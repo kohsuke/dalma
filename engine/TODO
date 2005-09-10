@@ -1,6 +1,5 @@
 TODO
 ====
-	- wait for the completion of the conversation
 	- users should be able to access their own state information easily
 	  from Conversation (like Thread)
 

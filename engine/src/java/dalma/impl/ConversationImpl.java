@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Represents a running conversation.
@@ -69,6 +71,14 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     private List<? extends Dock<?>> docks = new ArrayList<Dock<?>>();
 
     /**
+     * Other conversations that are blocking for the completion of this conversation.
+     *
+     * Transient, because {@link ConversationDock}s in this queue re-register themselves.
+     * Always non-null.
+     */
+    transient Set<ConversationDock> waitList;
+
+    /**
      * Every conversation gets unique ID (per engine).
      * This is used so that a serialized {@link Conversation}
      * (as a part of the stack frame) can connect back to the running {@link Conversation} instance.
@@ -90,6 +100,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     private void init(EngineImpl engine,File rootDir) {
         this.engine = engine;
         this.rootDir = rootDir;
+        waitList = Collections.synchronizedSet(new HashSet<ConversationDock>());
     }
 
     /**
@@ -288,13 +299,24 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
         // notify any threads that are blocked on this conversation.
         notifyAll();
+        // notify all conversations that are blocked on this
+        synchronized(waitList) {
+            for (ConversationDock cd : waitList)
+                cd.resume(this);
+        }
     }
 
     public synchronized void join() throws InterruptedException {
-        if(state!=ConversationState.ENDED) {
-            // TODO: allow this method to be invoked from another conversation,
-            // and in that case suspend instead of block
-            wait();
+        ConversationImpl cur = EngineImpl.currentConversations.get();
+        if(cur==null) {
+            // called from outside conversations
+            if(state!=ConversationState.ENDED) {
+                // TODO: allow this method to be invoked from another conversation,
+                // and in that case suspend instead of block
+                wait();
+            }
+        } else {
+            cur.suspend(new ConversationDock(this));
         }
     }
 

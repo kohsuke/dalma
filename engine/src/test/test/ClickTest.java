@@ -19,8 +19,17 @@ import java.util.List;
  *
  * @author Kohsuke Kawaguchi
  */
-public class ClickTest {
+public class ClickTest extends Launcher {
+    public ClickTest(String[] args) throws Exception {
+        super(args);
+    }
+
     public static void main(String[] args) throws Exception {
-        Launcher.main(ClickConversation.class, ClickConversation.class);
+        new ClickTest(args);
+    }
+
+    protected void init() throws Exception {
+        createConversation(ClickConversation.class);
+        createConversation(ClickConversation.class);
     }
 }

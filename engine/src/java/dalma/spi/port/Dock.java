@@ -12,8 +12,13 @@ import java.io.Serializable;
  * Derived by port specific implementation to capture port-specific information.
  * Intances created by a {@link Port} in a port specific way.
  *
+ * <p>
+ * Dock stays in a memory even when the continuation is persisted to a disk,
+ * to wait for the activation event.
+ *
+ * <p>
  * Dock is serialized as a part of the conversation, allowing conversation
- * to requeue when loaded from a file.
+ * to requeue when the engine is loaded from a file.
  *
  * @author Kohsuke Kawaguchi
  */

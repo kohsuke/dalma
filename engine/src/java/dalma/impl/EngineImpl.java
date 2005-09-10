@@ -53,7 +53,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
     /**
      * Records the currently running conversations.
      */
-    private static final ThreadLocal<ConversationImpl> currentConversations = new ThreadLocal<ConversationImpl>();
+    static final ThreadLocal<ConversationImpl> currentConversations = new ThreadLocal<ConversationImpl>();
 
     public EngineImpl(File rootDir,ClassLoader classLoader,Executor executor) throws IOException {
         this.rootDir = rootDir;

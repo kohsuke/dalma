@@ -5,8 +5,11 @@ import test.ClickConversation;
 
 import java.net.URLClassLoader;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.javaflow.ContinuationClassLoader;
 import org.apache.commons.javaflow.bytecode.transformation.bcel.BcelClassTransformer;
@@ -19,19 +22,30 @@ import dalma.helpers.ThreadPoolExecutor;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class Launcher {
-    public static void main(Class<? extends Runnable>... convClazz) throws Exception {
+public abstract class Launcher {
+
+    /**
+     * The {@link ClassLoader} that can load instrumented conversation classes.
+     */
+    protected final ClassLoader classLoader;
+
+    /**
+     * Dalma engine.
+     */
+    protected final Engine engine;
+
+    protected Launcher(String[] args) throws Exception {
         BcelClassTransformer.debug = true;
 
         // creates a new class loader that loads test classes with javaflow enhancements
         URLClassLoader baseLoader = (URLClassLoader)Launcher.class.getClassLoader();
-        ClassLoader cl = new ContinuationClassLoader(
+        classLoader = new ContinuationClassLoader(
             baseLoader.getURLs(),
             new MaskingClassLoader(ClickTest.class.getClassLoader()));
 
         File root = new File("dalma-test");
         root.mkdirs();
-        if(convClazz.length>0) {
+        if(args.length>0) {
             // start fresh
             System.out.println("Starting fresh");
             Util.deleteContentsRecursive(root);
@@ -39,17 +53,33 @@ public class Launcher {
             System.out.println("Picking up existing conversations");
         }
 
-        Engine engine = new EngineImpl(root,cl,new ThreadPoolExecutor(1));
+        engine = new EngineImpl(root,classLoader,new ThreadPoolExecutor(1));
 
-        List<Conversation> convs = new ArrayList<Conversation>();
-
-        for (Class<? extends Runnable> c : convClazz) {
-            Class clazz = cl.loadClass(c.getName());
-            Runnable r = (Runnable)clazz.newInstance();
-
-            convs.add( engine.createConversation(r) );
+        if(args.length>0) {
+            init();
         }
+    }
 
-        // press Ctrl+C to break.
+    /**
+     * Creates initial set of conversations.
+     */
+    protected abstract void init() throws Exception;
+
+    /**
+     * Creates a new conversation instance with given parameters.
+     */
+    protected Conversation createConversation(Class<? extends Runnable> c, Object... args ) throws Exception {
+        Class clazz = classLoader.loadClass(c.getName());
+        Runnable r = (Runnable)findConstructor(clazz,args.length).newInstance(args);
+
+        return engine.createConversation(r);
+    }
+
+    private Constructor findConstructor(Class c, int length) throws NoSuchMethodException {
+        for( Constructor init : c.getConstructors() )
+            if(init.getParameterTypes().length==length)
+                return init;
+
+        throw new NoSuchMethodException("Unable to find a matching constructor on "+c.getName());
     }
 }
