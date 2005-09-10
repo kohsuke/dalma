@@ -1,0 +1,87 @@
+package dalma.spi.port;
+
+import dalma.Conversation;
+import dalma.impl.ConversationImpl;
+import dalma.spi.ConversationSPI;
+
+import java.io.Serializable;
+
+/**
+ * TODO.
+ *
+ * Derived by port specific implementation to capture port-specific information.
+ * Intances created by a {@link Port} in a port specific way.
+ *
+ * Dock is serialized as a part of the conversation, allowing conversation
+ * to requeue when loaded from a file.
+ *
+ * @author Kohsuke Kawaguchi
+ */
+public abstract class Dock<T> implements Serializable {
+    /**
+     * Owner port.
+     */
+    public final Port port;
+
+    /**
+     * {@link ConversationSPI} parking on this dock.
+     */
+    public ConversationSPI conv;
+
+    /**
+     * Activation value from this dock.
+     *
+     * Transient because this field is always null when a conversation is serialized.
+     */
+    private transient T returnValue;
+
+    protected Dock(Port port) {
+        this.port = port;
+    }
+
+    /**
+     * Called after the conversation is parked on this dock.
+     *
+     * {@link #conv}!=null guaranteed. Typically used to queue
+     * this dock.
+     * TODO: should this be the same with onLoad?
+     */
+    public abstract void park();
+
+    /**
+     * Called when a {@link Conversation} parking on this port is
+     * {@link Conversation#remove() removed}.
+     *
+     * <p>
+     * The implementation is expected to remove this conversation
+     * from any queue it maintains. If the conversation isn't parked,
+     * throw an assertion faillure, as it's a bug in the dalma engine.
+     */
+    public abstract void interrupt();
+
+    /**
+     * Called after this dock is restored from disk.
+     *
+     * Typically used to requeue this object.
+     */
+    public abstract void onLoad();
+
+    /**
+     * Resumes the conversation parked on this dock.
+     * Typically invoked by a port when the conversation should be resumed.
+     */
+    public final void resume(T retVal) {
+        assert conv!=null;
+        synchronized(this) {
+            this.returnValue = retVal;
+        }
+        ((ConversationImpl)conv).resume(this);
+    }
+
+    public synchronized T getReturnValue() {
+        return returnValue;
+    }
+
+
+    private static final long serialVersionUID = 1L;
+}

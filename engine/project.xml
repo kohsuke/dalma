@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <pomVersion>3</pomVersion>
+  <name>Dalma Workflow Engine</name>
+  <id>dalma-engine</id>
+  <currentVersion>trunk</currentVersion>
+  <package>dalma</package>
+
+  <organization>
+    <name>Kohsuke Kawaguchi</name>
+    <url>http://www.kohsuke.org</url>
+  </organization> 
+
+  <shortDescription>Dalma Workflow Engine</shortDescription>
+  <description>Dalma Workflow Engine</description>
+
+  <developers>
+    <developer>
+      <name>Kohsuke Kawaguchi</name>
+      <id>kohsuke</id>
+      <email>kk@kohsuke.org</email>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <id>commons-javaflow</id>
+      <version>trunk</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
+    <!--unitTest>
+      <includes>
+        <include>**/*TestCase.java</include>
+      </includes>
+      <excludes>
+        <exclude>**/Abstract*TestCase.java</exclude>
+      </excludes>
+    </unitTest-->
+  </build>
+
+  <reports>
+    <report>maven-license-plugin</report>
+    <report>maven-changelog-plugin</report>
+    <report>maven-changes-plugin</report>
+    <report>maven-developer-activity-plugin</report>
+    <report>maven-file-activity-plugin</report>
+    <report>maven-javadoc-plugin</report>
+    <report>maven-junit-report-plugin</report>
+    <!--
+    <report>maven-jcoverage-plugin</report>
+    -->
+    <report>maven-jxr-plugin</report>
+    <report>maven-linkcheck-plugin</report>
+  </reports>
+</project>
+
