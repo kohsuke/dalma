@@ -1,23 +1,17 @@
 package test.infra;
 
-import test.ClickTest;
-import test.ClickConversation;
-
-import java.net.URLClassLoader;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
+import dalma.Conversation;
+import dalma.Engine;
+import dalma.helpers.ThreadPoolExecutor;
+import dalma.impl.EngineImpl;
+import dalma.impl.Util;
 import org.apache.commons.javaflow.ContinuationClassLoader;
 import org.apache.commons.javaflow.bytecode.transformation.bcel.BcelClassTransformer;
-import dalma.impl.Util;
-import dalma.impl.EngineImpl;
-import dalma.Engine;
-import dalma.Conversation;
-import dalma.helpers.ThreadPoolExecutor;
+import test.ClickTest;
+
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.net.URLClassLoader;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -58,6 +52,8 @@ public abstract class Launcher {
         if(args.length>0) {
             init();
         }
+
+        System.out.println("We have "+engine.getConversations().size()+" conversations");
     }
 
     /**
