@@ -1,5 +1,10 @@
 TODO
 ====
+    Use this to replace the build automation
+        - write e-mail port (and qmail port)
+        - figure out how to write the "accept" thread.
+
+
 	- users should be able to access their own state information easily
 	  from Conversation (like Thread)
 
@@ -7,6 +12,10 @@ TODO
     - consider integrating with Exchange Server
     - consider sendmail integration
 
+E-mail Ports
+============
+    - one interface, multiple implementations
+    
 Notes
 =====
 - Ports need to be continuationable.

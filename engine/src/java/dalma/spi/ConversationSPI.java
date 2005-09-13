@@ -29,6 +29,8 @@ public abstract class ConversationSPI implements Conversation {
 
     public abstract <T> T suspend(List<? extends Dock<? extends T>> docks);
 
+    public abstract <T> T suspend(Dock<? extends T>... docks);
+
     /**
      * Returns the {@link Conversation} that the current thread is executing.
      */

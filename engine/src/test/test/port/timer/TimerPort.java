@@ -3,6 +3,7 @@ package test.port.timer;
 import dalma.spi.ConversationSPI;
 import dalma.spi.port.Dock;
 import dalma.spi.port.Port;
+import dalma.TimeUnit;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -67,12 +68,20 @@ public class TimerPort implements Port, Serializable {
      * Wait for an user input.
      */
     // this method is invoked from conversations
-    public static void waitFor(long delay) {
-        waitFor(new Date(System.currentTimeMillis()+delay));
+    public static void waitFor(long delay,TimeUnit unit) {
+        ConversationSPI.getCurrentConversation().suspend(createDock(delay,unit));
     }
 
     public static void waitFor(Date dt) {
-        ConversationSPI.getCurrentConversation().suspend(new TimerDock(dt));
+        ConversationSPI.getCurrentConversation().suspend(createDock(dt));
+    }
+
+    public static Dock<?> createDock(Date dt) {
+        return new TimerDock(dt);
+    }
+
+    public static Dock<?> createDock(long delay,TimeUnit unit) {
+        return new TimerDock(new Date(System.currentTimeMillis()+unit.toMilli(delay)));
     }
 
     private Object readResolve() {

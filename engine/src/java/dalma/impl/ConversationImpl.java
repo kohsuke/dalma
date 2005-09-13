@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Arrays;
 
 /**
  * Represents a running conversation.
@@ -131,6 +132,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     // this method needs to be continuation aware.
     public <T> T suspend(Dock<T> dock) {
         return suspend(Collections.singletonList(dock));
+    }
+
+    public <T> T suspend(Dock<? extends T>... docks) {
+        return suspend(Arrays.asList(docks));
     }
 
     public <T> T suspend(List<? extends Dock<? extends T>> dock) {
