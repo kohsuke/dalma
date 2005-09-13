@@ -189,6 +189,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/dalma.iml" filepath="$PROJECT_DIR$/dalma.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ports/email/email.iml" filepath="$PROJECT_DIR$/ports/email/email.iml" />
       <module fileurl="file://$PROJECT_DIR$/engine/engine.iml" filepath="$PROJECT_DIR$/engine/engine.iml" />
     </modules>
   </component>
