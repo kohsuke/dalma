@@ -13,6 +13,11 @@ import java.util.TimerTask;
 /**
  * EndPoint that waits for some time to pass.
  *
+ * <p>
+ * The {@link #createDock(Date)} method can return a {@link Dock} of an
+ * arbitrary type, because it always return null. This works better when
+ * timer is used with other {@link Dock}s.
+ *
  * @author Kohsuke Kawaguchi
  */
 public class TimerEndPoint implements EndPoint, Serializable {
@@ -24,7 +29,7 @@ public class TimerEndPoint implements EndPoint, Serializable {
     private TimerEndPoint() {
     }
 
-    private static final class TimerDock extends Dock<Void> {
+    private static final class TimerDock<T> extends Dock<T> {
         /**
          * The date when the conversation should be activated.
          */
@@ -76,12 +81,12 @@ public class TimerEndPoint implements EndPoint, Serializable {
         ConversationSPI.getCurrentConversation().suspend(createDock(dt));
     }
 
-    public static Dock<?> createDock(Date dt) {
-        return new TimerDock(dt);
+    public static <T> Dock<T> createDock(Date dt) {
+        return new TimerDock<T>(dt);
     }
 
-    public static Dock<?> createDock(long delay,TimeUnit unit) {
-        return new TimerDock(new Date(System.currentTimeMillis()+unit.toMilli(delay)));
+    public static <T> Dock<T> createDock(long delay,TimeUnit unit) {
+        return new TimerDock<T>(new Date(System.currentTimeMillis()+unit.toMilli(delay)));
     }
 
     private Object readResolve() {
