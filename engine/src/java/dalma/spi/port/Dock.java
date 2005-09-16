@@ -9,8 +9,8 @@ import java.io.Serializable;
 /**
  * TODO.
  *
- * Derived by port specific implementation to capture port-specific information.
- * Intances created by a {@link Port} in a port specific way.
+ * Derived by endPointoint specific implementation to capture endPointoint-specific information.
+ * Intances created by a {@link EndPoint} in a endPoint specific way.
  *
  * <p>
  * Dock stays in a memory even when the continuation is persisted to a disk,
@@ -24,9 +24,9 @@ import java.io.Serializable;
  */
 public abstract class Dock<T> implements Serializable {
     /**
-     * Owner port.
+     * Owner endPoint.
      */
-    public final Port port;
+    public final EndPoint endPoint;
 
     /**
      * {@link ConversationSPI} parking on this dock.
@@ -40,8 +40,8 @@ public abstract class Dock<T> implements Serializable {
      */
     private transient T returnValue;
 
-    protected Dock(Port port) {
-        this.port = port;
+    protected Dock(EndPoint endPoint) {
+        this.endPoint = endPoint;
     }
 
     /**
@@ -54,7 +54,7 @@ public abstract class Dock<T> implements Serializable {
     public abstract void park();
 
     /**
-     * Called when a {@link Conversation} parking on this port is
+     * Called when a {@link Conversation} parking on this endPoint is
      * {@link Conversation#remove() removed}.
      *
      * <p>
@@ -73,7 +73,7 @@ public abstract class Dock<T> implements Serializable {
 
     /**
      * Resumes the conversation parked on this dock.
-     * Typically invoked by a port when the conversation should be resumed.
+     * Typically invoked by a endPoint when the conversation should be resumed.
      */
     public final void resume(T retVal) {
         assert conv!=null;

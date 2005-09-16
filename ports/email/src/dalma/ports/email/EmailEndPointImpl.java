@@ -1,31 +1,34 @@
 package dalma.ports.email;
 
 import dalma.TimeUnit;
-import dalma.spi.port.Dock;
-import dalma.spi.port.Port;
 import dalma.spi.ConversationSPI;
+import dalma.spi.port.Dock;
+import test.port.timer.TimerEndPoint;
 
+import javax.mail.Address;
 import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.MessagingException;
-import java.util.concurrent.TimeoutException;
-import java.util.UUID;
-import java.util.Arrays;
-import java.util.Map;
+import javax.mail.Transport;
 import java.util.HashMap;
-
-import test.port.timer.TimerPort;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 /**
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class EmailPortImpl implements EmailPort {
+public abstract class EmailEndPointImpl implements EmailEndPoint {
 
     private static final Map<UUID,DockImpl> queue = new HashMap<UUID, DockImpl>();
 
-    public EmailPortImpl() {
+    /**
+     * The address that this endPoint is waiting.
+     */
+    private final Address address;
+
+    protected EmailEndPointImpl(Address address) {
+        this.address = address;
     }
 
     protected static class DockImpl extends Dock<Message> {
@@ -42,7 +45,7 @@ public abstract class EmailPortImpl implements EmailPort {
          */
         private transient Message outgoing;
 
-        public DockImpl(EmailPortImpl port, Message outgoing) throws MessagingException {
+        public DockImpl(EmailEndPointImpl port, Message outgoing) throws MessagingException {
             super(port);
             this.outgoing = outgoing;
 
@@ -79,9 +82,20 @@ public abstract class EmailPortImpl implements EmailPort {
         }
     }
 
+
+
+    /**
+     * Wraps up the out-going message.
+     */
+    private Message wrapUp(Message outgoing) throws MessagingException {
+        outgoing.setReplyTo(new Address[]{address});
+        return outgoing;
+    }
+
+
     public Message waitForReply(Message outgoing) {
         try {
-            return ConversationSPI.getCurrentConversation().suspend(new DockImpl(this,outgoing));
+            return ConversationSPI.getCurrentConversation().suspend(new DockImpl(this,wrapUp(outgoing)));
         } catch (MessagingException e) {
             throw new EmailException(e);
         }
@@ -90,7 +104,7 @@ public abstract class EmailPortImpl implements EmailPort {
     public Message waitForReply(Message outgoing, long timeout, TimeUnit unit) throws TimeoutException {
         try {
             return (Message)ConversationSPI.getCurrentConversation().suspend(
-                new DockImpl(this,outgoing), TimerPort.createDock(timeout,unit) );
+                new DockImpl(this,wrapUp(outgoing)), TimerEndPoint.createDock(timeout,unit) );
         } catch (MessagingException e) {
             throw new EmailException(e);
         }

@@ -291,7 +291,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
                 // there's really nothing we nor appliation can do to recover from this.
                 // TODO: log
             }
-            // remove this conversation from the port
+            // remove this conversation from the endPoint
             for(Dock d : docks) {
                 assert d.conv==this;
                 d.interrupt();

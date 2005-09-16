@@ -1,7 +1,7 @@
 package dalma.ports.email;
 
 import dalma.TimeUnit;
-import dalma.spi.port.Port;
+import dalma.spi.port.EndPoint;
 
 import javax.mail.Message;
 import java.util.concurrent.TimeoutException;
@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * @author Kohsuke Kawaguchi
  */
-public interface EmailPort extends Port {
+public interface EmailEndPoint extends EndPoint {
     /**
      * Sends an e-mail out and waits for a reply to come back.
      *

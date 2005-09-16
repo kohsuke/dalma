@@ -1,7 +1,7 @@
 package test.port.mail;
 
 /**
- * Port that waits for e-mails.
+ * EndPoint that waits for e-mails.
  *
  *
  * <h1>qmail</h1>

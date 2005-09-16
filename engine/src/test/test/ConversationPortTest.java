@@ -1,7 +1,7 @@
 package test;
 
 import test.infra.Launcher;
-import test.port.timer.TimerPort;
+import test.port.timer.TimerEndPoint;
 import dalma.Conversation;
 
 import java.io.Serializable;

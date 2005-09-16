@@ -1,7 +1,7 @@
 TODO
 ====
     Use this to replace the build automation
-        - write e-mail port (and qmail port)
+        - write e-mail endPointoint (and qmail endPointoint)
         - figure out how to write the "accept" thread.
 
 

@@ -1,6 +1,6 @@
 package test;
 
-import test.port.input.LineInputPort;
+import test.port.input.LineInputEndPoint;
 
 import java.io.Serializable;
 
@@ -28,7 +28,7 @@ public class ClickConversation implements Runnable, Serializable {
     private void loop(int depth) {
         while(true) {
             out("current loop depth "+depth);
-            String input = LineInputPort.waitForInput();
+            String input = LineInputEndPoint.waitForInput();
             if(input.length()>0) {
                 loop(depth+1);
             } else {

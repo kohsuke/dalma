@@ -2,13 +2,13 @@ package dalma.spi;
 
 import dalma.Conversation;
 import dalma.impl.EngineImpl;
-import dalma.spi.port.Port;
+import dalma.spi.port.EndPoint;
 import dalma.spi.port.Dock;
 
 import java.util.List;
 
 /**
- * Additional methods of {@link Conversation} available for {@link Port}s.
+ * Additional methods of {@link Conversation} available for {@link EndPoint}s.
  *
  * @author Kohsuke Kawaguchi
  */

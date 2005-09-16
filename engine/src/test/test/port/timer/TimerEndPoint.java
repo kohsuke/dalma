@@ -2,7 +2,7 @@ package test.port.timer;
 
 import dalma.spi.ConversationSPI;
 import dalma.spi.port.Dock;
-import dalma.spi.port.Port;
+import dalma.spi.port.EndPoint;
 import dalma.TimeUnit;
 
 import java.io.Serializable;
@@ -11,17 +11,17 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Port that waits for some time to pass.
+ * EndPoint that waits for some time to pass.
  *
  * @author Kohsuke Kawaguchi
  */
-public class TimerPort implements Port, Serializable {
+public class TimerEndPoint implements EndPoint, Serializable {
 
-    public static final TimerPort INSTANCE = new TimerPort();
+    public static final TimerEndPoint INSTANCE = new TimerEndPoint();
 
     private static final Timer timer = new Timer(true);
 
-    private TimerPort() {
+    private TimerEndPoint() {
     }
 
     private static final class TimerDock extends Dock<Void> {

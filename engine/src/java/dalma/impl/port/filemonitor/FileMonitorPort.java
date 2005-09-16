@@ -1,7 +1,7 @@
 package dalma.impl.port.filemonitor;
 
 import dalma.spi.ConversationSPI;
-import dalma.spi.port.Port;
+import dalma.spi.port.EndPoint;
 
 import java.io.File;
 import java.io.Serializable;
@@ -15,7 +15,7 @@ import java.util.Map;
  *
  * @author Kohsuke Kawaguchi
  */
-//public class FileMonitorPort implements Port, Serializable {
+//public class FileMonitorPort implements EndPoint, Serializable {
 //
 //    private static final FileMonitorPort INSTANCE = new FileMonitorPort();
 //

@@ -2,7 +2,7 @@ package test.port.input;
 
 import dalma.Conversation;
 import dalma.spi.ConversationSPI;
-import dalma.spi.port.Port;
+import dalma.spi.port.EndPoint;
 import dalma.spi.port.Dock;
 
 import java.io.BufferedReader;
@@ -15,20 +15,20 @@ import java.util.List;
 /**
  * Waits for the user input.
  *
- * This is a singleton port.
+ * This is a singleton endPoint.
  *
  * @author Kohsuke Kawaguchi
  */
-public final class LineInputPort implements Runnable, Port, Serializable {
+public final class LineInputEndPoint implements Runnable, EndPoint, Serializable {
 
-    public static final LineInputPort INSTANCE = new LineInputPort();
+    public static final LineInputEndPoint INSTANCE = new LineInputEndPoint();
 
     /**
      * {@link Conversation}s waiting for input.
      */
     private static final List<LineDock> queue = new ArrayList<LineDock>();
 
-    private LineInputPort() {
+    private LineInputEndPoint() {
         // start the monitor thread
         new Thread(this).start();
     }

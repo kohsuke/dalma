@@ -2,12 +2,12 @@ package test;
 
 import static dalma.TimeUnit.SECONDS;
 import test.infra.Launcher;
-import test.port.timer.TimerPort;
+import test.port.timer.TimerEndPoint;
 
 import java.io.Serializable;
 
 /**
- * Tests timer port.
+ * Tests timer endPoint.
  *
  * @author Kohsuke Kawaguchi
  */
@@ -28,7 +28,7 @@ public class TimerTest extends Launcher {
         public void run() {
             for( int i=0; i<100; i++ ) {
                 System.out.println("waiting "+i);
-                TimerPort.waitFor(5,SECONDS);  // 5 sec
+                TimerEndPoint.waitFor(5,SECONDS);  // 5 sec
             }
         }
         private static final long serialVersionUID = 1L;
