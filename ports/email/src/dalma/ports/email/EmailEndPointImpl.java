@@ -1,6 +1,7 @@
 package dalma.ports.email;
 
 import dalma.TimeUnit;
+import dalma.Conversation;
 import dalma.spi.ConversationSPI;
 import dalma.spi.port.Dock;
 import test.port.timer.TimerEndPoint;
@@ -23,12 +24,61 @@ public abstract class EmailEndPointImpl implements EmailEndPoint {
     private static final Map<UUID,DockImpl> queue = new HashMap<UUID, DockImpl>();
 
     /**
-     * The address that this endPoint is waiting.
+     * The address that receives replies.
      */
     private final Address address;
 
     protected EmailEndPointImpl(Address address) {
         this.address = address;
+    }
+
+    /**
+     * Invoked when a new message is received to awake the corresponding
+     * {@link Conversation}.
+     */
+    /*package*/ static void handleMessage(Message msg) throws MessagingException {
+        // see http://cr.yp.to/immhf/thread.html
+        UUID id = getIdHeader(msg, "References");
+        if(id==null)
+            id = getIdHeader(msg,"In-reply-to");
+        if(id==null) {
+            throw new MessagingException(
+                "Neither In-reply-to nor References header was found.\n" +
+                "Unable to link this message to a conversation");
+        }
+        DockImpl dock;
+        synchronized(queue) {
+            dock = queue.remove(id);
+        }
+        if(dock==null) {
+            throw new MessagingException(
+                "No conversation is waiting for the message id="+id);
+        }
+        dock.resume(msg);
+    }
+
+    private static UUID getIdHeader(Message msg, String name) throws MessagingException {
+        String[] h = msg.getHeader(name);
+        if(h==null || h.length==0)
+            return null;
+
+        String val = h[0].trim();
+        if(val.length()<2)  return null;
+
+        // find the last token, if there are more than one
+        int idx = val.lastIndexOf(' ');
+        if(idx>0)   val = val.substring(idx+1);
+
+        if(!val.startsWith("<"))    return null;
+        val = val.substring(1);
+        if(!val.endsWith("@localhost>"))    return null;
+        val = val.substring(0,val.length()-"@localhost>".length());
+
+        try {
+            return UUID.fromString(val);
+        } catch (IllegalArgumentException e) {
+            return null;    // not a UUID
+        }
     }
 
     protected static class DockImpl extends Dock<Message> {
@@ -53,7 +103,7 @@ public abstract class EmailEndPointImpl implements EmailEndPoint {
             // meaning someone who knows any number of GUIDs can't
             // predict another one (to steal the session)
             uuid = UUID.randomUUID();
-            outgoing.setHeader("Message-ID",uuid.toString());
+            outgoing.setHeader("Message-ID",'<'+uuid.toString()+"@localhost>");
         }
 
         public void park() {
@@ -89,6 +139,9 @@ public abstract class EmailEndPointImpl implements EmailEndPoint {
      */
     private Message wrapUp(Message outgoing) throws MessagingException {
         outgoing.setReplyTo(new Address[]{address});
+        if(outgoing.getFrom()==null || outgoing.getFrom().length==0) {
+            outgoing.setFrom(address);
+        }
         return outgoing;
     }
 
@@ -103,8 +156,8 @@ public abstract class EmailEndPointImpl implements EmailEndPoint {
 
     public Message waitForReply(Message outgoing, long timeout, TimeUnit unit) throws TimeoutException {
         try {
-            return (Message)ConversationSPI.getCurrentConversation().suspend(
-                new DockImpl(this,wrapUp(outgoing)), TimerEndPoint.createDock(timeout,unit) );
+            return ConversationSPI.getCurrentConversation().suspend(
+                new DockImpl(this,wrapUp(outgoing)), TimerEndPoint.<Message>createDock(timeout,unit) );
         } catch (MessagingException e) {
             throw new EmailException(e);
         }

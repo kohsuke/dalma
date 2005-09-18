@@ -7,6 +7,7 @@
     <exclude-exploded />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -17,7 +18,9 @@
           <root url="jar://$MODULE_DIR$/lib/mail.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/javamail-1_3_2-src-jrl.zip!/javamail1.3.2-src/src/share/classes" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntryProperties />
