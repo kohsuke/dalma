@@ -1,6 +1,9 @@
 package dalma;
 
+import dalma.spi.port.EndPoint;
+
 import java.util.Collection;
+import java.util.Map;
 import java.io.IOException;
 
 
@@ -44,4 +47,28 @@ public interface Engine {
      */
     Collection<Conversation> getConversations();
     // snapshot, because of the synchronization issue
+
+    /**
+     * Gets a read-only copy of all the {@link EndPoint}s in this engine.
+     *
+     * @return
+     *      always retrun non-null (but possibly empty) collection.
+     */
+    Map<String,EndPoint> getEndPoints();
+
+    /**
+     * Gets the {@link EndPoint} of the given name.
+     *
+     * @return
+     *      null if no such {@link EndPoint} is found.
+     */ 
+    EndPoint getEndPoint(String name);
+
+    /**
+     * Adds a new {@link EndPoint} to this engine.
+     *
+     * @throws IllegalArgumentException
+     *      if there's already an {@link EndPoint} that has the same name.
+     */
+    void addEndPoint(EndPoint endPoint);
 }

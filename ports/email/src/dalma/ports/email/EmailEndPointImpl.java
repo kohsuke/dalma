@@ -19,7 +19,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class EmailEndPointImpl implements EmailEndPoint {
+public class EmailEndPointImpl extends EmailEndPoint {
 
     private static final Map<UUID,DockImpl> queue = new HashMap<UUID, DockImpl>();
 
@@ -28,7 +28,8 @@ public abstract class EmailEndPointImpl implements EmailEndPoint {
      */
     private final Address address;
 
-    protected EmailEndPointImpl(Address address) {
+    public EmailEndPointImpl(String name, Address address) {
+        super(name);
         this.address = address;
     }
 

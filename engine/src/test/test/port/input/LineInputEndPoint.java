@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class LineInputEndPoint implements Runnable, EndPoint, Serializable {
+public final class LineInputEndPoint extends EndPoint implements Runnable, Serializable {
 
     public static final LineInputEndPoint INSTANCE = new LineInputEndPoint();
 
@@ -29,6 +29,7 @@ public final class LineInputEndPoint implements Runnable, EndPoint, Serializable
     private static final List<LineDock> queue = new ArrayList<LineDock>();
 
     private LineInputEndPoint() {
+        super(LineInputEndPoint.class.getName());
         // start the monitor thread
         new Thread(this).start();
     }

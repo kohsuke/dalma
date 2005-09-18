@@ -1,7 +1,9 @@
 package dalma.spi.port;
 
-import dalma.Conversation;
-import dalma.spi.ConversationSPI;
+import dalma.Engine;
+import dalma.impl.EngineImpl;
+
+import java.io.Serializable;
 
 /**
  * Root of the endPoint SPI.
@@ -24,5 +26,43 @@ import dalma.spi.ConversationSPI;
  *
  * @author Kohsuke Kawaguchi
  */
-public interface EndPoint {
+public abstract class EndPoint implements Serializable {
+    private final String name;
+
+    protected EndPoint(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Gets the unique name that identifies this {@link EndPoint} within an {@link Engine}.
+     *
+     * @return
+     *      always non-null valid object.
+     */
+    public String getName() {
+        return name;
+    }
+
+    private Object writeReplace() {
+        if(EngineImpl.SERIALIZATION_CONTEXT.get()==null)
+            return this;
+        else
+            return new Moniker(name);
+    }
+
+    private static final class Moniker implements Serializable {
+        private final String name;
+
+        public Moniker(String name) {
+            this.name = name;
+        }
+
+        private Object readResolve() {
+            return EngineImpl.SERIALIZATION_CONTEXT.get().getEndPoint(name);
+        }
+
+        private static final long serialVersionUID = 1L;
+    }
+
+    private static final long serialVersionUID = 1L;
 }

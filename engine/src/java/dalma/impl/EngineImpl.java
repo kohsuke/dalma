@@ -3,6 +3,7 @@ package dalma.impl;
 import dalma.Conversation;
 import dalma.Executor;
 import dalma.spi.EngineSPI;
+import dalma.spi.port.EndPoint;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -49,6 +51,12 @@ public final class EngineImpl implements EngineSPI, Serializable {
      * Keyed by their {@link ConversationImpl#id}.
      */
     transient final Map<Integer,ConversationImpl> conversations = new HashMap<Integer,ConversationImpl>();
+
+    /**
+     * All {@link EndPoint}s that bleong to this engine.
+     * access need to be synchronized.
+     */
+    transient final Map<String,EndPoint> endPoints = new HashMap<String, EndPoint>();
 
     /**
      * Records the currently running conversations.
@@ -164,6 +172,26 @@ public final class EngineImpl implements EngineSPI, Serializable {
         }
     }
 
+    public Map<String, EndPoint> getEndPoints() {
+        synchronized(endPoints) {
+            return Collections.unmodifiableMap(endPoints);
+        }
+    }
+
+    public EndPoint getEndPoint(String name) {
+        synchronized(endPoints) {
+            return endPoints.get(name);
+        }
+    }
+
+    public void addEndPoint(EndPoint ep) {
+        synchronized(endPoints) {
+            if(endPoints.containsKey(ep.getName()))
+                throw new IllegalArgumentException("There's already an EndPoint of the name "+ep.getName());
+            endPoints.put(ep.getName(),ep);
+        }
+    }
+
     ConversationImpl getConversation(int id) {
         synchronized(conversations) {
             return conversations.get(id);
@@ -203,9 +231,12 @@ public final class EngineImpl implements EngineSPI, Serializable {
      * this variable stores the {@link EngineImpl} that owns the conversation.
      *
      * <p>
+     * <b>EVEN THOUGH THIS IS PUBLIC, IT IS NOT MEANT TO BE USED BY APPLICATIONS.</b>
+     *
+     * <p>
      * This is used to resolve serialized instances to running instances.
      */
-    static final ThreadLocal<EngineImpl> SERIALIZATION_CONTEXT = new ThreadLocal<EngineImpl>();
+    public static final ThreadLocal<EngineImpl> SERIALIZATION_CONTEXT = new ThreadLocal<EngineImpl>();
 
     private static final long serialVersionUID = 1L;
 

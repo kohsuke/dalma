@@ -20,13 +20,14 @@ import java.util.TimerTask;
  *
  * @author Kohsuke Kawaguchi
  */
-public class TimerEndPoint implements EndPoint, Serializable {
+public class TimerEndPoint extends EndPoint implements Serializable {
 
     public static final TimerEndPoint INSTANCE = new TimerEndPoint();
 
     private static final Timer timer = new Timer(true);
 
     private TimerEndPoint() {
+        super(TimerEndPoint.class.getName());
     }
 
     private static final class TimerDock<T> extends Dock<T> {

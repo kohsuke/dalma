@@ -9,7 +9,11 @@ import java.util.concurrent.TimeoutException;
 /**
  * @author Kohsuke Kawaguchi
  */
-public interface EmailEndPoint extends EndPoint {
+public abstract class EmailEndPoint extends EndPoint {
+    protected EmailEndPoint(String name) {
+        super(name);
+    }
+
     /**
      * Sends an e-mail out and waits for a reply to come back.
      *
@@ -22,7 +26,7 @@ public interface EmailEndPoint extends EndPoint {
      *      a message that represents the received reply.
      *      always a non-null valid message.
      */
-    Message waitForReply(Message outgoing);
+    public abstract Message waitForReply(Message outgoing);
 
 
     /**
@@ -37,6 +41,6 @@ public interface EmailEndPoint extends EndPoint {
      *      a message that represents the received reply.
      *      always a non-null valid message.
      */
-    Message waitForReply(Message outgoing,long timeout, TimeUnit unit) throws TimeoutException;
+    public abstract Message waitForReply(Message outgoing,long timeout, TimeUnit unit) throws TimeoutException;
 
 }
