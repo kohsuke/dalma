@@ -6,6 +6,7 @@ import javax.mail.Message;
 import javax.mail.Flags;
 import javax.mail.Session;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -28,6 +29,7 @@ public class POP3Listener extends Thread {
         this.password = password;
         this.interval = interval;
         setDaemon(true);
+        start();
     }
 
     public void run() {
@@ -45,12 +47,13 @@ public class POP3Listener extends Thread {
                 logger.fine("connected");
 
                 Folder folder = store.getFolder("INBOX");
+                folder.open(Folder.READ_WRITE);
                 Message[] msgs = folder.getMessages();
                 for( Message msg : msgs ) {
                     logger.fine("handling message: "+msg.getSubject());
                     msg.setFlag(Flags.Flag.DELETED,true);
                     try {
-                        EmailEndPointImpl.handleMessage(msg);
+                        EmailEndPointImpl.handleMessage((MimeMessage)msg);
                     } catch (MessagingException e) {
                         logger.log(Level.WARNING,"failed to handle message: "+msg.getSubject(),e);
                         // but delete this message anyway

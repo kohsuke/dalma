@@ -2,6 +2,14 @@
 <project version="4" relativePaths="false">
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
+    <buildFile url="file://$PROJECT_DIR$/ports/email/build.xml">
+      <additionalClassPath />
+      <antReference projectDefault="true" />
+      <customJdkName value="" />
+      <maximumHeapSize value="128" />
+      <properties />
+      <executeOn event="afterCompilation" target="instrument" />
+    </buildFile>
   </component>
   <component name="CodeStyleSettingsManager">
     <option name="PER_PROJECT_SETTINGS" />
@@ -219,6 +227,7 @@
         <root url="jar://$PROJECT_DIR$/lib/redist/jakarta-bcel-20050813.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/redist/xstream-1.1.2.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/redist/xpp3_min-1.1.3.4.I.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/redist/commons-io-1.0.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

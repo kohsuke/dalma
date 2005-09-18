@@ -48,12 +48,16 @@ public abstract class Launcher {
         }
 
         engine = new EngineImpl(root,classLoader,new ThreadPoolExecutor(1));
+        setUpEndPoints();
 
         if(args.length>0) {
             init();
         }
 
         System.out.println("We have "+engine.getConversations().size()+" conversations");
+    }
+
+    protected void setUpEndPoints() throws Exception {
     }
 
     /**

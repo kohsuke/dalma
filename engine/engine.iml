@@ -12,7 +12,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="redist" level="project" />
+    <orderEntry type="library" exported="" name="redist" level="project" />
     <orderEntryProperties />
   </component>
 </module>

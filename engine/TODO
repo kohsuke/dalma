@@ -17,5 +17,9 @@ E-mail Ports
     
 Notes
 =====
-- Ports need to be continuationable.
-	
+- MimeMessage is not serializable
+  this makes it ugly to work with e-mails.
+
+  IDEA.1: Build another serializable mail library and use it
+  IDEA.2: Replace non-serializable objects by null when persisted
+  IDEA.3:   	

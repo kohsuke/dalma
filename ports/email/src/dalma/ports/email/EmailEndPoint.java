@@ -3,7 +3,7 @@ package dalma.ports.email;
 import dalma.TimeUnit;
 import dalma.spi.port.EndPoint;
 
-import javax.mail.Message;
+import javax.mail.internet.MimeMessage;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -26,7 +26,14 @@ public abstract class EmailEndPoint extends EndPoint {
      *      a message that represents the received reply.
      *      always a non-null valid message.
      */
-    public abstract Message waitForReply(Message outgoing);
+    public abstract MimeMessage waitForReply(MimeMessage outgoing);
+
+    /**
+     * Sends a message and return immediately.
+     *
+     * Use this method when no further reply is expected.
+     */
+    public abstract void send(MimeMessage outgoing);
 
 
     /**
@@ -41,6 +48,6 @@ public abstract class EmailEndPoint extends EndPoint {
      *      a message that represents the received reply.
      *      always a non-null valid message.
      */
-    public abstract Message waitForReply(Message outgoing,long timeout, TimeUnit unit) throws TimeoutException;
+    public abstract MimeMessage waitForReply(MimeMessage outgoing,long timeout, TimeUnit unit) throws TimeoutException;
 
 }

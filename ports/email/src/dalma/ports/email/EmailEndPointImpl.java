@@ -4,16 +4,19 @@ import dalma.TimeUnit;
 import dalma.Conversation;
 import dalma.spi.ConversationSPI;
 import dalma.spi.port.Dock;
-import test.port.timer.TimerEndPoint;
 
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Transport;
+import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
+
+import org.apache.commons.javaflow.bytecode.StackRecorder;
+import test.port.timer.TimerEndPoint;
 
 /**
  *
@@ -37,7 +40,7 @@ public class EmailEndPointImpl extends EmailEndPoint {
      * Invoked when a new message is received to awake the corresponding
      * {@link Conversation}.
      */
-    /*package*/ static void handleMessage(Message msg) throws MessagingException {
+    /*package*/ static void handleMessage(MimeMessage msg) throws MessagingException {
         // see http://cr.yp.to/immhf/thread.html
         UUID id = getIdHeader(msg, "References");
         if(id==null)
@@ -55,7 +58,7 @@ public class EmailEndPointImpl extends EmailEndPoint {
             throw new MessagingException(
                 "No conversation is waiting for the message id="+id);
         }
-        dock.resume(msg);
+        dock.resume(new MimeMessageEx(msg));
     }
 
     private static UUID getIdHeader(Message msg, String name) throws MessagingException {
@@ -82,7 +85,7 @@ public class EmailEndPointImpl extends EmailEndPoint {
         }
     }
 
-    protected static class DockImpl extends Dock<Message> {
+    protected static class DockImpl extends Dock<MimeMessage> {
         private final UUID uuid;
 
         /**
@@ -94,9 +97,9 @@ public class EmailEndPointImpl extends EmailEndPoint {
          * The field is transient because once it's sent out
          * the field is kept to null.
          */
-        private transient Message outgoing;
+        private transient MimeMessage outgoing;
 
-        public DockImpl(EmailEndPointImpl port, Message outgoing) throws MessagingException {
+        public DockImpl(EmailEndPointImpl port, MimeMessage outgoing) throws MessagingException {
             super(port);
             this.outgoing = outgoing;
 
@@ -138,7 +141,7 @@ public class EmailEndPointImpl extends EmailEndPoint {
     /**
      * Wraps up the out-going message.
      */
-    private Message wrapUp(Message outgoing) throws MessagingException {
+    private MimeMessage wrapUp(MimeMessage outgoing) throws MessagingException {
         outgoing.setReplyTo(new Address[]{address});
         if(outgoing.getFrom()==null || outgoing.getFrom().length==0) {
             outgoing.setFrom(address);
@@ -146,8 +149,8 @@ public class EmailEndPointImpl extends EmailEndPoint {
         return outgoing;
     }
 
-
-    public Message waitForReply(Message outgoing) {
+    // this method needs to be continuable. compensate it manually
+    public MimeMessage waitForReply(MimeMessage outgoing) {
         try {
             return ConversationSPI.getCurrentConversation().suspend(new DockImpl(this,wrapUp(outgoing)));
         } catch (MessagingException e) {
@@ -155,10 +158,18 @@ public class EmailEndPointImpl extends EmailEndPoint {
         }
     }
 
-    public Message waitForReply(Message outgoing, long timeout, TimeUnit unit) throws TimeoutException {
+    public void send(MimeMessage outgoing) {
+        try {
+            Transport.send(wrapUp(outgoing));
+        } catch (MessagingException e) {
+            throw new EmailException(e);
+        }
+    }
+
+    public MimeMessage waitForReply(MimeMessage outgoing, long timeout, TimeUnit unit) throws TimeoutException {
         try {
             return ConversationSPI.getCurrentConversation().suspend(
-                new DockImpl(this,wrapUp(outgoing)), TimerEndPoint.<Message>createDock(timeout,unit) );
+                new DockImpl(this,wrapUp(outgoing)), TimerEndPoint.<MimeMessage>createDock(timeout,unit) );
         } catch (MessagingException e) {
             throw new EmailException(e);
         }

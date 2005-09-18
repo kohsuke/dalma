@@ -1,21 +1,20 @@
 package test;
 
-import test.infra.Launcher;
-import test.port.timer.TimerEndPoint;
-
-import java.io.Serializable;
-
-import static dalma.TimeUnit.SECONDS;
-import dalma.ports.email.EmailEndPointImpl;
 import dalma.ports.email.EmailEndPoint;
-import dalma.spi.port.EndPoint;
+import dalma.ports.email.EmailEndPointImpl;
+import dalma.ports.email.MimeMessageEx;
+import dalma.ports.email.POP3Listener;
+import test.infra.Launcher;
+import test.infra.PasswordStore;
 
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.Session;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -29,10 +28,15 @@ public class EmailTest extends Launcher {
         new EmailTest(args);
     }
 
-    protected void init() throws Exception {
-        EmailEndPoint ep = new EmailEndPointImpl("email",new InternetAddress("dalma@kohsuke.org","dalma engine"));
-        engine.addEndPoint(ep);
+    EmailEndPoint ep;
 
+    protected void setUpEndPoints() throws Exception {
+        ep = new EmailEndPointImpl("email",new InternetAddress("dalma@kohsuke.org","dalma engine"));
+        engine.addEndPoint(ep);
+        new POP3Listener("mail.kohsuke.org","dalma",PasswordStore.get("dalma@kohsuke.org"),3000);
+    }
+
+    protected void init() throws Exception {
         createConversation(ConversationImpl.class,ep);
         createConversation(ConversationImpl.class,ep);
     }
@@ -46,15 +50,21 @@ public class EmailTest extends Launcher {
 
         public void run() {
             try {
-                Message msg = new MimeMessage(Session.getInstance(System.getProperties()));
+                UUID uuid = UUID.randomUUID();
+
+                MimeMessage msg = new MimeMessage(Session.getInstance(System.getProperties()));
                 msg.setRecipient(Message.RecipientType.TO, new InternetAddress("kk@kohsuke.org"));
-                msg.setText("Hello!");
+                msg.setText("Hello! "+uuid.toString());
+                msg.setSubject("testing dalma");
+                msg = new MimeMessageEx(msg);
                 msg = ep.waitForReply(msg);
 
-                Message reply = msg.reply(false);
-                msg.setText("Reply to "+msg.getSubject());
+                System.out.println("got a reply.");
 
-                Transport.send(reply);
+                MimeMessage reply = (MimeMessage)msg.reply(false);
+                reply.setText("Reply to "+msg.getSubject()+" "+uuid.toString());
+                ep.send(reply);
+                System.out.println("done");
             } catch (MessagingException e) {
                 e.printStackTrace();
             }

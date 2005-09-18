@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="email" default="compile">
+
+  <target name="compile">
+    <mkdir dir="target/classes" />
+    <javac srcdir="src" destdir="target/classes" debug="on">
+      <classpath>
+        <pathelement path="../../engine/target/classes" />
+        <pathelement path="../../engine/target/test-classes" />
+        <fileset dir="../../lib/redist" includes="*.jar" />
+        <fileset dir="lib" includes="*.jar" />
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="instrument"> 
+    <taskdef resource="org/apache/commons/javaflow/ant/tasks.properties">
+      <classpath>
+        <fileset dir="../../lib/redist" includes="*.jar" />
+      </classpath>
+    </taskdef>
+
+    <javaflow destdir="target/classes" srcdir="target/classes">
+      <include name="dalma/ports/email/EmailEndPointImpl.class" />
+    </javaflow>
+  </target>
+</project>
