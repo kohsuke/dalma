@@ -1,9 +1,10 @@
 package dalma.ports.email;
 
-import dalma.TimeUnit;
 import dalma.Conversation;
+import dalma.TimeUnit;
 import dalma.spi.ConversationSPI;
 import dalma.spi.port.Dock;
+import test.port.timer.TimerEndPoint;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -14,9 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
-
-import org.apache.commons.javaflow.bytecode.StackRecorder;
-import test.port.timer.TimerEndPoint;
 
 /**
  *
