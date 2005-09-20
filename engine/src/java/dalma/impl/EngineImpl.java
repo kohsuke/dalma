@@ -196,7 +196,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
     }
 
     public void stop() {
-        // clone first
+        // clone first to avoid concurrent modification
         Collection<EndPointImpl> eps;
         synchronized(endPoints) {
             eps = new ArrayList<EndPointImpl>(endPoints.values());
@@ -204,6 +204,9 @@ public final class EngineImpl implements EngineSPI, Serializable {
 
         for( EndPointImpl ep : eps )
             ep.stop();
+
+        // TODO: wait until all conversations suspend
+        throw new UnsupportedOperationException();
     }
 
     ConversationImpl getConversation(int id) {

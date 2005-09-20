@@ -33,6 +33,11 @@ public class MailDirListener extends Listener {
 
     protected void stop() {
         thread.interrupt();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            ;
+        }
     }
 
     private class Runner implements Runnable {

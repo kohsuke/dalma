@@ -21,6 +21,9 @@ public abstract class EndPointImpl extends EndPoint {
      * {@link EndPoint} should release resources that are used to listen to incoming events.
      * Note that it's possible for new {@link Conversation}s to part to the {@link EndPoint}
      * even after this method is called, due to the synchronization issue.
+     *
+     * <p>
+     * Once this method is called, the end point must not awake conversations.  
      */
     protected abstract void stop();
 

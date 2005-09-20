@@ -37,6 +37,11 @@ public class POP3Listener extends Listener {
 
     protected void stop() {
         thread.interrupt();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            ;
+        }
     }
 
     private class Runner implements Runnable {
