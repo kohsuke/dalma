@@ -1,7 +1,6 @@
 package test;
 
 import dalma.ports.email.EmailEndPoint;
-import dalma.ports.email.EmailEndPointImpl;
 import dalma.ports.email.MimeMessageEx;
 import dalma.ports.email.POP3Listener;
 import test.infra.Launcher;
@@ -10,7 +9,6 @@ import test.infra.PasswordStore;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.Serializable;
@@ -31,9 +29,11 @@ public class EmailTest extends Launcher {
     EmailEndPoint ep;
 
     protected void setUpEndPoints() throws Exception {
-        ep = new EmailEndPointImpl("email",new InternetAddress("dalma@kohsuke.org","dalma engine"));
+        ep = new EmailEndPoint(
+            "email",
+            new InternetAddress("dalma@kohsuke.org","dalma engine"),
+            new POP3Listener("mail.kohsuke.org","dalma",PasswordStore.get("dalma@kohsuke.org"),3000));
         engine.addEndPoint(ep);
-        new POP3Listener("mail.kohsuke.org","dalma",PasswordStore.get("dalma@kohsuke.org"),3000);
     }
 
     protected void init() throws Exception {
