@@ -1,17 +1,12 @@
-package dalma.spi.port;
+package dalma;
 
-import dalma.Engine;
 import dalma.impl.EngineImpl;
 
 import java.io.Serializable;
 
 /**
- * Root of the endPoint SPI.
- *
- * <p>
- * A endPoint needs to be serializable, because it maybe referenced from
- * user conversations. When deserialized, a endPoint should bind to the
- * running instances of the endPoint.
+ * Represents a gate through which {@link Conversation}s communicate with
+ * outer world.
  *
  * TODO: One engine may have more than one instances of the same endPoint
  * (such as using multiple POP3 ports, etc.) How do we configure this?
@@ -41,27 +36,6 @@ public abstract class EndPoint implements Serializable {
      */
     public String getName() {
         return name;
-    }
-
-    private Object writeReplace() {
-        if(EngineImpl.SERIALIZATION_CONTEXT.get()==null)
-            return this;
-        else
-            return new Moniker(name);
-    }
-
-    private static final class Moniker implements Serializable {
-        private final String name;
-
-        public Moniker(String name) {
-            this.name = name;
-        }
-
-        private Object readResolve() {
-            return EngineImpl.SERIALIZATION_CONTEXT.get().getEndPoint(name);
-        }
-
-        private static final long serialVersionUID = 1L;
     }
 
     private static final long serialVersionUID = 1L;

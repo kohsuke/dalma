@@ -1,5 +1,8 @@
 package dalma.ports.email;
 
+import dalma.EndPoint;
+import dalma.impl.EndPointImpl;
+
 import javax.mail.internet.MimeMessage;
 import javax.mail.MessagingException;
 
@@ -48,4 +51,9 @@ public abstract class Listener {
     protected void handleMessage(MimeMessage msg) throws MessagingException {
         endPoint.handleMessage(msg);
     }
+
+    /**
+     * @see EndPointImpl#stop()
+     */
+    protected abstract void stop();
 }

@@ -20,6 +20,7 @@ public class POP3Listener extends Listener {
     private final String uid;
     private final String password;
     private final int interval;
+    private final Thread thread;
 
     private static final Logger logger = Logger.getLogger(POP3Listener.class.getName());
 
@@ -29,9 +30,13 @@ public class POP3Listener extends Listener {
         this.password = password;
         this.interval = interval;
 
-        Thread t = new Thread(new Runner());
-        t.setDaemon(true);
-        t.start();
+        thread = new Thread(new Runner());
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    protected void stop() {
+        thread.interrupt();
     }
 
     private class Runner implements Runnable {

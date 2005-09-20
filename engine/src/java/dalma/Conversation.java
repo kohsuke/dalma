@@ -1,5 +1,6 @@
 package dalma;
 
+import dalma.spi.EngineSPI;
 
 
 /**
@@ -7,6 +8,11 @@ package dalma;
  */
 public interface Conversation {
     ConversationState getState();
+
+    /**
+     * Gets the engine to which this conversation belongs to.
+     */
+    public Engine getEngine();
 
     /**
      * Kills a running conversation.

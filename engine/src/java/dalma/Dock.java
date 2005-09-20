@@ -1,4 +1,4 @@
-package dalma.spi.port;
+package dalma;
 
 import dalma.Conversation;
 import dalma.impl.ConversationImpl;

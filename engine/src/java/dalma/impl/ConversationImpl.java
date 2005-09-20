@@ -3,8 +3,8 @@ package dalma.impl;
 import dalma.Conversation;
 import dalma.ConversationDeath;
 import dalma.ConversationState;
+import dalma.Dock;
 import dalma.spi.ConversationSPI;
-import dalma.spi.port.Dock;
 import org.apache.commons.javaflow.Continuation;
 import org.apache.commons.javaflow.bytecode.StackRecorder;
 
@@ -17,13 +17,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
 
 /**
  * Represents a running conversation.
@@ -178,6 +178,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         this.docks.clear();
 
         return (T)r;
+    }
+
+    public EngineImpl getEngine() {
+        return engine;
     }
 
     /**

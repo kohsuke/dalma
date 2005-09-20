@@ -1,9 +1,12 @@
 package dalma.spi;
 
 import dalma.Conversation;
+import dalma.Dock;
 import dalma.impl.EngineImpl;
-import dalma.spi.port.EndPoint;
-import dalma.spi.port.Dock;
+import dalma.EndPoint;
+import dalma.Dock;
+import dalma.EndPoint;
+import dalma.Engine;
 
 import java.util.List;
 
@@ -37,4 +40,9 @@ public abstract class ConversationSPI implements Conversation {
     public static ConversationSPI getCurrentConversation() {
         return EngineImpl.getCurrentConversation();
     }
+
+    /**
+     * Gets the engine to which this conversation belongs to.
+     */
+    public abstract EngineSPI getEngine();
 }

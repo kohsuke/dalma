@@ -2,8 +2,11 @@ package dalma.ports.email;
 
 import dalma.TimeUnit;
 import dalma.Conversation;
-import dalma.spi.port.EndPoint;
-import dalma.spi.port.Dock;
+import dalma.Dock;
+import dalma.EndPoint;
+import dalma.Dock;
+import dalma.EndPoint;
+import dalma.impl.EndPointImpl;
 import dalma.spi.ConversationSPI;
 
 import javax.mail.internet.MimeMessage;
@@ -23,7 +26,7 @@ import test.port.timer.TimerEndPoint;
  *
  * @author Kohsuke Kawaguchi
  */
-public class EmailEndPoint extends EndPoint {
+public class EmailEndPoint extends EndPointImpl {
     /**
      * Conversations waiting for a reply, keyed by their Message ID.
      */
@@ -41,6 +44,10 @@ public class EmailEndPoint extends EndPoint {
         this.address = address;
         this.listener = listener;
         listener.setEndPoint(this);
+    }
+
+    protected void stop() {
+        listener.stop();
     }
 
     /**

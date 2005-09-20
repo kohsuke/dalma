@@ -1,7 +1,8 @@
 package dalma.impl;
 
 import dalma.Conversation;
-import dalma.spi.port.Dock;
+import dalma.Dock;
+import dalma.Dock;
 
 /**
  * {@link Dock} that waits for the completion of a {@link Conversation}.

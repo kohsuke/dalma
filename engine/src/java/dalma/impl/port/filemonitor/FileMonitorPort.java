@@ -1,7 +1,7 @@
 package dalma.impl.port.filemonitor;
 
 import dalma.spi.ConversationSPI;
-import dalma.spi.port.EndPoint;
+import dalma.EndPoint;
 
 import java.io.File;
 import java.io.Serializable;

@@ -2,8 +2,9 @@ package dalma.impl;
 
 import dalma.Conversation;
 import dalma.Executor;
+import dalma.EndPoint;
 import dalma.spi.EngineSPI;
-import dalma.spi.port.EndPoint;
+import dalma.EndPoint;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -56,7 +57,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
      * All {@link EndPoint}s that bleong to this engine.
      * access need to be synchronized.
      */
-    transient final Map<String,EndPoint> endPoints = new HashMap<String, EndPoint>();
+    transient final Map<String,EndPointImpl> endPoints = new HashMap<String,EndPointImpl>();
 
     /**
      * Records the currently running conversations.
@@ -172,9 +173,9 @@ public final class EngineImpl implements EngineSPI, Serializable {
         }
     }
 
-    public Map<String, EndPoint> getEndPoints() {
+    public Map<String,EndPoint> getEndPoints() {
         synchronized(endPoints) {
-            return Collections.unmodifiableMap(endPoints);
+            return (Map)Collections.unmodifiableMap(endPoints);
         }
     }
 
@@ -188,8 +189,21 @@ public final class EngineImpl implements EngineSPI, Serializable {
         synchronized(endPoints) {
             if(endPoints.containsKey(ep.getName()))
                 throw new IllegalArgumentException("There's already an EndPoint of the name "+ep.getName());
-            endPoints.put(ep.getName(),ep);
+            if(!(ep instanceof EndPointImpl))
+                throw new IllegalArgumentException(ep.getClass().getName()+" doesn't derive from EndPointImpl");
+            endPoints.put(ep.getName(),(EndPointImpl)ep);
         }
+    }
+
+    public void stop() {
+        // clone first
+        Collection<EndPointImpl> eps;
+        synchronized(endPoints) {
+            eps = new ArrayList<EndPointImpl>(endPoints.values());
+        }
+
+        for( EndPointImpl ep : eps )
+            ep.stop();
     }
 
     ConversationImpl getConversation(int id) {
@@ -236,7 +250,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
      * <p>
      * This is used to resolve serialized instances to running instances.
      */
-    public static final ThreadLocal<EngineImpl> SERIALIZATION_CONTEXT = new ThreadLocal<EngineImpl>();
+    /*package*/ static final ThreadLocal<EngineImpl> SERIALIZATION_CONTEXT = new ThreadLocal<EngineImpl>();
 
     private static final long serialVersionUID = 1L;
 

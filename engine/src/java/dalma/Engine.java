@@ -1,7 +1,5 @@
 package dalma;
 
-import dalma.spi.port.EndPoint;
-
 import java.util.Collection;
 import java.util.Map;
 import java.io.IOException;
@@ -71,4 +69,13 @@ public interface Engine {
      *      if there's already an {@link EndPoint} that has the same name.
      */
     void addEndPoint(EndPoint endPoint);
+
+    /**
+     * Stops the engine and releases all the resources it acquired.
+     *
+     * <p>
+     * This method blocks until all the running {@link Conversation} suspends/completes,
+     * so it may take some time.
+     */
+    void stop();
 }

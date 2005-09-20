@@ -1,11 +1,11 @@
 package test.port.timer;
 
-import dalma.spi.ConversationSPI;
-import dalma.spi.port.Dock;
-import dalma.spi.port.EndPoint;
+import dalma.Dock;
 import dalma.TimeUnit;
+import dalma.impl.EndPointImpl;
+import dalma.spi.ConversationSPI;
+import dalma.spi.EngineSPI;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,17 +20,15 @@ import java.util.TimerTask;
  *
  * @author Kohsuke Kawaguchi
  */
-public class TimerEndPoint extends EndPoint implements Serializable {
-
-    public static final TimerEndPoint INSTANCE = new TimerEndPoint();
+public class TimerEndPoint extends EndPointImpl {
 
     private static final Timer timer = new Timer(true);
 
-    private TimerEndPoint() {
+    public TimerEndPoint() {
         super(TimerEndPoint.class.getName());
     }
 
-    private static final class TimerDock<T> extends Dock<T> {
+    private final class TimerDock<T> extends Dock<T> {
         /**
          * The date when the conversation should be activated.
          */
@@ -43,7 +41,7 @@ public class TimerEndPoint extends EndPoint implements Serializable {
         private transient TimerTaskImpl task;
 
         public TimerDock(Date dt) {
-            super(INSTANCE);
+            super(TimerEndPoint.this);
             this.dt = dt;
         }
 
@@ -70,6 +68,10 @@ public class TimerEndPoint extends EndPoint implements Serializable {
         }
     }
 
+    protected void stop() {
+        timer.cancel();
+    }
+
     /**
      * Wait for an user input.
      */
@@ -83,16 +85,20 @@ public class TimerEndPoint extends EndPoint implements Serializable {
     }
 
     public static <T> Dock<T> createDock(Date dt) {
-        return new TimerDock<T>(dt);
+        EngineSPI engine = ConversationSPI.getCurrentConversation().getEngine();
+
+        synchronized(TimerEndPoint.class) {
+            TimerEndPoint ep = (TimerEndPoint)engine.getEndPoint(TimerEndPoint.class.getName());
+            if(ep==null) {
+                // make sure no two threads try to create a new endpoint at the same time.
+                ep = new TimerEndPoint();
+                engine.addEndPoint(ep);
+            }
+            return ep.new TimerDock<T>(dt);
+        }
     }
 
     public static <T> Dock<T> createDock(long delay,TimeUnit unit) {
-        return new TimerDock<T>(new Date(System.currentTimeMillis()+unit.toMilli(delay)));
+        return createDock(new Date(System.currentTimeMillis()+unit.toMilli(delay)));
     }
-
-    private Object readResolve() {
-        return INSTANCE;
-    }
-
-    private static final long serialVersionUID = 1L;
 }

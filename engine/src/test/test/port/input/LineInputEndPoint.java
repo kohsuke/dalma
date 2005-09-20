@@ -1,14 +1,14 @@
 package test.port.input;
 
 import dalma.Conversation;
+import dalma.Dock;
+import dalma.Engine;
+import dalma.impl.EndPointImpl;
 import dalma.spi.ConversationSPI;
-import dalma.spi.port.EndPoint;
-import dalma.spi.port.Dock;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,19 +19,20 @@ import java.util.List;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class LineInputEndPoint extends EndPoint implements Runnable, Serializable {
-
-    public static final LineInputEndPoint INSTANCE = new LineInputEndPoint();
+public final class LineInputEndPoint extends EndPointImpl implements Runnable {
 
     /**
      * {@link Conversation}s waiting for input.
      */
     private static final List<LineDock> queue = new ArrayList<LineDock>();
 
+    private final Thread thread;
+
     private LineInputEndPoint() {
         super(LineInputEndPoint.class.getName());
         // start the monitor thread
-        new Thread(this).start();
+        thread = new Thread(this);
+        thread.start();
     }
 
     public void run() {
@@ -52,10 +53,14 @@ public final class LineInputEndPoint extends EndPoint implements Runnable, Seria
         }
     }
 
+    protected void stop() {
+        thread.interrupt();
+    }
 
-    private static final class LineDock extends Dock<String> {
+
+    private final class LineDock extends Dock<String> {
         public LineDock() {
-            super(INSTANCE);
+            super(LineInputEndPoint.this);
         }
 
         public void park() {
@@ -80,17 +85,21 @@ public final class LineInputEndPoint extends EndPoint implements Runnable, Seria
      */
     // this method is invoked from conversations
     public static String waitForInput() {
-        final ConversationSPI cnv = ConversationSPI.getCurrentConversation();
-
-        final LineDock dock = new LineDock();
-
-        // FIX: this puts 'cnv' object into the stack to be restored
-        return cnv.suspend(dock);
+        ConversationSPI cnv = ConversationSPI.getCurrentConversation();
+        return cnv.suspend(createDock(cnv));
     }
 
-    private Object readResolve() {
-        return INSTANCE;
+    private static LineDock createDock(ConversationSPI cnv) {
+        LineDock dock;
+        synchronized(LineInputEndPoint.class) {
+            Engine engine = cnv.getEngine();
+            LineInputEndPoint endPoint = (LineInputEndPoint)engine.getEndPoint(LineInputEndPoint.class.getName());
+            if(endPoint==null) {
+                endPoint = new LineInputEndPoint();
+                engine.addEndPoint(endPoint);
+            }
+            dock = endPoint.new LineDock();
+        }
+        return dock;
     }
-
-    private static final long serialVersionUID = 1L;
 }

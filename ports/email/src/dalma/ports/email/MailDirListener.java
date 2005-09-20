@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 public class MailDirListener extends Listener {
     private final File dir;
     private final int interval;
+    private final Thread thread;
 
     private static final Logger logger = Logger.getLogger(POP3Listener.class.getName());
 
@@ -25,9 +26,13 @@ public class MailDirListener extends Listener {
         this.dir = dir;
         this.interval = interval;
 
-        Thread t = new Thread(new Runner());
-        t.setDaemon(true);
-        t.start();
+        thread = new Thread(new Runner());
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    protected void stop() {
+        thread.interrupt();
     }
 
     private class Runner implements Runnable {
