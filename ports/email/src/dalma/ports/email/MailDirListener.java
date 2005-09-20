@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Picks up messages from <a href="http://cr.yp.to/proto/maildir.html">the maildir directory</a>.
+ * Picks up messages from <a href="http://en.wikipedia.org/wiki/Maildir">the maildir directory</a>.
  *
  * @author Kohsuke Kawaguchi
  */
