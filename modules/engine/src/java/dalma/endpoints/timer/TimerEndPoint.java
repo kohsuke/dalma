@@ -1,4 +1,4 @@
-package test.port.timer;
+package dalma.endpoints.timer;
 
 import dalma.Dock;
 import dalma.TimeUnit;

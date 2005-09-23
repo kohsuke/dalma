@@ -1,10 +1,11 @@
 package test;
 
-import static dalma.TimeUnit.SECONDS;
+import dalma.endpoints.timer.TimerEndPoint;
 import test.infra.Launcher;
-import test.port.timer.TimerEndPoint;
 
 import java.io.Serializable;
+
+import static dalma.TimeUnit.SECONDS;
 
 /**
  * Tests timer endPoint.

@@ -4,9 +4,9 @@ import dalma.Conversation;
 import dalma.Dock;
 import dalma.EndPoint;
 import dalma.TimeUnit;
+import dalma.endpoints.timer.TimerEndPoint;
 import dalma.impl.EndPointImpl;
 import dalma.spi.ConversationSPI;
-import test.port.timer.TimerEndPoint;
 
 import javax.mail.Address;
 import javax.mail.Message;

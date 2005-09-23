@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <pomVersion>3</pomVersion>
+  <extend>../../project.xml</extend>
+  <id>dalma-endpoint-email</id>
+  <description>endpoint that connects to the e-mail system</description>
+  <shortDescription>e-mail endpoint for dalma</shortDescription>
+  
+  <dependencies>
+    <dependency>
+      <id>dalma</id>
+      <version>${pom.currentVersion}</version>
+    </dependency>
+    <!-- javamail -->
+    <dependency>
+      <id>javamail</id>
+      <version>1.3.3</version>
+    </dependency>
+    <dependency>
+      <id>activation</id>
+      <version>1.0.3</version>
+    </dependency>
+  </dependencies>
+</project>

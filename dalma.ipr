@@ -2,7 +2,7 @@
 <project version="4" relativePaths="false">
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
-    <buildFile url="file://$PROJECT_DIR$/ports/email/build.xml">
+    <buildFile url="file://$PROJECT_DIR$/modules/email/build.xml">
       <additionalClassPath />
       <antReference projectDefault="true" />
       <customJdkName value="" />
@@ -197,8 +197,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/dalma.iml" filepath="$PROJECT_DIR$/dalma.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ports/email/email.iml" filepath="$PROJECT_DIR$/ports/email/email.iml" />
-      <module fileurl="file://$PROJECT_DIR$/engine/engine.iml" filepath="$PROJECT_DIR$/engine/engine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/email/email.iml" filepath="$PROJECT_DIR$/modules/email/email.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/engine/engine.iml" filepath="$PROJECT_DIR$/modules/engine/engine.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="JDK1.5" />
