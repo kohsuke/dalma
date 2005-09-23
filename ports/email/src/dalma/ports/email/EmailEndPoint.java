@@ -1,25 +1,22 @@
 package dalma.ports.email;
 
-import dalma.TimeUnit;
 import dalma.Conversation;
 import dalma.Dock;
 import dalma.EndPoint;
-import dalma.Dock;
-import dalma.EndPoint;
+import dalma.TimeUnit;
 import dalma.impl.EndPointImpl;
 import dalma.spi.ConversationSPI;
-
-import javax.mail.internet.MimeMessage;
-import javax.mail.Address;
-import javax.mail.MessagingException;
-import javax.mail.Message;
-import javax.mail.Transport;
-import java.util.concurrent.TimeoutException;
-import java.util.UUID;
-import java.util.Map;
-import java.util.HashMap;
-
 import test.port.timer.TimerEndPoint;
+
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Transport;
+import javax.mail.internet.MimeMessage;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 /**
  * {@link EndPoint} connected to an e-mail address.
@@ -39,6 +36,16 @@ public class EmailEndPoint extends EndPointImpl {
 
     private final Listener listener;
 
+    /**
+     * Creates a new e-mail end point.
+     *
+     * @param name
+     *      The unique name assigned by the application that identifies this endpoint.
+     * @param address
+     *      The e-mail address of this endpoint.
+     * @param listener
+     *      The object that fetches incoming e-mails.
+     */
     public EmailEndPoint(String name, Address address, Listener listener) {
         super(name);
         this.address = address;
