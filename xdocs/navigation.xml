@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Dalma">
+  <title>Dalma</title>
+  <body>
+    <links>
+      <item name="java.net" href="http://www.java.net"/>
+    </links>
+
+    <menu name="Dalma">
+      <item name="Home"                    href="index.html"/>
+    </menu>
+
+    <menu name="Components">
+      <item name="Engine (core)"           href="engine/index.html"/>
+      <item name="E-mail endpoint"         href="email/index.html"/>
+    </menu>
+  </body>
+</project>
