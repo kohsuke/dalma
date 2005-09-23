@@ -2,6 +2,7 @@
 <project>
   <pomVersion>3</pomVersion>
   <extend>../../project.xml</extend>
+  <name>Dalma e-mail endpoint</name>
   <id>dalma-endpoint-email</id>
   <description>endpoint that connects to the e-mail system</description>
   <shortDescription>e-mail endpoint for dalma</shortDescription>

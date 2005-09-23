@@ -1,4 +1,4 @@
-package test.infra;
+package dalma.test;
 
 /**
  * {@link ClassLoader} that masks <tt>test.*</tt> classes visible

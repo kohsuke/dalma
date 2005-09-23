@@ -3,8 +3,9 @@ package test;
 import dalma.ports.email.EmailEndPoint;
 import dalma.ports.email.MimeMessageEx;
 import dalma.ports.email.POP3Listener;
-import test.infra.Launcher;
-import test.infra.PasswordStore;
+import dalma.test.Launcher;
+import dalma.test.Launcher;
+import dalma.test.PasswordStore;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;

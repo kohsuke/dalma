@@ -1,7 +1,8 @@
 package test;
 
 import dalma.endpoints.timer.TimerEndPoint;
-import test.infra.Launcher;
+import dalma.test.Launcher;
+import dalma.test.Launcher;
 
 import java.io.Serializable;
 

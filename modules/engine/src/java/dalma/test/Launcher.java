@@ -1,4 +1,4 @@
-package test.infra;
+package dalma.test;
 
 import dalma.Conversation;
 import dalma.Engine;
@@ -7,7 +7,6 @@ import dalma.impl.EngineImpl;
 import dalma.impl.Util;
 import org.apache.commons.javaflow.ContinuationClassLoader;
 import org.apache.commons.javaflow.bytecode.transformation.bcel.BcelClassTransformer;
-import test.ClickTest;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -35,7 +34,7 @@ public abstract class Launcher {
         URLClassLoader baseLoader = (URLClassLoader)Launcher.class.getClassLoader();
         classLoader = new ContinuationClassLoader(
             baseLoader.getURLs(),
-            new MaskingClassLoader(ClickTest.class.getClassLoader()));
+            new MaskingClassLoader(baseLoader));
 
         File root = new File("dalma-test");
         root.mkdirs();

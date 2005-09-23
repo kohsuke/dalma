@@ -1,4 +1,4 @@
-package test.infra;
+package dalma.test;
 
 import java.io.IOException;
 import java.util.Properties;

@@ -2,7 +2,7 @@
 <project>
   <pomVersion>3</pomVersion>
   <name>Dalma Workflow Engine</name>
-  <id>dalma</id>
+  <id>dalma-site</id>
   <currentVersion>0.1-SNAPSHOT</currentVersion>
   <package>dalma</package>
 
@@ -13,6 +13,32 @@
 
   <shortDescription>Dalma Workflow Engine</shortDescription>
   <description>Dalma Workflow Engine</description>
+
+  <organization>
+      <url>http://www.java.net/</url>
+      <logo>https://${maven.javanet.project}.dev.java.net/branding/images/header_jnet_new.jpg</logo>
+  </organization>
+  <issueTrackingUrl>https://${maven.javanet.project}.dev.java.net/servlets/ProjectIssues</issueTrackingUrl>
+  <mailingLists>
+      <mailingList>
+          <name>Users List</name>
+          <subscribe>users-subscribe@${maven.javanet.project}.dev.java.net</subscribe>
+          <unsubscribe>users-unsubscribe@${maven.javanet.project}.dev.java.net</unsubscribe>
+          <archive>https://${maven.javanet.project}.dev.java.net/servlets/SummarizeList?listName=users</archive>
+      </mailingList>
+      <mailingList>
+          <name>Issues List</name>
+          <subscribe>issues-subscribe@${maven.javanet.project}.dev.java.net</subscribe>
+          <unsubscribe>issues-unsubscribe@${maven.javanet.project}.dev.java.net</unsubscribe>
+          <archive>https://${maven.javanet.project}.dev.java.net/servlets/SummarizeList?listName=issues</archive>
+      </mailingList>
+      <mailingList>
+          <name>CVS List</name>
+          <subscribe>cvs-subscribe@${maven.javanet.project}.dev.java.net</subscribe>
+          <unsubscribe>cvs-unsubscribe@${maven.javanet.project}.dev.java.net</unsubscribe>
+          <archive>https://${maven.javanet.project}.dev.java.net/servlets/SummarizeList?listName=cvs</archive>
+      </mailingList>
+  </mailingLists>
 
   <developers>
     <developer>
@@ -60,8 +86,8 @@
     <report>maven-junit-report-plugin</report>
     <!--
     <report>maven-jcoverage-plugin</report>
-    -->
     <report>maven-jxr-plugin</report>
+    -->
     <report>maven-linkcheck-plugin</report>
   </reports>
 </project>

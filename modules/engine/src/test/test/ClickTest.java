@@ -2,12 +2,13 @@ package test;
 
 import dalma.Conversation;
 import dalma.Engine;
+import dalma.test.Launcher;
 import dalma.helpers.ThreadPoolExecutor;
 import dalma.impl.EngineImpl;
 import dalma.impl.Util;
 import org.apache.commons.javaflow.ContinuationClassLoader;
-import test.infra.MaskingClassLoader;
-import test.infra.Launcher;
+import dalma.test.MaskingClassLoader;
+import dalma.test.Launcher;
 
 import java.io.File;
 import java.net.URLClassLoader;
