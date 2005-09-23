@@ -11,8 +11,8 @@
     </menu>
 
     <menu name="Components">
-      <item name="Engine (core)"           href="engine/index.html"/>
-      <item name="E-mail endpoint"         href="email/index.html"/>
+      <item name="Engine (core)"           href="dalme/index.html"/>
+      <item name="E-mail endpoint"         href="dalme-endpoint-email/index.html"/>
     </menu>
   </body>
 </project>
