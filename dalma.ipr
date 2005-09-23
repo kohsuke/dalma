@@ -210,15 +210,6 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
   <component name="libraryTable">
-    <library name="commons-jci-trunk">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/lib/test/commons-jci-trunk.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/lib/test/commons-jci-trunk.src.zip!/src/java" />
-      </SOURCES>
-    </library>
     <library name="redist">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/lib/redist/commons-logging-api.jar!/" />
