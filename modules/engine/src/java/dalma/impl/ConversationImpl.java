@@ -108,7 +108,13 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      * Loads a {@link ConversationImpl} object from the disk.
      */
     public static ConversationImpl load(EngineImpl engine, File dir) throws IOException {
-        ConversationImpl conv = (ConversationImpl) new XmlFile(new File(dir,"conversation.xml")).read(engine.classLoader);
+        ConversationImpl conv;
+        try {
+            SerializationContext.set(engine,SerializationContext.Mode.CONVERSATION);
+            conv = (ConversationImpl) new XmlFile(new File(dir,"conversation.xml")).read(engine.classLoader);
+        } finally {
+            SerializationContext.remove();
+        }
         conv.init(engine,dir);
         conv.state = ConversationState.SUSPENDED;
         for( Dock d : conv.docks )
