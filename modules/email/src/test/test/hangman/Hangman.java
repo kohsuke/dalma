@@ -89,14 +89,14 @@ public class Hangman extends Launcher implements NewMailHandler {
                     if(maskWord(word,opened).equals(word)) {
                         // bingo!
                         mail = (MimeMessage)mail.reply(false);
-                        mail.setText("Bingo! The word was "+word);
+                        mail.setText("Bingo! The word was\n\n   "+word);
                         ep.send(mail);
                         return;
                     }
                 }
 
                 MimeMessage reply = (MimeMessage)mail.reply(false);
-                reply.setText("Bzzzt! The word was "+word);
+                reply.setText("Bzzzt! The word was\n\n   "+word);
                 ep.send(reply);
             } catch (Exception e) {
                 e.printStackTrace();
