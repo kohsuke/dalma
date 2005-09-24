@@ -27,7 +27,7 @@ public abstract class EndPointImpl extends EndPoint {
      */
     protected abstract void stop();
 
-    private Object writeReplace() {
+    protected Object writeReplace() {
         if(EngineImpl.SERIALIZATION_CONTEXT.get()==null)
             return this;
         else
