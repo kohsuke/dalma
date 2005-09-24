@@ -3,6 +3,7 @@ package test;
 import dalma.ports.email.EmailEndPoint;
 import dalma.ports.email.MimeMessageEx;
 import dalma.ports.email.POP3Listener;
+import dalma.ports.email.NewMailHandler;
 import dalma.test.Launcher;
 import dalma.test.Launcher;
 import dalma.test.PasswordStore;
@@ -18,7 +19,7 @@ import java.util.UUID;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class EmailTest extends Launcher {
+public class EmailTest extends Launcher implements NewMailHandler {
     public EmailTest(String[] args) throws Exception {
         super(args);
     }
@@ -34,39 +35,54 @@ public class EmailTest extends Launcher {
             "email",
             new InternetAddress("dalma@kohsuke.org","dalma engine"),
             new POP3Listener("mail.kohsuke.org","dalma",PasswordStore.get("dalma@kohsuke.org"),3000));
+        ep.setNewMailHandler(this);
         engine.addEndPoint(ep);
     }
 
     protected void init() throws Exception {
-        createConversation(ConversationImpl.class,ep);
-        createConversation(ConversationImpl.class,ep);
+    }
+
+    public void onNewMail(MimeMessage mail) throws Exception {
+        System.out.println("new e-mail");
+        createConversation(ConversationImpl.class,ep,mail);
     }
 
     public static final class ConversationImpl implements Runnable, Serializable {
         private final EmailEndPoint ep;
 
-        public ConversationImpl(EmailEndPoint ep) {
+        // initial e-mail
+        private MimeMessage email;
+
+        public ConversationImpl(EmailEndPoint ep, MimeMessage email) {
             this.ep = ep;
+            this.email = email;
         }
 
         public void run() {
             try {
                 UUID uuid = UUID.randomUUID();
 
-                MimeMessage msg = new MimeMessage(Session.getInstance(System.getProperties()));
-                msg.setRecipient(Message.RecipientType.TO, new InternetAddress("kk@kohsuke.org"));
-                msg.setText("Hello! "+uuid.toString());
-                msg.setSubject("testing dalma");
-                msg = new MimeMessageEx(msg);
-                msg = ep.waitForReply(msg);
+                System.out.println("started "+uuid);
+                MimeMessage msg = email;
+                int count = 0;
 
-                System.out.println("got a reply.");
+                while(true) {
+                    if(msg.getContent().toString().contains("bye"))
+                        break;
+
+                    // reply
+                    msg = (MimeMessage)msg.reply(false);
+                    msg.setText("Hello! "+(count++));
+                    msg.setSubject("testing dalma "+uuid.toString());
+                    msg = ep.waitForReply(msg);
+                    System.out.println("got a reply.");
+                }
 
                 MimeMessage reply = (MimeMessage)msg.reply(false);
-                reply.setText("Reply to "+msg.getSubject()+" "+uuid.toString());
+                reply.setText("bye bye");
                 ep.send(reply);
                 System.out.println("done");
-            } catch (MessagingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

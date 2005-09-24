@@ -16,6 +16,8 @@ import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -29,6 +31,7 @@ public class EmailEndPoint extends EndPointImpl {
      */
     private static final Map<UUID,DockImpl> queue = new HashMap<UUID, DockImpl>();
 
+    private static final Logger logger = Logger.getLogger(EmailEndPoint.class.getName());
     /**
      * The address that receives replies.
      */
@@ -86,8 +89,13 @@ public class EmailEndPoint extends EndPointImpl {
             id = getIdHeader(msg,"In-reply-to");
         if(id==null) {
             NewMailHandler h = newMailHandler;
-            if(h!=null)
-                h.onNewMail(msg);
+            if(h!=null) {
+                try {
+                    h.onNewMail(new MimeMessageEx(msg));
+                } catch (Exception e) {
+                    logger.log(Level.WARNING,"Unhandled exception",e);
+                }
+            }
             return;
         }
         DockImpl dock;

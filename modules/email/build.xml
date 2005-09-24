@@ -21,7 +21,7 @@
     </taskdef>
 
     <javaflow destdir="target/classes" srcdir="target/classes">
-      <include name="dalma/ports/email/EmailEndPointImpl.class" />
+      <include name="dalma/ports/email/EmailEndPoint.class" />
     </javaflow>
   </target>
 </project>
