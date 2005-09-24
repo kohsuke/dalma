@@ -1,10 +1,9 @@
 package dalma.impl;
 
 import dalma.Conversation;
+import dalma.EndPoint;
 import dalma.Executor;
-import dalma.EndPoint;
 import dalma.spi.EngineSPI;
-import dalma.EndPoint;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -12,9 +11,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Collections;
 
 /**
  * @author Kohsuke Kawaguchi
