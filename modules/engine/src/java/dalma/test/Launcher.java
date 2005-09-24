@@ -62,7 +62,7 @@ public abstract class Launcher {
     /**
      * Creates initial set of conversations.
      */
-    protected abstract void init() throws Exception;
+    protected void init() throws Exception {}
 
     /**
      * Creates a new conversation instance with given parameters.
