@@ -36,6 +36,8 @@ public class EmailEndPoint extends EndPointImpl {
 
     private final Listener listener;
 
+    private NewMailHandler newMailHandler;
+
     /**
      * Creates a new e-mail end point.
      *
@@ -58,6 +60,22 @@ public class EmailEndPoint extends EndPointImpl {
     }
 
     /**
+     * Gets the listener set by {@link #setNewMailHandler(NewMailHandler)}.
+     */
+    public NewMailHandler getNewMailHandler() {
+        return newMailHandler;
+    }
+
+    /**
+     * Sets the handler that receives uncorrelated incoming e-mails.
+     *
+     * @see NewMailHandler
+     */
+    public void setNewMailHandler(NewMailHandler newMailHandler) {
+        this.newMailHandler = newMailHandler;
+    }
+
+    /**
      * Invoked when a new message is received to awake the corresponding
      * {@link Conversation}.
      */
@@ -67,9 +85,10 @@ public class EmailEndPoint extends EndPointImpl {
         if(id==null)
             id = getIdHeader(msg,"In-reply-to");
         if(id==null) {
-            throw new MessagingException(
-                "Neither In-reply-to nor References header was found.\n" +
-                "Unable to link this message to a conversation");
+            NewMailHandler h = newMailHandler;
+            if(h!=null)
+                h.onNewMail(msg);
+            return;
         }
         DockImpl dock;
         synchronized(queue) {
