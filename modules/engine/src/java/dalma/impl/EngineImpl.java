@@ -174,7 +174,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
 
     public Map<String,EndPoint> getEndPoints() {
         synchronized(endPoints) {
-            return (Map)Collections.unmodifiableMap(endPoints);
+            return Collections.<String,EndPoint>unmodifiableMap(endPoints);
         }
     }
 
