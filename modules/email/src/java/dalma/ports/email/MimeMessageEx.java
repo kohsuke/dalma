@@ -37,7 +37,7 @@ public class MimeMessageEx extends MimeMessage implements Serializable {
     }
 
     public Message reply(boolean replyToAll) throws MessagingException {
-        Message msg = super.reply(replyToAll);
+        MimeMessage msg = (MimeMessage)super.reply(replyToAll);
 
         // set References header
         String msgId = getHeader("Message-Id", null);
@@ -48,8 +48,9 @@ public class MimeMessageEx extends MimeMessage implements Serializable {
         header += ' '+msgId.trim();
 
         msg.setHeader("References",header);
+        msg.setText("");    // set the dummy body otherwise the following method fails
 
-        return msg;
+        return new MimeMessageEx(msg);
     }
 
     private Object writeReplace() throws IOException, MessagingException {
