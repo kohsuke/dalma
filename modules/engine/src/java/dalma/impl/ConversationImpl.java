@@ -117,7 +117,12 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     }
 
     private void save() throws IOException {
-        new XmlFile(new File(rootDir,"conversation.xml")).write(this);
+        try {
+            SerializationContext.set(engine,SerializationContext.Mode.CONVERSATION);
+            new XmlFile(new File(rootDir,"conversation.xml")).write(this);
+        } finally {
+            SerializationContext.remove();
+        }
     }
 
     /**
@@ -200,7 +205,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         if(continuation==null) {
             File cont = new File(rootDir,"continuation");
             try {
-                EngineImpl.SERIALIZATION_CONTEXT.set(engine);
+                SerializationContext.set(engine,SerializationContext.Mode.CONTINUATION);
 
                 ObjectInputStream ois = new ObjectInputStreamEx(
                     new BufferedInputStream(new FileInputStream(cont)),engine.classLoader);
@@ -212,7 +217,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             } catch (ClassNotFoundException e) {
                 throw new ConversationDeath("failed to restore the state of the conversation "+cont,e);
             } finally {
-                EngineImpl.SERIALIZATION_CONTEXT.remove();
+                SerializationContext.remove();
             }
         }
 
@@ -235,7 +240,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             // persist the state
             File cont = new File(rootDir,"continuation");
             try {
-                EngineImpl.SERIALIZATION_CONTEXT.set(engine);
+                SerializationContext.set(engine,SerializationContext.Mode.CONTINUATION);
 
                 ObjectOutputStream oos = new ObjectOutputStream(
                     new BufferedOutputStream(new FileOutputStream(cont)));
@@ -245,7 +250,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             } catch (IOException e) {
                 throw new ConversationDeath("failed to persist the state of the conversation "+cont, e);
             } finally {
-                EngineImpl.SERIALIZATION_CONTEXT.remove();
+                SerializationContext.remove();
             }
 
             try { // this needs to be done outside the EngineImpl.SERIALIZATION_CONTEXT
@@ -330,7 +335,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     }
 
     private Object writeReplace() {
-        if(EngineImpl.SERIALIZATION_CONTEXT.get()==null)
+        if(SerializationContext.get().mode==SerializationContext.Mode.CONVERSATION)
             return this;
         else
             return new ConversationMoniker(id);
@@ -348,7 +353,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             // we can fix this by allowing Conversation object itself to be persisted
             // (and then readResolve may replace if it's still running),
             // but how do we do about the classLoader field?
-            return EngineImpl.SERIALIZATION_CONTEXT.get().getConversation(id);
+            return SerializationContext.get().engine.getConversation(id);
         }
 
         private static final long serialVersionUID = 1L;

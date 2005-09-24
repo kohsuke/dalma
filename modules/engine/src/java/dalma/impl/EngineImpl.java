@@ -112,7 +112,12 @@ public final class EngineImpl implements EngineSPI, Serializable {
      * into the data file.
      */
     private void save() throws IOException {
-        getDataFile().write(this);
+        try {
+            SerializationContext.set(this,SerializationContext.Mode.ENGINE);
+            getDataFile().write(this);
+        } finally {
+            SerializationContext.remove();
+        }
     }
 
     /**
@@ -233,7 +238,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
 //    }
 
     private Object writeReplace() {
-        if(SERIALIZATION_CONTEXT.get()!=null)
+        if(SerializationContext.get().mode!=SerializationContext.Mode.ENGINE)
             // if the engine is written as a part of dehydration,
             // return a moniker to avoid the whole engine to be serialized.
             return MONIKER;
@@ -242,24 +247,12 @@ public final class EngineImpl implements EngineSPI, Serializable {
             return this;
     }
 
-    /**
-     * While the hydration of the conversation is in progress,
-     * this variable stores the {@link EngineImpl} that owns the conversation.
-     *
-     * <p>
-     * <b>EVEN THOUGH THIS IS PUBLIC, IT IS NOT MEANT TO BE USED BY APPLICATIONS.</b>
-     *
-     * <p>
-     * This is used to resolve serialized instances to running instances.
-     */
-    /*package*/ static final ThreadLocal<EngineImpl> SERIALIZATION_CONTEXT = new ThreadLocal<EngineImpl>();
-
     private static final long serialVersionUID = 1L;
 
     private static final class EngineMoniker implements Serializable {
         private static final long serialVersionUID = 1L;
         private Object readResolve() {
-            return SERIALIZATION_CONTEXT.get();
+            return SerializationContext.get().engine;
         }
     }
     private static final EngineMoniker MONIKER = new EngineMoniker();

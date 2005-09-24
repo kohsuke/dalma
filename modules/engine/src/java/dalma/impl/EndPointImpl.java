@@ -28,10 +28,7 @@ public abstract class EndPointImpl extends EndPoint {
     protected abstract void stop();
 
     protected Object writeReplace() {
-        if(EngineImpl.SERIALIZATION_CONTEXT.get()==null)
-            return this;
-        else
-            return new Moniker(getName());
+        return new Moniker(getName());
     }
 
     private static final class Moniker implements Serializable {
@@ -42,7 +39,7 @@ public abstract class EndPointImpl extends EndPoint {
         }
 
         private Object readResolve() {
-            return EngineImpl.SERIALIZATION_CONTEXT.get().getEndPoint(name);
+            return SerializationContext.get().engine.getEndPoint(name);
         }
 
         private static final long serialVersionUID = 1L;
