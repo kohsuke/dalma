@@ -1,8 +1,5 @@
 package dalma;
 
-import dalma.spi.EngineSPI;
-
-
 /**
  * @author Kohsuke Kawaguchi
  */
@@ -22,6 +19,17 @@ public interface Conversation {
     /**
      * Waits for the completion of this conversation.
      *
+     * <p>
+     * If called from a conversation, the calling conversation
+     * suspends and blocks until this conversation exits (and
+     * the thread will be reused to execute other conversations.)
+     *
+     * <p>
+     * If called from outside conversations, the calling
+     * method simply {@link #wait() waits}.
+     *
+     * @throws IllegalStateException
+     *      If a conversation tries to join itself.
      * @throws InterruptedException
      *      If this thread is interrupted while waiting.
      */

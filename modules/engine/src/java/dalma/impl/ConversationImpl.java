@@ -334,6 +334,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
                 wait();
             }
         } else {
+            if(this==cur)
+                throw new IllegalStateException();
             cur.suspend(new ConversationDock(this));
         }
     }
