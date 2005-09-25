@@ -75,9 +75,13 @@ public class Hangman extends Launcher implements NewMailHandler {
 
                     mail = ep.waitForReply(mail);
 
-                    // the char the user chose
+                    // pick up the char the user chose
                     String body = getMailBody(mail.getContent()).trim();
+                    if(body.length()!=1)
+                        continue;
                     char ch = Character.toLowerCase(body.charAt(0));
+                    if(ch<'a' || 'z'<ch)
+                        continue;
 
                     if(word.indexOf(ch)<0) {
                         // bzzzt!
