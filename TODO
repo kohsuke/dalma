@@ -1,8 +1,8 @@
 TODO
 ====
-    Use this to replace the build automation
+    - how to wait for multipe replies against a single message?
+    - Use this to replace the build automation
         - write e-mail endPointoint (and qmail endPointoint)
-        - figure out how to write the "accept" thread.
 
 	- users should be able to access their own state information easily
 	  from Conversation (like Thread)
@@ -11,12 +11,7 @@ TODO
     - consider integrating with Exchange Server
     - consider sendmail integration
 
-E-mail Ports
-============
-    - one interface, multiple implementations
-    
 Notes
 =====
 - MimeMessage is not serializable
   this makes it ugly to work with e-mails.
-  
