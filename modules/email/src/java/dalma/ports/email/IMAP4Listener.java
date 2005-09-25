@@ -1,21 +1,21 @@
 package dalma.ports.email;
 
+import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Flags;
-import javax.mail.Session;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 /**
- * {@link Listener} that picks up messages from a POP3 server.
- *
+ * {@link Listener} that picks up messages from an IMAP4 server.
+ * 
  * @author Kohsuke Kawaguchi
  */
-public class POP3Listener extends Listener {
+public class IMAP4Listener extends Listener {
     private final String host;
     private final String uid;
     private final String password;
@@ -24,7 +24,7 @@ public class POP3Listener extends Listener {
 
     private static final Logger logger = Logger.getLogger(POP3Listener.class.getName());
 
-    public POP3Listener(String host, String uid, String password, int interval) {
+    public IMAP4Listener(String host, String uid, String password, int interval) {
         this.host = host;
         this.uid = uid;
         this.password = password;
@@ -54,7 +54,7 @@ public class POP3Listener extends Listener {
                 }
                 try {
                     logger.fine("connecting");
-                    Store store = s.getStore("pop3");
+                    Store store = s.getStore("imap");
                     store.connect(host,uid,password);
                     logger.fine("connected");
 
