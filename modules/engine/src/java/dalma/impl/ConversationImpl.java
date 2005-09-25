@@ -331,8 +331,6 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         if(cur==null) {
             // called from outside conversations
             if(state!=ConversationState.ENDED) {
-                // TODO: allow this method to be invoked from another conversation,
-                // and in that case suspend instead of block
                 wait();
             }
         } else {
