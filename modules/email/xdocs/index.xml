@@ -1,0 +1,25 @@
+<document>
+  <body>
+    <section name="Overview">
+      <p>
+        This e-mail endpoint implements an <a href="/nonav/maven/dalma/apidocs/dalma/EndPoint.html"><tt>Endpoint</tt></a> for the SMTP internet mail system. With this endpoint, a workflow can:
+      </p>
+      <ol>
+        <li>
+          send an e-mail and block until a reply is received
+        </li>
+        <li>
+          start a new conversation when a new e-mail is received
+        </li>
+      </ol>
+      <p>
+        See <a href="apidocs">javadoc</a> and <a href="hangman.xml">Hangman sample</a> for more details.
+      </p>
+    </section>
+    <section name="Technical Details">
+      <p>
+        This endpoint is implemented by using JavaMail. Out-going e-mails are sent by talking to a SMTP server, and the only thing that needs to be configured is the SMTP server's address. Incoming e-mails can be fetched from various sources, such as POP3, IMAP4, and the <a href="http://en.wikipedia.org/wiki/Maildir">Maildir</a> format. All of them are fetched by polling. It's up to a program to configure an endpoint.
+      </p>
+    </section>
+  </body>
+</document>
