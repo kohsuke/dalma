@@ -50,6 +50,8 @@ public abstract class Dock<T> implements Serializable {
      * {@link #conv}!=null guaranteed. Typically used to queue
      * this dock.
      * TODO: should this be the same with onLoad?
+     *
+     * TODO: error handling semantics. what happens if the park fails?
      */
     public abstract void park();
 
@@ -68,12 +70,17 @@ public abstract class Dock<T> implements Serializable {
      * Called after this dock is restored from disk.
      *
      * Typically used to requeue this object.
+     * This happens while the conversation is being restored from the disk.
      */
     public abstract void onLoad();
 
     /**
      * Resumes the conversation parked on this dock.
-     * Typically invoked by a endPoint when the conversation should be resumed.
+     * Typically invoked by an end point when the conversation should be resumed.
+     *
+     * <p>
+     * Note that the resumed conversation may start executed even before this method
+     * returns.
      */
     public final void resume(T retVal) {
         assert conv!=null;

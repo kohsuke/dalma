@@ -3,6 +3,7 @@ package dalma.spi;
 import dalma.Conversation;
 import dalma.Dock;
 import dalma.impl.EngineImpl;
+import dalma.impl.GeneratorImpl;
 import dalma.EndPoint;
 import dalma.Dock;
 import dalma.EndPoint;
@@ -45,4 +46,6 @@ public abstract class ConversationSPI implements Conversation {
      * Gets the engine to which this conversation belongs to.
      */
     public abstract EngineSPI getEngine();
+
+    public abstract void addGenerator(GeneratorImpl generator);
 }

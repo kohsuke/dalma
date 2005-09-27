@@ -72,6 +72,11 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     private List<? extends Dock<?>> docks = new ArrayList<Dock<?>>();
 
     /**
+     * {@link GeneratorImpl}s that belong to this conversation.
+     */
+    private Set<GeneratorImpl> generators = Collections.synchronizedSet(new HashSet<GeneratorImpl>());
+
+    /**
      * Other conversations that are blocking for the completion of this conversation.
      *
      * Transient, because {@link ConversationDock}s in this queue re-register themselves.
@@ -104,6 +109,11 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         waitList = Collections.synchronizedSet(new HashSet<ConversationDock>());
     }
 
+    public void addGenerator(GeneratorImpl g) {
+        generators.add(g);
+        g.onLoad();
+    }
+
     /**
      * Loads a {@link ConversationImpl} object from the disk.
      */
@@ -117,6 +127,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         }
         conv.init(engine,dir);
         conv.state = ConversationState.SUSPENDED;
+        for (GeneratorImpl g : conv.generators)
+            g.onLoad();
         for( Dock d : conv.docks )
             d.onLoad();
         return conv;
@@ -198,8 +210,16 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     /**
      * Called from the executor thread to run this conversation until
      * it suspends.
+     *
+     * This method is synchronized to prevent a still-running conversation
+     * from being run again concurrently, which happens when:
+     *
+     * 1. a dock parks
+     * 2. a signal arrives and conversation resumes
+     * 3. the conversation gets queued and picked up
+     * 4. the conversation gets run
      */
-    public void run() {
+    public synchronized void run() {
         if(state==ConversationState.ENDED) {
             return; // no-op
         }
@@ -278,13 +298,15 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         if(state==ConversationState.SUSPENDED) {
             state = ConversationState.RUNNABLE;
             engine.queue(this);
-        } else
+            return;
+        }
+
         if(state==ConversationState.RUNNABLE) {
             // this happens if two docks try to awake a conversation around the same time
             return;
-        } else {
-            throw new IllegalStateException();
         }
+
+        throw new IllegalStateException();
     }
 
     /**
@@ -313,6 +335,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
                 d.conv = null;
             }
             docks.clear();
+        }
+
+        for (GeneratorImpl g : generators) {
+            g.interrupt();
         }
 
         state = ConversationState.ENDED;
