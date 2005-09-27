@@ -1,6 +1,5 @@
 package dalma.ports.email;
 
-import dalma.Conversation;
 import dalma.Dock;
 import dalma.EndPoint;
 import dalma.TimeUnit;
@@ -14,11 +13,13 @@ import javax.mail.MessagingException;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import java.util.Collections;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * {@link EndPoint} connected to an e-mail address.
@@ -29,7 +30,8 @@ public class EmailEndPoint extends EndPointImpl {
     /**
      * Conversations waiting for a reply, keyed by their Message ID.
      */
-    private static final Map<UUID,DockImpl> queue = new HashMap<UUID, DockImpl>();
+    private static final Map<UUID,MailReceiver> queue =
+        Collections.synchronizedMap(new HashMap<UUID,MailReceiver>());
 
     private static final Logger logger = Logger.getLogger(EmailEndPoint.class.getName());
     /**
@@ -78,9 +80,16 @@ public class EmailEndPoint extends EndPointImpl {
         this.newMailHandler = newMailHandler;
     }
 
+    /*package*/ static void register(MailReceiver mr) {
+        queue.put(mr.getUUID(),mr);
+    }
+
+    /*paclage*/ static void unregister(MailReceiver mr) {
+        queue.remove(mr.getUUID());
+    }
+
     /**
-     * Invoked when a new message is received to awake the corresponding
-     * {@link Conversation}.
+     * Invoked when a new message is received.
      */
     /*package*/ void handleMessage(MimeMessage msg) throws MessagingException {
         // see http://cr.yp.to/immhf/thread.html
@@ -98,15 +107,12 @@ public class EmailEndPoint extends EndPointImpl {
             }
             return;
         }
-        DockImpl dock;
-        synchronized(queue) {
-            dock = queue.remove(id);
-        }
-        if(dock==null) {
+        MailReceiver receiver = queue.get(id);
+        if(receiver==null) {
             throw new MessagingException(
                 "No conversation is waiting for the message id="+id);
         }
-        dock.resume(new MimeMessageEx(msg));
+        receiver.handleMessage(new MimeMessageEx(msg));
     }
 
     private static UUID getIdHeader(Message msg, String name) throws MessagingException {
@@ -133,50 +139,45 @@ public class EmailEndPoint extends EndPointImpl {
         }
     }
 
-    protected static class DockImpl extends Dock<MimeMessage> {
+    protected static class DockImpl extends Dock<MimeMessage> implements MailReceiver {
         private final UUID uuid;
 
         /**
          * The out-going message to be sent.
-         * This needs to be sent out after this dock is placed,
-         * so that we can safely ignore all incoming e-mails
-         * that doesn't have docks waiting for it.
          *
-         * The field is transient because once it's sent out
-         * the field is kept to null.
+         * The field is transient because we'll send it before
+         * the dock is serialized, and thereafter never be used.
          */
-        private transient MimeMessage outgoing;
+        private transient Sender sender;
 
         public DockImpl(EmailEndPoint port, MimeMessage outgoing) throws MessagingException {
             super(port);
-            this.outgoing = outgoing;
+            this.sender = new Sender(outgoing);
+            this.uuid = sender.uuid;
+        }
 
-            // this creates a cryptographically strong GUID,
-            // meaning someone who knows any number of GUIDs can't
-            // predict another one (to steal the session)
-            uuid = UUID.randomUUID();
-            outgoing.setHeader("Message-ID",'<'+uuid.toString()+"@localhost>");
+        public UUID getUUID() {
+            return uuid;
+        }
+
+        public void handleMessage(MimeMessage msg) {
+            unregister(this);
+            resume(msg);
         }
 
         public void park() {
-            synchronized(queue) {
-                queue.put(uuid,this);
-            }
-            if(outgoing!=null) {
+            register(this);
+            if(sender!=null) {
                 try {
-                    Transport.send(outgoing);
-                } catch (MessagingException e) {
-                    throw new EmailException(e);
+                    sender.send();
                 } finally {
-                    outgoing = null;
+                    sender = null;
                 }
             }
         }
 
         public void interrupt() {
-            synchronized(queue) {
-                queue.remove(uuid);
-            }
+            unregister(this);
         }
 
         public void onLoad() {
@@ -212,6 +213,19 @@ public class EmailEndPoint extends EndPointImpl {
     public MimeMessage waitForReply(MimeMessage outgoing) {
         try {
             return ConversationSPI.getCurrentConversation().suspend(new DockImpl(this,wrapUp(outgoing)));
+        } catch (MessagingException e) {
+            throw new EmailException(e);
+        }
+    }
+
+    /**
+     * Sends an e-mail out and waits for multiple replies.
+     */
+    public Iterator<MimeMessage> waitForMultipleReplies(MimeMessage outgoing) {
+        try {
+            ReplyIterator r = new ReplyIterator(this,outgoing);
+            ConversationSPI.getCurrentConversation().addGenerator(r);
+            return r;
         } catch (MessagingException e) {
             throw new EmailException(e);
         }
