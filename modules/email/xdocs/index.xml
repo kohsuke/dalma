@@ -16,10 +16,24 @@
         See <a href="apidocs">javadoc</a> and <a href="hangman.xml">Hangman sample</a> for more details.
       </p>
     </section>
-    <section name="Technical Details">
+    <section name="Configuring End-point">
       <p>
-        This endpoint is implemented by using JavaMail. Out-going e-mails are sent by talking to a SMTP server, and the only thing that needs to be configured is the SMTP server's address. Incoming e-mails can be fetched from various sources, such as POP3, IMAP4, and the <a href="http://en.wikipedia.org/wiki/Maildir">Maildir</a> format. All of them are fetched by polling. It's up to a program to configure an endpoint.
+        This endpoint is implemented by using JavaMail. Out-going e-mails are sent by talking to a SMTP server. Incoming e-mails can be fetched from various sources, such as POP3, IMAP4, and the <a href="http://en.wikipedia.org/wiki/Maildir">Maildir</a> format.
+        All of them are fetched by polling.
+      </p><p>
+        This endpoint requires you to configure a few settings through the constructor parameters. There are a large number of other configurations, such as the SMTP server name, that are exposed from JavaMail. See
+        <a href="http://java.sun.com/products/javamail/javadocs/com/sun/mail/smtp/package-summary.html">this document for SMTP-related configurations</a>,
+        <a href="http://java.sun.com/products/javamail/javadocs/com/sun/mail/pop3/package-summary.html">this document for POP3-related configurations</a>, and
+        <a href="http://java.sun.com/products/javamail/javadocs/com/sun/mail/imap/package-summary.html">this document for IMAP-related configurations</a>.
+      </p><p>
+        To configure this, specify those properties as system properties. If this approach doesn't work for you, instead configure a JavaMail <tt>Session</tt> object manually and then use the <tt>EmailEndPoint</tt> constructor that takes <tt>Session</tt>. The following code illustrates this:
       </p>
+<source>
+Properties props = System.getProperties();
+props.put("mail.smtp.host","mail.sun.com");
+Session session = Session.getInstance(props);
+new EmailEndPoint( ...., session );
+</source>
     </section>
   </body>
 </document>

@@ -22,6 +22,7 @@
 
     <javaflow destdir="target/classes" srcdir="target/classes">
       <include name="dalma/ports/email/EmailEndPoint.class" />
+      <include name="dalma/ports/email/ReplyIterator.class" />
     </javaflow>
   </target>
 </project>

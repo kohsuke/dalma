@@ -26,6 +26,8 @@ public abstract class EndPoint implements Serializable {
 
     protected EndPoint(String name) {
         this.name = name;
+        if(name==null)
+            throw new IllegalArgumentException();
     }
 
     /**

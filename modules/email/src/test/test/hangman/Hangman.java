@@ -33,7 +33,7 @@ public class Hangman extends Launcher implements NewMailHandler {
         ep = new EmailEndPoint(
             "email",
             new InternetAddress("dalma@kohsuke.org","hangman"),
-            new POP3Listener("mail.kohsuke.org","dalma",PasswordStore.get("dalma@kohsuke.org"),3000));
+            new POP3Listener("kohsuke.sfbay","dalma",PasswordStore.get("dalma@kohsuke.org"),3000));
         ep.setNewMailHandler(this);
         engine.addEndPoint(ep);
     }

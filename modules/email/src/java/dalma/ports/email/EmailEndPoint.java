@@ -11,6 +11,7 @@ import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Transport;
+import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,7 +45,16 @@ public class EmailEndPoint extends EndPointImpl {
     private NewMailHandler newMailHandler;
 
     /**
+     * The JavaMail configuration.
+     */
+    private final Session session;
+
+    /**
      * Creates a new e-mail end point.
+     *
+     * <p>
+     * This uses {@code Session.getInstance(System.getProperties())} as the JavaMail session,
+     * so effectively it configures JavaMail from the system properties.
      *
      * @param name
      *      The unique name assigned by the application that identifies this endpoint.
@@ -54,9 +64,28 @@ public class EmailEndPoint extends EndPointImpl {
      *      The object that fetches incoming e-mails.
      */
     public EmailEndPoint(String name, Address address, Listener listener) {
+        this(name,address,listener,Session.getInstance(System.getProperties()));
+    }
+
+    /**
+     * Creates a new e-mail end point.
+     *
+     * @param name
+     *      The unique name assigned by the application that identifies this endpoint.
+     * @param address
+     *      The e-mail address of this endpoint.
+     * @param listener
+     *      The object that fetches incoming e-mails.
+     * @param session
+     *      The JavaMail configuration.
+     */
+    public EmailEndPoint(String name, Address address, Listener listener, Session session) {
         super(name);
         this.address = address;
         this.listener = listener;
+        this.session = session;
+        if(address==null || listener==null || session==null)
+            throw new IllegalArgumentException();
         listener.setEndPoint(this);
     }
 
@@ -78,6 +107,17 @@ public class EmailEndPoint extends EndPointImpl {
      */
     public void setNewMailHandler(NewMailHandler newMailHandler) {
         this.newMailHandler = newMailHandler;
+    }
+
+    /**
+     * Gets the JavaMail session that this endpoint uses to configure
+     * JavaMail.
+     *
+     * @return
+     *      always non-null.
+     */
+    public Session getSession() {
+        return session;
     }
 
     /*package*/ static void register(MailReceiver mr) {
@@ -223,7 +263,7 @@ public class EmailEndPoint extends EndPointImpl {
      */
     public Iterator<MimeMessage> waitForMultipleReplies(MimeMessage outgoing) {
         try {
-            ReplyIterator r = new ReplyIterator(this,outgoing);
+            ReplyIterator r = new ReplyIterator(this,wrapUp(outgoing));
             ConversationSPI.getCurrentConversation().addGenerator(r);
             return r;
         } catch (MessagingException e) {

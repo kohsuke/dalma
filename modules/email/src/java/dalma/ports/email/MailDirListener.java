@@ -25,8 +25,11 @@ public class MailDirListener extends Listener {
     public MailDirListener(File dir, int interval) {
         this.dir = dir;
         this.interval = interval;
+        this.thread = new Thread(new Runner());
+    }
 
-        thread = new Thread(new Runner());
+    protected void setEndPoint(EmailEndPoint ep) {
+        super.setEndPoint(ep);
         thread.setDaemon(true);
         thread.start();
     }
@@ -42,7 +45,6 @@ public class MailDirListener extends Listener {
 
     private class Runner implements Runnable {
         public void run() {
-            Session session = Session.getInstance(System.getProperties());
             while(true) {
                 try {
                     Thread.sleep(interval);
@@ -59,7 +61,7 @@ public class MailDirListener extends Listener {
                         for(File mail : files ) {
                             BufferedInputStream in = new BufferedInputStream(new FileInputStream(mail));
                             try {
-                                MimeMessage msg = new MimeMessage(session,in);
+                                MimeMessage msg = new MimeMessage(getEndPoint().getSession(),in);
                                 logger.fine("handling message: "+msg.getSubject());
                                 try {
                                     handleMessage(msg);

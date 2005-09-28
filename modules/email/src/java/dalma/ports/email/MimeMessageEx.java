@@ -4,6 +4,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+import javax.activation.DataHandler;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,6 +52,16 @@ public class MimeMessageEx extends MimeMessage implements Serializable {
         msg.setText("");    // set the dummy body otherwise the following method fails
 
         return new MimeMessageEx(msg);
+    }
+
+    /**
+     * Working around another bug in JavaMail.
+     */
+    public synchronized void setDataHandler(DataHandler dh) throws MessagingException {
+        super.setDataHandler(dh);
+//        content = null;
+//        contentStream = null;
+        saveChanges();
     }
 
     private Object writeReplace() throws IOException, MessagingException {

@@ -29,8 +29,12 @@ public class IMAP4Listener extends Listener {
         this.uid = uid;
         this.password = password;
         this.interval = interval;
+        this.thread = new Thread(new Runner());
+    }
 
-        thread = new Thread(new Runner());
+    protected void setEndPoint(EmailEndPoint ep) {
+        super.setEndPoint(ep);
+
         thread.setDaemon(true);
         thread.start();
     }
@@ -45,7 +49,6 @@ public class IMAP4Listener extends Listener {
 
     private class Runner implements Runnable {
         public void run() {
-            Session s = Session.getInstance(System.getProperties());
             while(true) {
                 try {
                     Thread.sleep(interval);
@@ -54,7 +57,7 @@ public class IMAP4Listener extends Listener {
                 }
                 try {
                     logger.fine("connecting");
-                    Store store = s.getStore("imap");
+                    Store store = getEndPoint().getSession().getStore("imap");
                     store.connect(host,uid,password);
                     logger.fine("connected");
 

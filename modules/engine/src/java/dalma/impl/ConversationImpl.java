@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.HashMap;
 
 /**
  * Represents a running conversation.
@@ -74,7 +76,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     /**
      * {@link GeneratorImpl}s that belong to this conversation.
      */
-    private Set<GeneratorImpl> generators = Collections.synchronizedSet(new HashSet<GeneratorImpl>());
+    private Map<UUID,GeneratorImpl> generators = Collections.synchronizedMap(new HashMap<UUID,GeneratorImpl>());
 
     /**
      * Other conversations that are blocking for the completion of this conversation.
@@ -110,8 +112,13 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     }
 
     public void addGenerator(GeneratorImpl g) {
-        generators.add(g);
+        generators.put(g.id,g);
+        g.setConversation(this);
         g.onLoad();
+    }
+
+    public GeneratorImpl getGenerator(UUID id) {
+        return generators.get(id);
     }
 
     /**
@@ -127,7 +134,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         }
         conv.init(engine,dir);
         conv.state = ConversationState.SUSPENDED;
-        for (GeneratorImpl g : conv.generators)
+        for (GeneratorImpl g : conv.generators.values())
             g.onLoad();
         for( Dock d : conv.docks )
             d.onLoad();
@@ -337,8 +344,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             docks.clear();
         }
 
-        for (GeneratorImpl g : generators) {
-            g.interrupt();
+        synchronized(generators) {
+            for (GeneratorImpl g : generators.values()) {
+                g.interrupt();
+            }
         }
 
         state = ConversationState.ENDED;

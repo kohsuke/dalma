@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
+ * {@link Iterator} that waits for multiple replies to one e-mail.
  *
  * <p>
  * Remains in memory even if the continuation is suspended.
@@ -59,7 +60,9 @@ final class ReplyIterator extends GeneratorImpl implements Iterator<MimeMessage>
     public synchronized MimeMessage next() {
         while(replies.isEmpty()) {
             lock = new DockImpl(endPoint);
+            System.out.println("going to suspend");
             ConversationSPI.getCurrentConversation().suspend(lock);
+            System.out.println("resumed");
         }
 
         return replies.remove(0);

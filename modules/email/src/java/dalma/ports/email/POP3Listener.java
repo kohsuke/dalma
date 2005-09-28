@@ -31,6 +31,10 @@ public class POP3Listener extends Listener {
         this.interval = interval;
 
         thread = new Thread(new Runner());
+    }
+
+    protected void setEndPoint(EmailEndPoint ep) {
+        super.setEndPoint(ep);
         thread.setDaemon(true);
         thread.start();
     }
@@ -45,7 +49,6 @@ public class POP3Listener extends Listener {
 
     private class Runner implements Runnable {
         public void run() {
-            Session s = Session.getInstance(System.getProperties());
             while(true) {
                 try {
                     Thread.sleep(interval);
@@ -54,7 +57,7 @@ public class POP3Listener extends Listener {
                 }
                 try {
                     logger.fine("connecting");
-                    Store store = s.getStore("pop3");
+                    Store store = getEndPoint().getSession().getStore("pop3");
                     store.connect(host,uid,password);
                     logger.fine("connected");
 
