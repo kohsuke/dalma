@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Collections;
+import java.util.Date;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -262,26 +263,25 @@ public class EmailEndPoint extends EndPointImpl {
      * Sends an e-mail out and waits for multiple replies.
      *
      * <p>
-     * Upon a successful completion, this method returns an {@link Iterator}
+     * Upon a successful completion, this method returns an {@link ReplyIterator}
      * that receives replies to the e-mail that was just sent.
      *
      * <p>
-     * Every time you call the returned iterator's {@link Iterator#next() next} method,
-     * it returns a next reply. If no reply is received yet, the conversation suspends
-     * and resumes when a reply is received.
-     *
-     * <p>
-     * As a consequence, its {@link Iterator#hasNext()} method always return <tt>true</tt>
-     * (because there's always a chance that a new reply is received in the future.)
+     * The timeout and unit parameters together specifies the time period
+     * in which the returned iterator waits for replies. For example,
+     * if you set "1 week", the returned iterator will catch all replies received
+     * within 1 week from now. See {@link ReplyIterator} for more details.
      *
      * @param outgoing
      *      The message to be sent. Must not be null.
      * @return
      *      always non-null.
+     * @see ReplyIterator
      */
-    public Iterator<MimeMessage> waitForMultipleReplies(MimeMessage outgoing) {
+    public ReplyIterator waitForMultipleReplies(MimeMessage outgoing, long timeout, TimeUnit unit ) {
         try {
-            ReplyIterator r = new ReplyIterator(this,wrapUp(outgoing));
+            ReplyIteratorImpl r = new ReplyIteratorImpl(this,wrapUp(outgoing));
+            r.setExpirationDate(unit.fromNow(timeout));
             ConversationSPI.getCurrentConversation().addGenerator(r);
             return r;
         } catch (MessagingException e) {

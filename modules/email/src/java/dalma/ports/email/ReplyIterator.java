@@ -1,110 +1,49 @@
 package dalma.ports.email;
 
-import dalma.Dock;
-import dalma.impl.GeneratorImpl;
-import dalma.spi.ConversationSPI;
+import dalma.TimeUnit;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.Date;
 
 /**
- * {@link Iterator} that waits for multiple replies to one e-mail.
+ * {@link Iterator} that returns the replies to a message
+ * that was sent out.
  *
  * <p>
- * Remains in memory even if the continuation is suspended.
+ * Every time you call the iterator's {@link Iterator#hasNext() hasNext} method,
+ * it checks if a reply is received. If not, the conversation suspends
+ * and then resumes only when either (1) a reply is received or (2) the expiration date
+ * of this iterator is reached.
  *
- * TODO: this needs to be easier to write.
+ * <p>
+ * If a reply is received, {@link #hasNext() hasNext} method returns true,
+ * and the reply can be fetched by calling {@link #next() next} method,
+ * just like a normal {@link Iterator}.
+ *
+ * <p>
+ * If the expiration date is reached, the {@link #hasNext() hasNext} method
+ * returns false, indicating that it will not wait for another message.
+ *
+ * <p>
+ * Together, this allows the calling conversation to efficiently handle
+ * all the reply messages received during a particular time period, then
+ * move on to do something else.
  *
  * @author Kohsuke Kawaguchi
  */
-final class ReplyIterator extends GeneratorImpl implements Iterator<MimeMessage>, MailReceiver {
+public interface ReplyIterator extends Iterator<MimeMessage> {
+    /**
+     * Sets the expiration date.
+     *
+     * @param dt
+     *      null to indicate no expiration at all.
+     */
+    void setExpirationDate(Date dt);
 
     /**
-     * EndPoint to which this iterator belongs.
+     * Sets the expiration date in terms of the timespan from right now.
      */
-    private final EmailEndPoint endPoint;
-
-    private final List<MimeMessage> replies = new LinkedList<MimeMessage>();
-
-    /**
-     * If the {@link #replies} become empty, the conversation
-     * will wait until a new one arrives by using this lock.
-     */
-    private transient DockImpl lock;
-
-    private final UUID uuid;
-
-    ReplyIterator(EmailEndPoint endPoint,MimeMessage outgoing) throws MessagingException {
-        this.endPoint = endPoint;
-        Sender s = new Sender(outgoing);
-        this.uuid = s.uuid;
-        s.send();
-    }
-
-    protected void onLoad() {
-        EmailEndPoint.register(this);
-    }
-
-    protected void interrupt() {
-        EmailEndPoint.unregister(this);
-    }
-
-    public UUID getUUID() {
-        return uuid;
-    }
-
-    public synchronized MimeMessage next() {
-        while(replies.isEmpty()) {
-            lock = new DockImpl(endPoint);
-            System.out.println("going to suspend");
-            ConversationSPI.getCurrentConversation().suspend(lock);
-            System.out.println("resumed");
-        }
-
-        return replies.remove(0);
-    }
-
-    public boolean hasNext() {
-        return true;
-    }
-
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
-
-    public synchronized void handleMessage(MimeMessage msg) {
-        replies.add(msg);
-        if(lock!=null) {
-            lock.resume(null);
-            lock = null;
-        }
-    }
-
-    private class DockImpl extends Dock<Void> {
-        public DockImpl(EmailEndPoint endPoint) {
-            super(endPoint);
-        }
-
-        public void park() {
-            synchronized(ReplyIterator.this) {
-                if(!replies.isEmpty()) {
-                    resume(null);
-                    return;
-                }
-                lock = this;
-            }
-        }
-
-        public void interrupt() {
-            // noop
-        }
-
-        public void onLoad() {
-            park();
-        }
-    }
+    void setExpirationDate(long time, TimeUnit unit);
+    Date getExpirationDate();
 }
