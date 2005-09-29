@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.HashMap;
 
 /**
  * Represents a running conversation.
@@ -76,7 +76,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     /**
      * {@link GeneratorImpl}s that belong to this conversation.
      */
-    private Map<UUID,GeneratorImpl> generators = Collections.synchronizedMap(new HashMap<UUID,GeneratorImpl>());
+    private Map<UUID,GeneratorImpl> generators = new Hashtable<UUID,GeneratorImpl>();
 
     /**
      * Other conversations that are blocking for the completion of this conversation.
