@@ -260,6 +260,24 @@ public class EmailEndPoint extends EndPointImpl {
 
     /**
      * Sends an e-mail out and waits for multiple replies.
+     *
+     * <p>
+     * Upon a successful completion, this method returns an {@link Iterator}
+     * that receives replies to the e-mail that was just sent.
+     *
+     * <p>
+     * Every time you call the returned iterator's {@link Iterator#next() next} method,
+     * it returns a next reply. If no reply is received yet, the conversation suspends
+     * and resumes when a reply is received.
+     *
+     * <p>
+     * As a consequence, its {@link Iterator#hasNext()} method always return <tt>true</tt>
+     * (because there's always a chance that a new reply is received in the future.)
+     *
+     * @param outgoing
+     *      The message to be sent. Must not be null.
+     * @return
+     *      always non-null.
      */
     public Iterator<MimeMessage> waitForMultipleReplies(MimeMessage outgoing) {
         try {
