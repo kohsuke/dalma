@@ -39,7 +39,10 @@ public abstract class GeneratorImpl implements Serializable {
     }
 
     protected Object writeReplace() {
-        return new Moniker(conv,id);
+        if(SerializationContext.get().mode==SerializationContext.Mode.CONVERSATION)
+            return this;
+        else
+            return new Moniker(conv,id);
     }
 
     private static final class Moniker implements Serializable {
