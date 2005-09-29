@@ -1,5 +1,7 @@
 package dalma;
 
+import java.util.Date;
+
 /**
  * Unit of time.
  *
@@ -34,5 +36,12 @@ public enum TimeUnit {
 
     public long toMilli(long time) {
         return toNano(time)/MILLISECONDS.unitTime;
+    }
+
+    /**
+     * Gets the {@link Date} by ading the duration to the current time.
+     */
+    public Date fromNow(long time) {
+        return new Date(System.currentTimeMillis()+toMilli(time));
     }
 }

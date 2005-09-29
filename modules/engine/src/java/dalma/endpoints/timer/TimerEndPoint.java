@@ -99,6 +99,6 @@ public class TimerEndPoint extends EndPointImpl {
     }
 
     public static <T> Dock<T> createDock(long delay,TimeUnit unit) {
-        return createDock(new Date(System.currentTimeMillis()+unit.toMilli(delay)));
+        return createDock(unit.fromNow(delay));
     }
 }
