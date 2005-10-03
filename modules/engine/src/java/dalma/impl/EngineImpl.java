@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Hashtable;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -56,7 +57,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
      * All {@link EndPoint}s that bleong to this engine.
      * access need to be synchronized.
      */
-    transient final Map<String,EndPointImpl> endPoints = new HashMap<String,EndPointImpl>();
+    transient final Map<String,EndPointImpl> endPoints = new Hashtable<String,EndPointImpl>();
 
     /**
      * Records the currently running conversations.
@@ -184,9 +185,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
     }
 
     public EndPoint getEndPoint(String name) {
-        synchronized(endPoints) {
-            return endPoints.get(name);
-        }
+        return endPoints.get(name);
     }
 
     public void addEndPoint(EndPoint ep) {
@@ -196,6 +195,14 @@ public final class EngineImpl implements EngineSPI, Serializable {
             if(!(ep instanceof EndPointImpl))
                 throw new IllegalArgumentException(ep.getClass().getName()+" doesn't derive from EndPointImpl");
             endPoints.put(ep.getName(),(EndPointImpl)ep);
+        }
+    }
+
+    public void setEndPoints(Collection<? extends EndPoint> endPoints) {
+        synchronized(this.endPoints) {
+            endPoints.clear();
+            for (EndPoint ep : endPoints)
+                addEndPoint(ep);
         }
     }
 
