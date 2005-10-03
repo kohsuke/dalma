@@ -71,25 +71,6 @@ public interface Engine {
     void addEndPoint(EndPoint endPoint);
 
     /**
-     * Copies the list of {@link EndPoint}s from the given list.
-     *
-     * <p>
-     * This method completely removes all the {@link EndPoint}s in this engine
-     * by the specified {@link EndPoint}s.
-     *
-     * <p>
-     * Note that this method copies the values from the collection but not the
-     * collection itself. Therefore once the method returns, changes can be
-     * made to the collection object that is used for this method invocation
-     * and it will not affect the engine.
-     *
-     * <p>
-     * This somewhat ugly method is added so that endpoints can be configured
-     * from the Spring beans framework.
-     */
-    void setEndPoints(Collection<? extends EndPoint> endPoints);
-
-    /**
      * Stops the engine and releases all the resources it acquired.
      *
      * <p>

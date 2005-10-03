@@ -198,14 +198,6 @@ public final class EngineImpl implements EngineSPI, Serializable {
         }
     }
 
-    public void setEndPoints(Collection<? extends EndPoint> endPoints) {
-        synchronized(this.endPoints) {
-            endPoints.clear();
-            for (EndPoint ep : endPoints)
-                addEndPoint(ep);
-        }
-    }
-
     public void stop() {
         // clone first to avoid concurrent modification
         Collection<EndPointImpl> eps;

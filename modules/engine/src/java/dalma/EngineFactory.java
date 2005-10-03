@@ -4,6 +4,11 @@ import dalma.impl.EngineImpl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Factory for {@link Engine}.
@@ -20,6 +25,7 @@ public class EngineFactory {
     private File rootDir;
     private ClassLoader classLoader;
     private Executor executor;
+    private final Map<String,EndPoint> endPoints = new HashMap<String,EndPoint>();
 
     /**
      * Sets the directory to be used for persisting the state of conversations.
@@ -47,10 +53,42 @@ public class EngineFactory {
     }
 
     /**
+     * Adds a new {@link EndPoint} to the engine.
+     *
+     * @throws IllegalArgumentException
+     *      if there's already an {@link EndPoint} that has the same name.
+     */
+    public void addEndPoint(EndPoint ep) {
+        endPoints.put(ep.getName(),ep);
+    }
+
+    /**
+     * Copies the list of {@link EndPoint}s from the given list.
+     *
+     * <p>
+     * This method completely removes all the {@link EndPoint}s configured so far
+     * by the specified {@link EndPoint}s.
+     *
+     * <p>
+     * Note that this method copies the values from the collection but not the
+     * collection itself. Therefore once the method returns, changes can be
+     * made to the collection object that is used for this method invocation
+     * and it will not affect the engine.
+     */
+    public void setEndPoints(Collection<? extends EndPoint> endPoints) {
+        for (EndPoint endPoint : endPoints)
+            addEndPoint(endPoint);
+    }
+
+    /**
      * Creates a new {@link Engine} based on the current configuration.
      */
     public Engine newInstance() throws IOException {
-        return new EngineImpl(rootDir,classLoader,executor);
+        EngineImpl engine = new EngineImpl(rootDir, classLoader, executor);
+        for (EndPoint endPoint : endPoints.values()) {
+            engine.addEndPoint(endPoint);
+        }
+        return engine;
     }
 
     /**
@@ -61,7 +99,7 @@ public class EngineFactory {
      * @param classLoader
      *      see {@link #setClassLoader(ClassLoader)}
      * @param executor
-     *      see {@link #setExecutor(Executor)} 
+     *      see {@link #setExecutor(Executor)}
      */
     public static Engine newInstance(File rootDir,ClassLoader classLoader, Executor executor) throws IOException {
         return new EngineImpl(rootDir,classLoader,executor);
