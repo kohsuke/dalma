@@ -1,7 +1,6 @@
 package dalma.ports.email;
 
 import javax.mail.MessagingException;
-import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -39,7 +38,7 @@ public class MailDirListener extends Listener {
         try {
             thread.join();
         } catch (InterruptedException e) {
-            ;
+            // noop
         }
     }
 

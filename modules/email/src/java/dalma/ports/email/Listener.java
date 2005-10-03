@@ -1,10 +1,9 @@
 package dalma.ports.email;
 
-import dalma.EndPoint;
 import dalma.impl.EndPointImpl;
 
-import javax.mail.internet.MimeMessage;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 /**
  * Listens to the incoming e-mail messages and pass it to

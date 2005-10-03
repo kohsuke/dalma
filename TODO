@@ -1,12 +1,11 @@
 TODO
 ====
-    - think of a better way to unify Dock and Generator
-       isn't a dock a special case of a generator (in the sense
-       that a dock lives shorter.) 
-
     - JMS messages aren't serializable
     - Use this to replace the build automation
         - write e-mail endPointoint (and qmail endPointoint)
+
+    - test automation
+    - allow externalized configuration. spring?
 
 	- users should be able to access their own state information easily
 	  from Conversation (like Thread)

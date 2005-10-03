@@ -1,11 +1,10 @@
 package test;
 
-import static dalma.TimeUnit.MINUTES;
+import dalma.TimeUnit;
 import dalma.ports.email.EmailEndPoint;
 import dalma.ports.email.MailDirListener;
 import dalma.ports.email.NewMailHandler;
 import dalma.test.Launcher;
-import dalma.TimeUnit;
 
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -66,7 +65,7 @@ public class GeneratorTest extends Launcher implements NewMailHandler {
                 msg = (MimeMessage)msg.reply(false);
                 msg.setText("Hello! "+uuid);
 
-                Iterator<MimeMessage> itr = ep.waitForMultipleReplies(msg,3,MINUTES);
+                Iterator<MimeMessage> itr = ep.waitForMultipleReplies(msg,15,TimeUnit.SECONDS);
 
                 while(itr.hasNext()) {
                     msg = itr.next();
@@ -80,7 +79,7 @@ public class GeneratorTest extends Launcher implements NewMailHandler {
                     ep.send(msg);
                 }
 
-                MimeMessage reply = (MimeMessage)msg.reply(false);
+                MimeMessage reply = (MimeMessage)email.reply(false);
                 reply.setText("bye bye");
                 ep.send(reply);
                 System.out.println("done");

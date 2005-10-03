@@ -31,7 +31,7 @@ public abstract class GeneratorImpl implements Serializable {
     /**
      * Called when the conversation completes. Used to dequeue this object.
      */
-    protected abstract void interrupt();
+    protected abstract void dispose();
 
     /*package*/ final void setConversation(ConversationImpl conv) {
         assert this.conv==null;

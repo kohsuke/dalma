@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<project name="email" default="sorry">
+<project name="engine" default="sorry">
   <target name="sorry">
     <fail message="Please use maven to build this project" />
   </target>
-  
+
   <target name="instrument">
     <taskdef resource="org/apache/commons/javaflow/ant/tasks.properties">
       <classpath>
@@ -12,7 +12,7 @@
     </taskdef>
 
     <javaflow destdir="target/classes" srcdir="target/classes">
-      <include name="dalma/ports/email/EmailEndPoint.class" />
+      <include name="dalma/spi/port/*.class" />
     </javaflow>
   </target>
 </project>

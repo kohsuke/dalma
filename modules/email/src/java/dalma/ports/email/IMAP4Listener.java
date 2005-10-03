@@ -1,14 +1,13 @@
 package dalma.ports.email;
 
-import javax.mail.Session;
-import javax.mail.Store;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
-import javax.mail.Flags;
 import javax.mail.MessagingException;
+import javax.mail.Store;
 import javax.mail.internet.MimeMessage;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * {@link Listener} that picks up messages from an IMAP4 server.

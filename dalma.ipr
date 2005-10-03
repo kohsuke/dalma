@@ -2,7 +2,7 @@
 <project version="4" relativePaths="false">
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
-    <buildFile url="file://$PROJECT_DIR$/modules/email/build.xml">
+    <buildFile url="file://$PROJECT_DIR$/build.xml">
       <additionalClassPath />
       <antReference projectDefault="true" />
       <customJdkName value="" />
@@ -64,7 +64,6 @@
     <option name="DEPRECATION" value="true" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
-    <option name="USE_GENERICS_COMPILER" value="false" />
   </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
@@ -233,5 +232,6 @@
     <option name="INSTRUMENT_CLASSES" value="true" />
     <option name="COPY_FORMS_RUNTIME_TO_OUTPUT" value="true" />
   </component>
+  <UsedPathMacros />
 </project>
 

@@ -1,13 +1,5 @@
 <project xmlns:j="jelly:core" xmlns:ant="jelly:ant" xmlns:maven="jelly:maven">
   <postGoal name="java:compile">
-    <taskdef resource="org/apache/commons/javaflow/ant/tasks.properties">
-      <classpath>
-        <fileset dir="${basedir}/../../lib/redist" includes="*.jar" />
-      </classpath>
-    </taskdef>
-
-    <javaflow destdir="${maven.build.dest}" srcdir="${maven.build.dest}">
-      <include name="dalma/endpoints/**/*.class" />
-    </javaflow>
+    <ant target="instrument" />    
   </postGoal>
 </project>

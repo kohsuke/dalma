@@ -1,15 +1,15 @@
 package test.hangman;
 
 import dalma.ports.email.EmailEndPoint;
+import dalma.ports.email.MailDirListener;
 import dalma.ports.email.NewMailHandler;
-import dalma.ports.email.POP3Listener;
 import dalma.test.Launcher;
-import dalma.test.PasswordStore;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -32,8 +32,8 @@ public class Hangman extends Launcher implements NewMailHandler {
     protected void setUpEndPoints() throws Exception {
         ep = new EmailEndPoint(
             "email",
-            new InternetAddress("dalma@kohsuke.org","hangman"),
-            new POP3Listener("kohsuke.sfbay","dalma",PasswordStore.get("dalma@kohsuke.org"),3000));
+            new InternetAddress("hangman@kohsuke.org","hangman"),
+            new MailDirListener(new File("mail"),3000));
         ep.setNewMailHandler(this);
         engine.addEndPoint(ep);
     }

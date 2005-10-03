@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="dalma" default="sorry">
+  <target name="sorry">
+    <fail message="Please use maven to build this project" />
+  </target>
+
+  <target name="instrument">
+    <subant target="instrument">
+      <fileset dir="modules" includes="*/build.xml" />
+    </subant>
+  </target>
+</project>

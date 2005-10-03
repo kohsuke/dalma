@@ -1,9 +1,7 @@
 package dalma.endpoints.jms;
 
-import dalma.Dock;
 import dalma.EndPoint;
-import dalma.impl.EndPointImpl;
-import dalma.spi.ConversationSPI;
+import dalma.spi.port.MultiplexedEndPoint;
 
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
@@ -17,25 +15,23 @@ import javax.jms.ObjectMessage;
 import javax.jms.QueueSession;
 import javax.jms.StreamMessage;
 import javax.jms.TextMessage;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.logging.Level;
 
 /**
  * {@link EndPoint} that connects to two JMS queues.
  *
  * @author Kohsuke Kawaguchi
  */
-public class JMSEndPoint extends EndPointImpl implements MessageListener {
+public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements MessageListener {
     private final QueueSession session;
 
     private final MessageProducer sender;
     private final MessageConsumer consumer;
 
     /**
-     * Conversations waiting for a reply, keyed by their correlation ID.
+     * Handles uncorrelated messages.
      */
-    private static final Map<UUID,DockImpl> queue = new HashMap<UUID, DockImpl>();
+    private MessageHandler newMessageHandler;
 
     public JMSEndPoint(String name, QueueSession session, Destination out, Destination in) throws JMSException {
         super(name);
@@ -43,14 +39,6 @@ public class JMSEndPoint extends EndPointImpl implements MessageListener {
         sender =session.createProducer(out);
         consumer = session.createConsumer(in);
         consumer.setMessageListener(this);
-    }
-
-    /**
-     * Sends/publishes a JMS message and blocks until a reply is received.
-     */
-    public Message waitForReply(Message message) throws JMSException {
-        return ConversationSPI.getCurrentConversation().suspend(
-            new DockImpl(this,message));
     }
 
     protected void stop() {
@@ -62,6 +50,65 @@ public class JMSEndPoint extends EndPointImpl implements MessageListener {
     }
 
     /**
+     * Invoked by JMS.
+     */
+    public void onMessage(Message message) {
+        super.handleMessage(message);
+    }
+
+    protected String getKey(Message msg) {
+        try {
+            return msg.getJMSCorrelationID();
+        } catch (JMSException e) {
+            throw new QueueException(e);
+        }
+    }
+
+    protected void onNewMessage(Message msg) {
+        MessageHandler h = newMessageHandler;
+        if(h !=null) {
+            try {
+                h.onNewMessage(msg);
+            } catch (Exception e) {
+                logger.log(Level.WARNING,e.getMessage(),e);
+            }
+        }
+    }
+
+    protected String send(Message msg) {
+        try {
+            sender.send(msg);
+            return msg.getJMSCorrelationID();
+        } catch (JMSException e) {
+            throw new QueueException(e);
+        }
+    }
+
+//
+//
+// API methods
+//
+//
+
+    /**
+     * Gets the last value set by {@link #setNewMessageHandler(MessageHandler)}.
+     */
+    public MessageHandler getNewMessageHandler() {
+        return newMessageHandler;
+    }
+
+    /**
+     * Sets {@link MessageHandler} that handles uncorrelated messages
+     * received by this endpoint.
+     *
+     * @param newMessageHandler
+     *      if null, uncorrelated messages are discarded.
+     */
+    public void setNewMessageHandler(MessageHandler newMessageHandler) {
+        this.newMessageHandler = newMessageHandler;
+    }
+
+    /**
      * Creates a new blank {@link Message} of the specified type.
      *
      * @param type
@@ -69,93 +116,31 @@ public class JMSEndPoint extends EndPointImpl implements MessageListener {
      */
     public <T extends Message> T createMessage(Class<T> type) throws JMSException {
         if(type==BytesMessage.class)
-            return (T)session.createBytesMessage();
+            return type.cast(session.createBytesMessage());
         if(type==MapMessage.class)
-            return (T)session.createMapMessage();
+            return type.cast(session.createMapMessage());
         if(type==ObjectMessage.class)
-            return (T)session.createObjectMessage();
+            return type.cast(session.createObjectMessage());
         if(type==StreamMessage.class)
-            return (T)session.createStreamMessage();
+            return type.cast(session.createStreamMessage());
         if(type==TextMessage.class)
-            return (T)session.createTextMessage();
+            return type.cast(session.createTextMessage());
         throw new IllegalArgumentException();
     }
 
     /**
-     * Receives incoming messages.
+     * Creates a reply to the specified message.
      */
-    public void onMessage(Message message) {
-        try {
-            UUID id = UUID.fromString(message.getJMSCorrelationID());
-
-            DockImpl dock;
-            synchronized(queue) {
-                dock = queue.remove(id);
-            }
-            if(dock==null) {
-                throw new JMSException(
-                    "No conversation is waiting for the message id="+id);
-            }
-            dock.resume(message);
-        } catch (JMSException e) {
-            // TODO
-            throw new Error(e);
-        }
+    public <T extends Message> T createReplyMessage(Class<T> type, Message in) throws JMSException {
+        T reply = createMessage(type);
+        reply.setJMSCorrelationID(in.getJMSMessageID());
+        return reply;
     }
 
-
-    protected static class DockImpl extends Dock<Message> {
-        /**
-         * Correlation ID.
-         */
-        private final UUID uuid;
-
-        /**
-         * The out-going message to be sent.
-         * This needs to be sent out after this dock is placed,
-         * so that we can safely ignore all incoming messages
-         * that doesn't have docks waiting for it.
-         *
-         * The field is transient because once it's sent out
-         * the field is kept to null.
-         */
-        private transient Message outgoing;
-
-        public DockImpl(JMSEndPoint port, Message outgoing) throws JMSException {
-            super(port);
-            this.outgoing = outgoing;
-
-            // this creates a cryptographically strong GUID,
-            // meaning someone who knows any number of GUIDs can't
-            // predict another one (to steal the session)
-            uuid = UUID.randomUUID();
-            outgoing.setJMSCorrelationID(uuid.toString());
-        }
-
-        public void park() {
-            synchronized(queue) {
-                queue.put(uuid,this);
-            }
-            if(outgoing!=null) {
-                try {
-                    ((JMSEndPoint)endPoint).sender.send(outgoing);
-                } catch (JMSException e) {
-                    // TODO
-                    throw new Error(e);
-                } finally {
-                    outgoing = null;
-                }
-            }
-        }
-
-        public void interrupt() {
-            synchronized(queue) {
-                queue.remove(uuid);
-            }
-        }
-
-        public void onLoad() {
-            park();
-        }
+    /**
+     * Sends/publishes a JMS message and blocks until a reply is received.
+     */
+    public Message waitForReply(Message message) {
+        return super.waitForReply(message);
     }
 }

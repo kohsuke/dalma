@@ -165,7 +165,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     }
 
     public <T> T suspend(Dock<? extends T>... docks) {
-        return suspend(Arrays.asList(docks));
+        return suspend(docks!=null ? Arrays.asList(docks) : Collections.<Dock<T>>emptyList() );
     }
 
     public <T> T suspend(List<? extends Dock<? extends T>> dock) {
@@ -346,7 +346,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
         synchronized(generators) {
             for (GeneratorImpl g : generators.values()) {
-                g.interrupt();
+                g.dispose();
             }
         }
 

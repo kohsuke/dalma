@@ -1,41 +1,28 @@
 package dalma.ports.email;
 
-import dalma.Dock;
 import dalma.EndPoint;
+import dalma.ReplyIterator;
 import dalma.TimeUnit;
-import dalma.endpoints.timer.TimerEndPoint;
-import dalma.impl.EndPointImpl;
-import dalma.spi.ConversationSPI;
+import dalma.spi.port.MultiplexedEndPoint;
 
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Transport;
 import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
-import java.util.Collections;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * {@link EndPoint} connected to an e-mail address.
  *
  * @author Kohsuke Kawaguchi
  */
-public class EmailEndPoint extends EndPointImpl {
-    /**
-     * Conversations waiting for a reply, keyed by their Message ID.
-     */
-    private static final Map<UUID,MailReceiver> queue =
-        Collections.synchronizedMap(new HashMap<UUID,MailReceiver>());
+public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
 
-    private static final Logger logger = Logger.getLogger(EmailEndPoint.class.getName());
     /**
      * The address that receives replies.
      */
@@ -121,39 +108,27 @@ public class EmailEndPoint extends EndPointImpl {
         return session;
     }
 
-    /*package*/ static void register(MailReceiver mr) {
-        queue.put(mr.getUUID(),mr);
+    protected UUID getKey(MimeMessage msg) {
+        try {
+            UUID id = getIdHeader(msg, "References");
+            if(id!=null)    return id;
+
+            return getIdHeader(msg,"In-reply-to");
+        } catch (MessagingException e) {
+            throw new EmailException(e);
+        }
     }
 
-    /*paclage*/ static void unregister(MailReceiver mr) {
-        queue.remove(mr.getUUID());
-    }
 
-    /**
-     * Invoked when a new message is received.
-     */
-    /*package*/ void handleMessage(MimeMessage msg) throws MessagingException {
-        // see http://cr.yp.to/immhf/thread.html
-        UUID id = getIdHeader(msg, "References");
-        if(id==null)
-            id = getIdHeader(msg,"In-reply-to");
-        if(id==null) {
-            NewMailHandler h = newMailHandler;
-            if(h!=null) {
-                try {
-                    h.onNewMail(new MimeMessageEx(msg));
-                } catch (Exception e) {
-                    logger.log(Level.WARNING,"Unhandled exception",e);
-                }
+    protected void onNewMessage(MimeMessage msg) {
+        NewMailHandler h = newMailHandler;
+        if(h!=null) {
+            try {
+                h.onNewMail(new MimeMessageEx(msg));
+            } catch (Exception e) {
+                logger.log(Level.WARNING,"Unhandled exception",e);
             }
-            return;
         }
-        MailReceiver receiver = queue.get(id);
-        if(receiver==null) {
-            throw new MessagingException(
-                "No conversation is waiting for the message id="+id);
-        }
-        receiver.handleMessage(new MimeMessageEx(msg));
     }
 
     private static UUID getIdHeader(Message msg, String name) throws MessagingException {
@@ -180,63 +155,38 @@ public class EmailEndPoint extends EndPointImpl {
         }
     }
 
-    protected static class DockImpl extends Dock<MimeMessage> implements MailReceiver {
-        private final UUID uuid;
-
-        /**
-         * The out-going message to be sent.
-         *
-         * The field is transient because we'll send it before
-         * the dock is serialized, and thereafter never be used.
-         */
-        private transient Sender sender;
-
-        public DockImpl(EmailEndPoint port, MimeMessage outgoing) throws MessagingException {
-            super(port);
-            this.sender = new Sender(outgoing);
-            this.uuid = sender.uuid;
-        }
-
-        public UUID getUUID() {
-            return uuid;
-        }
-
-        public void handleMessage(MimeMessage msg) {
-            unregister(this);
-            resume(msg);
-        }
-
-        public void park() {
-            register(this);
-            if(sender!=null) {
-                try {
-                    sender.send();
-                } finally {
-                    sender = null;
-                }
-            }
-        }
-
-        public void interrupt() {
-            unregister(this);
-        }
-
-        public void onLoad() {
-            park();
+    protected void handleMessage(MimeMessage msg) {
+        try {
+            super.handleMessage(new MimeMessageEx(msg));
+        } catch (MessagingException e) {
+            throw new EmailException(e);
         }
     }
 
-
-
     /**
-     * Wraps up the out-going message.
+     * Sends a message and return immediately.
+     *
+     * Use this method when no further reply is expected.
      */
-    private MimeMessage wrapUp(MimeMessage outgoing) throws MessagingException {
-        outgoing.setReplyTo(new Address[]{address});
-        if(outgoing.getFrom()==null || outgoing.getFrom().length==0) {
-            outgoing.setFrom(address);
+    public UUID send(MimeMessage msg) {
+        try {
+            msg.setReplyTo(new Address[]{address});
+            if(msg.getFrom()==null || msg.getFrom().length==0) {
+                msg.setFrom(address);
+            }
+
+            // this creates a cryptographically strong GUID,
+            // meaning someone who knows any number of GUIDs can't
+            // predict another one (to steal the session)
+            UUID uuid = UUID.randomUUID();
+            msg.setHeader("Message-ID",'<'+uuid.toString()+"@localhost>");
+
+            Transport.send(msg);
+
+            return uuid;
+        } catch (MessagingException e) {
+            throw new EmailException(e);
         }
-        return outgoing;
     }
 
     /**
@@ -252,11 +202,7 @@ public class EmailEndPoint extends EndPointImpl {
      *      always a non-null valid message.
      */
     public MimeMessage waitForReply(MimeMessage outgoing) {
-        try {
-            return ConversationSPI.getCurrentConversation().suspend(new DockImpl(this,wrapUp(outgoing)));
-        } catch (MessagingException e) {
-            throw new EmailException(e);
-        }
+        return super.waitForReply(outgoing);
     }
 
     /**
@@ -264,44 +210,47 @@ public class EmailEndPoint extends EndPointImpl {
      *
      * <p>
      * Upon a successful completion, this method returns an {@link ReplyIterator}
-     * that receives replies to the e-mail that was just sent.
+     * that receives replies to the e-mail that was just sent, until the specified
+     * expiration date is reached.
+     *
+     * @param outgoing
+     *      The message to be sent. Must not be null.
+     * @param expirationDate
+     *      null to indicate that the iterator shall never be expired.
+     *      Otherwise, the iterator will stop accepting reply messages
+     *      once the specified date is reached.
+     * @return
+     *      always non-null.
+     * @see ReplyIterator
+     */
+    public ReplyIterator<MimeMessage> waitForMultipleReplies(MimeMessage outgoing, Date expirationDate ) {
+        return super.waitForMultipleReplies(outgoing,expirationDate);
+    }
+
+    /**
+     * Sends an e-mail out and waits for multiple replies.
      *
      * <p>
      * The timeout and unit parameters together specifies the time period
      * in which the returned iterator waits for replies. For example,
      * if you set "1 week", the returned iterator will catch all replies received
-     * within 1 week from now. See {@link ReplyIterator} for more details.
-     *
-     * @param outgoing
-     *      The message to be sent. Must not be null.
-     * @return
-     *      always non-null.
-     * @see ReplyIterator
+     * within 1 week from now. See {@link #waitForMultipleReplies(MimeMessage, long, TimeUnit)} for
+     * details.
      */
-    public ReplyIterator waitForMultipleReplies(MimeMessage outgoing, long timeout, TimeUnit unit ) {
-        try {
-            ReplyIteratorImpl r = new ReplyIteratorImpl(this,wrapUp(outgoing));
-            r.setExpirationDate(unit.fromNow(timeout));
-            ConversationSPI.getCurrentConversation().addGenerator(r);
-            return r;
-        } catch (MessagingException e) {
-            throw new EmailException(e);
-        }
+    public ReplyIterator<MimeMessage> waitForMultipleReplies(MimeMessage outgoing, long timeout, TimeUnit unit ) {
+        return waitForMultipleReplies(outgoing,unit.fromNow(timeout));
     }
 
     /**
-     * Sends a message and return immediately.
+     * Sends an e-mail out and waits for multiple replies.
      *
-     * Use this method when no further reply is expected.
+     * <p>
+     * This overloaded version returns a {@link ReplyIterator} that never expires.
+     * See {@link #waitForMultipleReplies(MimeMessage, long, TimeUnit)} for details.
      */
-    public void send(MimeMessage outgoing) {
-        try {
-            Transport.send(wrapUp(outgoing));
-        } catch (MessagingException e) {
-            throw new EmailException(e);
-        }
+    public ReplyIterator<MimeMessage> waitForMultipleReplies(MimeMessage outgoing) {
+        return waitForMultipleReplies(outgoing,null);
     }
-
 
     /**
      * Sends an e-mail out and waits for a reply to come back,
@@ -316,12 +265,6 @@ public class EmailEndPoint extends EndPointImpl {
      *      always a non-null valid message.
      */
     public MimeMessage waitForReply(MimeMessage outgoing,long timeout, TimeUnit unit) throws TimeoutException {
-        try {
-            return ConversationSPI.getCurrentConversation().suspend(
-                new DockImpl(this,wrapUp(outgoing)), TimerEndPoint.<MimeMessage>createDock(timeout,unit) );
-        } catch (MessagingException e) {
-            throw new EmailException(e);
-        }
+        return super.waitForReply(outgoing, unit.fromNow(timeout));
     }
-
 }

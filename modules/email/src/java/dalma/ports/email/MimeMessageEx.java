@@ -1,10 +1,10 @@
 package dalma.ports.email;
 
+import javax.activation.DataHandler;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import javax.activation.DataHandler;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

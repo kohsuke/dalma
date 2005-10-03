@@ -1,0 +1,9 @@
+<document>
+  <body>
+    <section name="SMTP Configuration">
+      <p>
+        This endpoint talks to an SMTP server to deliver out-going e-mails. By default, JavaMail talks to the SMTP server on localhost. 
+      </p>
+    </section>
+  </body>
+</document>
