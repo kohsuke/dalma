@@ -1,8 +1,8 @@
 package test;
 
-import dalma.ports.email.EmailEndPoint;
-import dalma.ports.email.NewMailHandler;
-import dalma.ports.email.POP3Listener;
+import dalma.endpoints.email.EmailEndPoint;
+import dalma.endpoints.email.NewMailHandler;
+import dalma.endpoints.email.POP3Listener;
 import dalma.test.Launcher;
 import dalma.test.PasswordStore;
 

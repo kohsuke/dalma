@@ -1,4 +1,4 @@
-package dalma.ports.email;
+package dalma.endpoints.email;
 
 /**
  * Signals an error in the underlying e-mail handling layer.

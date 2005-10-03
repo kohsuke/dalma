@@ -1,4 +1,4 @@
-package dalma.ports.email;
+package dalma.endpoints.email;
 
 import dalma.Conversation;
 

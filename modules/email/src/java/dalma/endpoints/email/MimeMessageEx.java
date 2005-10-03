@@ -1,4 +1,4 @@
-package dalma.ports.email;
+package dalma.endpoints.email;
 
 import javax.activation.DataHandler;
 import javax.mail.Message;

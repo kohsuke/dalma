@@ -1,8 +1,8 @@
 package test.hangman;
 
-import dalma.ports.email.EmailEndPoint;
-import dalma.ports.email.MailDirListener;
-import dalma.ports.email.NewMailHandler;
+import dalma.endpoints.email.EmailEndPoint;
+import dalma.endpoints.email.MailDirListener;
+import dalma.endpoints.email.NewMailHandler;
 import dalma.test.Launcher;
 
 import javax.mail.MessagingException;
