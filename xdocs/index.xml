@@ -2,26 +2,26 @@
   <body>
     <section name="Overview">
       <p>
-				Many applications of today need to have a part of the program that waits for other entities. For example, a mailing list manager waits for an e-mail to trigger actions. A web application waits for incoming HTTP requests.
-			</p>
-			<p>
-				Sometimes those applications are conversational; they not only just receive messages, but also send out messages. Those programs often maintain some state and change it as the conversation progresses. Often there are multiple conversations running concurrently. Those are what we call "workflow" applications.
-			</p>
-			<p>
-				For example, where I work, I have a little process every Monday. On Sunday night, cron triggers an automated weekly build of our software. Upon a successful build, it sends out an e-mail. On Monday morning, a manager and an engineer replies to those e-mails, authorizing the posting of the build to a publicly visible web server. Another program waits for those authorization e-mails, push the binaries to the server, and then report the result in an e-mail, concluding a conversation. This little ritual happens concurrently for each project in my group.
-			</p>
-			<p>
-				Today, those applications can be written, but one can't write it very productively. For one thing, every time an incoming message comes, the program has to retrieve the state information, act on it, and then store it back. This needs a lot of boilerplate code. You also need to write it as an event-driven program, where your application consists of a set of message handlers. This makes it difficult to follow the flow of the logic.
-			</p>
-			<p>
-				The other approach is to use a special-purpose language like BPEL. While BPEL is indeed useful in certain circumstances, it brings in a considerable complexity, and thus you need a relatively large-scale project to pay it off.
-			</p>
-			<p>
-				Dalma makes it very easy to write those workflow applications by letting you write it as an ordinary procedural program without any boilerplate.
-			</p>
-			<p>
-				For example, consider the following program that subscribes an user to a mailing list by using a simple e-mail base confirmation:
-			</p>
+        Many applications of today need to have a part of the program that waits for other entities. For example, a mailing list manager waits for an e-mail to trigger actions. A web application waits for incoming HTTP requests.
+      </p>
+      <p>
+        Sometimes those applications are conversational; they not only just receive messages, but also send out messages. Those programs often maintain some state and change it as the conversation progresses. Often there are multiple conversations running concurrently. Those are what we call "workflow" applications.
+      </p>
+      <p>
+        For example, where I work, I have a little process every Monday. On Sunday night, cron triggers an automated weekly build of our software. Upon a successful build, it sends out an e-mail. On Monday morning, a manager and an engineer replies to those e-mails, authorizing the posting of the build to a publicly visible web server. Another program waits for those authorization e-mails, push the binaries to the server, and then report the result in an e-mail, concluding a conversation. This little ritual happens concurrently for each project in my group.
+      </p>
+      <p>
+        Today, those applications can be written, but one can't write it very productively. For one thing, every time an incoming message comes, the program has to retrieve the state information, act on it, and then store it back. This needs a lot of boilerplate code. You also need to write it as an event-driven program, where your application consists of a set of message handlers. This makes it difficult to follow the flow of the logic.
+      </p>
+      <p>
+        The other approach is to use a special-purpose language like BPEL. While BPEL is indeed useful in certain circumstances, it brings in a considerable complexity, and thus you need a relatively large-scale project to pay it off.
+      </p>
+      <p>
+        Dalma makes it very easy to write those workflow applications by letting you write it as an ordinary procedural program without any boilerplate.
+      </p>
+      <p>
+        For example, consider the following program that subscribes an user to a mailing list by using a simple e-mail base confirmation:
+      </p>
 <source>
 void subscribe(MailingList ml, InternetAddress userEmailAddress) {
   // ask the user to confirm subscription
@@ -43,42 +43,42 @@ void subscribe(MailingList ml, InternetAddress userEmailAddress) {
 }
 </source>
 
-			<p>
-				While this is very easy to write, traditionally, writing such a program like this would be considered a bad idea, because:
-			</p>
-			<ol>
-				<li>this requires one thread per one conversation, making it less scalable</li>
-				<li>if the JVM shuts down, all information about the on-going conversations will be lost.</li>
-			</ol>
+      <p>
+        While this is very easy to write, traditionally, writing such a program like this would be considered a bad idea, because:
+      </p>
+      <ol>
+        <li>this requires one thread per one conversation, making it less scalable</li>
+        <li>if the JVM shuts down, all information about the on-going conversations will be lost.</li>
+      </ol>
 
-			<p>
-				Dalma solves those issues by allowing you to run them on a "virtual thread". A virtual thread is like an ordinary thread, except that it can be suspended, persisted, and resumed later, possibly in a different JVM.
-			</p>
-			<p>
-				Inside the waitForResponse method, dalma suspends the virtual thread, and then persists its execution state to a disk. The actual Java thread that was used to run this virtual thread can be then reused to run other virtual threads. Later, when an e-mail is received, the persisted execution state is restored, and the virtual thread resumes its execution inside the waitForResponse method. The JVM can even shut down and restart between this.
-			</p>
-			<p>
-				This mechanism eliminates the needs of the explicit state persistence; those states are now captured in terms of local variables and call stacks. Dalma engine handles persistence transparently behind the scene by collaborating with those I/O APIs.
-			</p>
-			<p>
-				This mechanism also allows few threads to support much larger number of virtual threads, which is essential for supporting many concurrent conversations.
-			</p>
-		</section>
-		<section name="Goal of the Project">
-			<p>
-				The heart of this engine is an ability to capture the execution state of a thread and resume it later. This is one use case of what's commonly known as "continuation."
-			</p>
-			<p>
-				While functional programming languages typically have a built-in support for continuation, procedural programming languages like Java usually doesn't. Because of this, the use of continuation has been largely limited to computer scientists.
-			</p>
-			<p>
-				Recently, continuation is attracting some attentions among procedural language developer communities. C# 2.0 added a language support for a "generator", which is a limited form of the continuation. In the Java web tier, such as in Cocoon and Struts, some people started using continuation to control the page flow of web applications.
-			</p>
-			<p>
-				While continuation itself will likely to remain as one of the most difficult programming concepts to understand, there are many applications of it that are useful for general developer audience.
-			</p>
-			<p>
-				I see an interesting opportunity for introducing continuation in Java. Dalma is an experiment to seek the usefulness of it.
+      <p>
+        Dalma solves those issues by allowing you to run them on a "virtual thread". A virtual thread is like an ordinary thread, except that it can be suspended, persisted, and resumed later, possibly in a different JVM.
+      </p>
+      <p>
+        Inside the waitForResponse method, dalma suspends the virtual thread, and then persists its execution state to a disk. The actual Java thread that was used to run this virtual thread can be then reused to run other virtual threads. Later, when an e-mail is received, the persisted execution state is restored, and the virtual thread resumes its execution inside the waitForResponse method. The JVM can even shut down and restart between this.
+      </p>
+      <p>
+        This mechanism eliminates the needs of the explicit state persistence; those states are now captured in terms of local variables and call stacks. Dalma engine handles persistence transparently behind the scene by collaborating with those I/O APIs.
+      </p>
+      <p>
+        This mechanism also allows few threads to support much larger number of virtual threads, which is essential for supporting many concurrent conversations.
+      </p>
+    </section>
+    <section name="Goal of the Project">
+      <p>
+        The heart of this engine is an ability to capture the execution state of a thread and resume it later. This is one use case of what's commonly known as "continuation."
+      </p>
+      <p>
+        While functional programming languages typically have a built-in support for continuation, procedural programming languages like Java usually doesn't. Because of this, the use of continuation has been largely limited to computer scientists.
+      </p>
+      <p>
+        Recently, continuation is attracting some attentions among procedural language developer communities. C# 2.0 added a language support for a "generator", which is a limited form of the continuation. In the Java web tier, such as in Cocoon and Struts, some people started using continuation to control the page flow of web applications.
+      </p>
+      <p>
+        While continuation itself will likely to remain as one of the most difficult programming concepts to understand, there are many applications of it that are useful for general developer audience.
+      </p>
+      <p>
+        I see an interesting opportunity for introducing continuation in Java. Dalma is an experiment to seek the usefulness of it.
       </p>
     </section>
   </body>
