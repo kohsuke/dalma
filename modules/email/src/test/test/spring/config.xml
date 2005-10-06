@@ -1,0 +1,40 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <bean id="engine" class="dalma.EngineFactory">
+    <property name="endPoints">
+      <list>
+        <bean class="dalma.endpoints.email.EmailEndPoint">
+          <constructor-arg index="0">
+            <value>e-mail</value>
+          </constructor-arg>
+          <constructor-arg index="1">
+            <value>dalma@kohsuke.org</value>
+          </constructor-arg>
+          <constructor-arg index="2">
+            <bean class="dalma.endpoints.email.POP3Listener">
+              <constructor-arg index="0">
+                <value>mail.kohsuke.org</value>
+              </constructor-arg>
+              <constructor-arg index="1">
+                <value>dalma</value>
+              </constructor-arg>
+              <constructor-arg index="2">
+                <value>password</value>
+              </constructor-arg>
+              <constructor-arg index="3">
+                <value>5000</value>
+              </constructor-arg>
+            </bean>
+          </constructor-arg>
+        </bean>
+      </list>
+    </property>
+    <property name="executor">
+      <bean class="dalma.helpers.ThreadPoolExecutor">
+        <constructor-arg type="int">
+          <value>3</value>
+        </constructor-arg>
+      </bean>
+    </property>
+  </bean>
+</beans>
