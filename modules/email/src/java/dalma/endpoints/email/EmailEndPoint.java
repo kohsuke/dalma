@@ -11,6 +11,8 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.AddressException;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
@@ -53,6 +55,21 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      */
     public EmailEndPoint(String name, Address address, Listener listener) {
         this(name,address,listener,Session.getInstance(System.getProperties()));
+    }
+
+    /**
+     * Creates a new e-mail end point.
+     *
+     * <p>
+     * This version takes the address as string so that it can be invoked from Spring.
+     * It's just a short-cut for:
+     * <pre>
+     * this(name,new InternetAddress(address),listener,Session.getInstance(System.getProperties()))
+     * </pre>
+     * @see #EmailEndPoint(String, Address, Listener)
+     */
+    public EmailEndPoint(String name, String address, Listener listener) throws AddressException {
+        this(name,new InternetAddress(address),listener,Session.getInstance(System.getProperties()));
     }
 
     /**
