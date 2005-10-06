@@ -82,6 +82,10 @@ public class EngineFactory {
 
     /**
      * Creates a new {@link Engine} based on the current configuration.
+     *
+     * @throws IOException
+     *      if the engine failed to set up the files for persistence,
+     *      or fails to read from the existing persisted conversations.
      */
     public Engine newInstance() throws IOException {
         EngineImpl engine = new EngineImpl(rootDir, classLoader, executor);

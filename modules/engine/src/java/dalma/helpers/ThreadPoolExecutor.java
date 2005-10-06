@@ -22,24 +22,45 @@ public class ThreadPoolExecutor implements Executor {
 
     private final Collection<WorkerThread> threads = new ArrayList<WorkerThread>();
 
+    /**
+     * This object signals when all the threads terminate.
+     */
+    private final Object terminationSignal = new Object();
+
     public ThreadPoolExecutor(int nThreads) {
-        for( int i=0; i<nThreads; i++ ) {
-            WorkerThread thread = new WorkerThread();
-            thread.start();
-            threads.add(thread);
+        synchronized(threads) {
+            for( int i=0; i<nThreads; i++ ) {
+                WorkerThread thread = new WorkerThread();
+                thread.start();
+                threads.add(thread);
+            }
         }
     }
 
     protected void finalize() throws Throwable {
         super.finalize();
-        for( WorkerThread t : threads )
-            t.interrupt();
+        synchronized(threads) {
+            // let them die, but don't wait
+            for( WorkerThread t : threads )
+                t.interrupt();
+        }
     }
 
     public void execute(Runnable command) {
         synchronized(jobQueue) {
             jobQueue.add(command);
             jobQueue.notify();
+        }
+    }
+
+    public void stop(long timeout) throws InterruptedException {
+        synchronized(terminationSignal) {
+            for( Thread t : threads )
+                t.interrupt();
+            if(timeout==-1)
+                terminationSignal.wait();
+            else
+                terminationSignal.wait(timeout);
         }
     }
 
@@ -62,6 +83,14 @@ public class ThreadPoolExecutor implements Executor {
                 }
             } catch (InterruptedException e) {
                 // treat this as a signal to die
+                synchronized(threads) {
+                    threads.remove(this);
+                    if(threads.isEmpty()) {
+                        synchronized(terminationSignal) {
+                            terminationSignal.notifyAll();
+                        }
+                    }
+                }
             }
         }
     }

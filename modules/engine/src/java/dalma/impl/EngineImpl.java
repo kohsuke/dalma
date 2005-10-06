@@ -198,7 +198,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
         }
     }
 
-    public void stop() {
+    public void stop() throws InterruptedException {
         // clone first to avoid concurrent modification
         Collection<EndPointImpl> eps;
         synchronized(endPoints) {
@@ -208,8 +208,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
         for( EndPointImpl ep : eps )
             ep.stop();
 
-        // TODO: wait until all conversations suspend
-        throw new UnsupportedOperationException();
+        executor.stop(0);
     }
 
     ConversationImpl getConversation(int id) {

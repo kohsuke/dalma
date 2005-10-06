@@ -76,6 +76,9 @@ public interface Engine {
      * <p>
      * This method blocks until all the running {@link Conversation} suspends/completes,
      * so it may take some time.
+     *
+     * @throws InterruptedException
+     *      if the calling thread is interrupted while waiting for the completion. 
      */
-    void stop();
+    void stop() throws InterruptedException;
 }

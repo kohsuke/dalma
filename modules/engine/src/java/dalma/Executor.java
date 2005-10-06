@@ -10,4 +10,15 @@ package dalma;
  */
 public interface Executor {
     void execute(Runnable command);
+
+    /**
+     * Shuts down the executor.
+     *
+     * This method blocks until all the scheduled {@link Runnable}s are completed,
+     * or the timeout occurs.
+     *
+     * @param timeout
+     *      Number of milliseconds to wait. 0 for no timeout.
+     */
+    void stop(long timeout) throws InterruptedException;
 }
