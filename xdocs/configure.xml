@@ -1,0 +1,26 @@
+<document><body>
+<section name="Configuring engine">
+  <p>
+    Often a dalma engine needs to be configured in a highly environment-specific way. For example, if you are using the e-mail endpoint, you don't know what the e-mail address you'll bind to until you actually deploy the program. Or you might want to test the workflow application with a different e-mail address.
+  </p><p>
+    When you are in this situation, it's better not to programatically configure the engine from your application. Instead, consider the following approaches.
+  </p>
+  <subsection name="Configuring with Spring">
+    <p>
+      Dalma's <tt>Engine</tt> object can be configured from Spring beans framework. The following XML shows a sample Spring bean configuration file:
+    </p>
+<source><![CDATA[
+]]></source>
+    <p>
+      Your application can then load this fully configured engine by the following code:
+    </p>
+<source>
+XmlBeanFactory xbf = new XmlBeanFactory(new FileSystemResource(new File("dalma-engine.xml")));
+Engine engine = (Engine)xbf.getBean("engine");
+</source>
+    <p>
+      If you are going to use Dalma within Spring, this would be an obvious choice. Consult <a href="http://www.springframework.org/documentation">Spring documentation</a> for more about Spring,
+    </p>
+  </subsection>
+</section>
+</body></document>

@@ -13,6 +13,11 @@
     <menu name="Components">
       <item name="Engine (core)"           href="dalma/index.html"/>
       <item name="E-mail endpoint"         href="dalma-endpoint-email/index.html"/>
+      <item name="JMS endpoint"            href="dalma-endpoint-jms/index.html"/>
+    </menu>
+
+    <menu name="Programming with Dalma">
+      <item name="Configuring Engine"      href="configure.html" />
     </menu>
   </body>
 </project>
