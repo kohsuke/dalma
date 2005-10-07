@@ -87,6 +87,8 @@ public interface Engine {
      *      must not be null.
      * @throws ParseException
      *      if there's an error in the connection string.
+     * @throws IllegalArgumentException
+     *      if there's already an {@link EndPoint} that has the same name.
      * @return
      *      the endpoint created from the connection string.
      */
