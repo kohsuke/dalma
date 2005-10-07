@@ -1,6 +1,7 @@
 package dalma.helpers;
 
 import dalma.Executor;
+import dalma.Engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +28,25 @@ public class ThreadPoolExecutor implements Executor {
      */
     private final Object terminationSignal = new Object();
 
-    public ThreadPoolExecutor(int nThreads) {
+    /**
+     * True to make worker threads daemon thread.
+     */
+    private final boolean daemon;
+
+    /**
+     * Creates a new thread pool executor.
+     *
+     * @param nThreads
+     *      number of worker threads to create.
+     * @param daemon
+     *      true to make worker threads daemon threads.
+     *      daemon threads allows the VM to shut down as soon as
+     *      the application thread exits. Otherwise, you have to
+     *      call {@link Engine#stop()} before your main thread exits,
+     *      or else the JVM will run forever.
+     */
+    public ThreadPoolExecutor(int nThreads, boolean daemon) {
+        this.daemon = daemon;
         synchronized(threads) {
             for( int i=0; i<nThreads; i++ ) {
                 WorkerThread thread = new WorkerThread();
@@ -35,6 +54,10 @@ public class ThreadPoolExecutor implements Executor {
                 threads.add(thread);
             }
         }
+    }
+
+    public ThreadPoolExecutor(int nThreads) {
+        this(nThreads,false);
     }
 
     protected void finalize() throws Throwable {
@@ -67,6 +90,7 @@ public class ThreadPoolExecutor implements Executor {
     private final class WorkerThread extends Thread {
         public WorkerThread() {
             super("Dalma engine worker thread");
+            setDaemon(daemon);
         }
 
         public void run() {
