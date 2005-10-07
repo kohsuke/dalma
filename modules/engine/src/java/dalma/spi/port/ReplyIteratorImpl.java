@@ -74,7 +74,7 @@ final class ReplyIteratorImpl<Key,Msg> extends GeneratorImpl implements ReplyIte
     public synchronized boolean hasNext() {
         if(replies.isEmpty()) {
             // no replies in the queue
-            if(isExpired()) {
+            if(!isExpired()) {
                 // block until we receive another one
                 lock = new DockImpl(endPoint);
                 ConversationSPI.getCurrentConversation().suspend(
