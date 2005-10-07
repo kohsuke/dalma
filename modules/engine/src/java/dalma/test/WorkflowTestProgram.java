@@ -50,7 +50,7 @@ public abstract class WorkflowTestProgram extends TestCase {
             }
         });
 
-        engine = new EngineImpl(root,classLoader,new ThreadPoolExecutor(3));
+        engine = new EngineImpl(root,classLoader,new ThreadPoolExecutor(3,true));
     }
 
     /**
@@ -72,6 +72,7 @@ public abstract class WorkflowTestProgram extends TestCase {
     }
 
     protected void tearDown() throws Exception {
+        System.out.println("tearing down");
         engine.stop();
         Util.deleteRecursive(root);
     }
@@ -88,7 +89,7 @@ public abstract class WorkflowTestProgram extends TestCase {
 
         // otherwise let's check those properties by ourselves.
         File f = new File(".").getAbsoluteFile();
-        while(!new File(f,"dalma.iml").exists()) {
+        do {
             File buildProperties = new File(f,"build.properties");
             if(buildProperties.exists()) {
                 try {
@@ -100,7 +101,7 @@ public abstract class WorkflowTestProgram extends TestCase {
                     throw new Error(e);
                 }
             }
-        }
+        } while(!new File(f,"dalma.iml").exists());
 
         // TODO: explain what it means better
         throw new Error("test property "+key+" is not set.");
