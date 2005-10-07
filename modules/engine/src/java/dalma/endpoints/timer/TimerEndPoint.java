@@ -42,6 +42,7 @@ public class TimerEndPoint extends EndPointImpl {
 
         public TimerDock(Date dt) {
             super(TimerEndPoint.this);
+            assert dt!=null;
             this.dt = dt;
         }
 
