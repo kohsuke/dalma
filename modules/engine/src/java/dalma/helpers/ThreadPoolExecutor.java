@@ -78,8 +78,10 @@ public class ThreadPoolExecutor implements Executor {
 
     public void stop(long timeout) throws InterruptedException {
         synchronized(terminationSignal) {
-            for( Thread t : threads )
-                t.interrupt();
+            synchronized(threads) {
+                for( Thread t : threads )
+                    t.interrupt();
+            }
             if(timeout==-1)
                 terminationSignal.wait();
             else
