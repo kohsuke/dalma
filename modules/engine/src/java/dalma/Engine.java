@@ -2,7 +2,9 @@ package dalma;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.io.IOException;
+import java.text.ParseException;
 
 
 /**
@@ -59,7 +61,7 @@ public interface Engine {
      *
      * @return
      *      null if no such {@link EndPoint} is found.
-     */ 
+     */
     EndPoint getEndPoint(String name);
 
     /**
@@ -69,6 +71,26 @@ public interface Engine {
      *      if there's already an {@link EndPoint} that has the same name.
      */
     void addEndPoint(EndPoint endPoint);
+
+    /**
+     * Creates and adds a new {@link EndPoint} to this engine.
+     *
+     * <p>
+     * See <a href="https://dalma.dev.java.net/nonav/maven/connectionString.html">
+     * this document for details</a>.
+     *
+     * @param endPointName
+     *      name of the endpoint. this will become the value
+     *      returned from {@link EndPoint#getName()}. Must not be null.
+     * @param connectionString
+     *      configuration of an endpoint encoded in an URI form.
+     *      must not be null.
+     * @throws ParseException
+     *      if there's an error in the connection string.
+     * @return
+     *      the endpoint created from the connection string.
+     */
+    EndPoint addEndPoint(String endPointName, String connectionString) throws ParseException;
 
     /**
      * Stops the engine and releases all the resources it acquired.
@@ -81,4 +103,12 @@ public interface Engine {
      *      if the calling thread is interrupted while waiting for the completion. 
      */
     void stop() throws InterruptedException;
+
+    /**
+     * Sets the logger that this engine uses.
+     *
+     * @param logger
+     *      if null, the engine will stop logging.
+     */
+    void setLogger(Logger logger);
 }

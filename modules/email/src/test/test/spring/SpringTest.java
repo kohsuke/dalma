@@ -7,6 +7,7 @@ import org.springframework.core.io.ClassPathResource;
 import junit.framework.TestCase;
 
 /**
+ * Spring configuration test.
  * @author Kohsuke Kawaguchi
  */
 public class SpringTest extends TestCase {

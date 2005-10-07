@@ -4,6 +4,7 @@ import dalma.Conversation;
 import dalma.EndPoint;
 import dalma.Executor;
 import dalma.spi.EngineSPI;
+import dalma.spi.EndPointFactory;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -15,11 +16,27 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Hashtable;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.text.ParseException;
+import java.net.URL;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 public final class EngineImpl implements EngineSPI, Serializable {
+
+    /**
+     * Logger that logs events.
+     */
+    private transient Logger logger;
+
+    /**
+     * Cache of protocol -> endpoint factory class.
+     */
+    private transient Properties endPointFactories;
 
     /**
      * Executes conversations that can be run.
@@ -68,6 +85,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
         this.rootDir = rootDir;
         this.executor = executor;
         this.classLoader = classLoader;
+        setLogger(Logger.getLogger(getClass().getName()));
         load();
     }
 
@@ -198,6 +216,70 @@ public final class EngineImpl implements EngineSPI, Serializable {
         }
     }
 
+    public synchronized EndPoint addEndPoint(String name, String connectionString) throws ParseException {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        if(cl==null)        cl = getClass().getClassLoader();
+        if(cl==null)        cl = ClassLoader.getSystemClassLoader();
+
+        Properties properties = loadEndPointFactories(cl);
+        int idx = connectionString.indexOf(':');
+        if(idx<0)
+            throw new ParseException("no scheme in "+connectionString,-1);
+        String scheme = connectionString.substring(0,idx);
+
+        EndPointFactory epf;
+        Object value = properties.get(scheme);
+        if(value==null)
+            throw new ParseException("unrecognized scheme "+scheme,0);
+        if(value instanceof String) {
+            try {
+                Class clazz = cl.loadClass((String)value);
+                Object o = clazz.newInstance();
+                if(!(o instanceof EndPointFactory)) {
+                    logger.warning(clazz+" is not an EndPointFactory");
+                }
+                epf = (EndPointFactory)o;
+                properties.put(scheme,epf);
+            } catch (ClassNotFoundException e) {
+                throw new NoClassDefFoundError(e.getMessage());
+            } catch (IllegalAccessException e) {
+                throw new IllegalAccessError(e.getMessage());
+            } catch (InstantiationException e) {
+                throw new InstantiationError(e.getMessage());
+            }
+        } else {
+            epf = (EndPointFactory)value;
+        }
+
+        return epf.create(name,connectionString);
+    }
+
+    /**
+     * Loads the list of {@link EndPointFactory} classes from the manifest.
+     */
+    private synchronized Properties loadEndPointFactories(ClassLoader cl) {
+        if(endPointFactories!=null)
+            return endPointFactories;
+
+        endPointFactories = new Properties();
+
+        try {
+            Enumeration<URL> resources = cl.getResources("META-INF/services/dalma.spi.EndPointFactory");
+            while(resources.hasMoreElements()) {
+                URL url = resources.nextElement();
+                try {
+                    endPointFactories.load(url.openStream());
+                } catch (IOException e) {
+                    logger.log(Level.WARNING,"Unable to access "+url,e);
+                }
+            }
+        } catch (IOException e) {
+            logger.log(Level.WARNING,"failed to load endpoint factory list",e);
+        }
+
+        return endPointFactories;
+    }
+
     public void stop() throws InterruptedException {
         // clone first to avoid concurrent modification
         Collection<EndPointImpl> eps;
@@ -209,6 +291,15 @@ public final class EngineImpl implements EngineSPI, Serializable {
             ep.stop();
 
         executor.stop(0);
+    }
+
+    public void setLogger(Logger logger) {
+        if(logger==null) {
+            // use unconnected anonymous logger to ignore log
+            logger = Logger.getAnonymousLogger();
+            logger.setUseParentHandlers(false);
+        }
+        this.logger = logger;
     }
 
     ConversationImpl getConversation(int id) {
