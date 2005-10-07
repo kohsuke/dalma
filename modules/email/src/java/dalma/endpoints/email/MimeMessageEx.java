@@ -25,6 +25,10 @@ public class MimeMessageEx extends MimeMessage implements Serializable {
         super(session, is);
     }
 
+    public MimeMessageEx(Session session) {
+        super(session);
+    }
+
     protected void updateHeaders() throws MessagingException {
         // JavaMail clears the message-id with its own, so restore the one
         // we set
