@@ -26,6 +26,9 @@ public class Util {
     }
 
     public static void deleteRecursive(File dir) throws IOException {
+        if(!dir.exists())
+            return;
+
         deleteContentsRecursive(dir);
         if(!dir.delete())
             throw new IOException("Unable to delete "+dir);
