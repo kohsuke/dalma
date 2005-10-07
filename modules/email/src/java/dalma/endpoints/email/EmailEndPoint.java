@@ -10,9 +10,9 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
@@ -28,7 +28,7 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
     /**
      * The address that receives replies.
      */
-    private final Address address;
+    private final InternetAddress address;
 
     private final Listener listener;
 
@@ -53,7 +53,7 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      * @param listener
      *      The object that fetches incoming e-mails.
      */
-    public EmailEndPoint(String name, Address address, Listener listener) {
+    public EmailEndPoint(String name, InternetAddress address, Listener listener) {
         this(name,address,listener,Session.getInstance(System.getProperties()));
     }
 
@@ -66,7 +66,7 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      * <pre>
      * this(name,new InternetAddress(address),listener,Session.getInstance(System.getProperties()))
      * </pre>
-     * @see #EmailEndPoint(String, Address, Listener)
+     * @see #EmailEndPoint(String, InternetAddress, Listener)
      */
     public EmailEndPoint(String name, String address, Listener listener) throws AddressException {
         this(name,new InternetAddress(address),listener,Session.getInstance(System.getProperties()));
@@ -84,7 +84,7 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      * @param session
      *      The JavaMail configuration.
      */
-    public EmailEndPoint(String name, Address address, Listener listener, Session session) {
+    public EmailEndPoint(String name, InternetAddress address, Listener listener, Session session) {
         super(name);
         this.address = address;
         this.listener = listener;
@@ -123,6 +123,13 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      */
     public Session getSession() {
         return session;
+    }
+
+    /**
+     * Gets the e-mail address that this endpoint is connected to.
+     */
+    public InternetAddress getAddress() {
+        return address;
     }
 
     protected UUID getKey(MimeMessage msg) {
