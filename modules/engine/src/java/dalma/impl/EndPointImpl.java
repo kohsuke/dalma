@@ -39,7 +39,10 @@ public abstract class EndPointImpl extends EndPoint {
         }
 
         private Object readResolve() {
-            return SerializationContext.get().engine.getEndPoint(name);
+            EndPoint endPoint = SerializationContext.get().engine.getEndPoint(name);
+            if(endPoint==null)
+                throw new Error("no endpoint of the name "+name+" exists in the engine");
+            return endPoint;
         }
 
         private static final long serialVersionUID = 1L;
