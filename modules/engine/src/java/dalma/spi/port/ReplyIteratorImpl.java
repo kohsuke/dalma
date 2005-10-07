@@ -77,8 +77,11 @@ final class ReplyIteratorImpl<Key,Msg> extends GeneratorImpl implements ReplyIte
             if(!isExpired()) {
                 // block until we receive another one
                 lock = new DockImpl(endPoint);
-                ConversationSPI.getCurrentConversation().suspend(
-                    lock, TimerEndPoint.createDock(expirationDate));
+                if(expirationDate==null)
+                    ConversationSPI.getCurrentConversation().suspend(lock);
+                else
+                    ConversationSPI.getCurrentConversation().suspend(
+                        lock, TimerEndPoint.createDock(expirationDate));
             }
         }
         return !replies.isEmpty();
