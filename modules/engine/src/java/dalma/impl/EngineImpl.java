@@ -251,7 +251,9 @@ public final class EngineImpl implements EngineSPI, Serializable {
             epf = (EndPointFactory)value;
         }
 
-        return epf.create(name,connectionString);
+        EndPoint ep = epf.create(name, connectionString);
+        addEndPoint(ep);
+        return ep;
     }
 
     /**
