@@ -56,9 +56,12 @@ public class JMSTest extends WorkflowTestProgram implements MessageHandler {
     }
 
     protected void tearDown() throws Exception {
-        super.tearDown();
-        qs.close();
-        qcon.close();
+        try {
+            super.tearDown();
+        } finally {
+            qs.close();
+            qcon.close();
+        }
     }
 
     public void onNewMessage(Message message) throws Exception {
@@ -88,6 +91,7 @@ public class JMSTest extends WorkflowTestProgram implements MessageHandler {
                     TextMessage reply = ep.createReplyMessage(TextMessage.class,msg);
                     reply.setText("Hello! "+uuid);
 
+                    System.out.println("sent a reply");
                     msg = ep.waitForReply(msg);
                     System.out.println("got a reply");
                 }
