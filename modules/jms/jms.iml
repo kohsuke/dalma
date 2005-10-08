@@ -30,7 +30,9 @@
           <root url="jar://$MODULE_DIR$/lib/activemq-3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/activemq-3.1-src.zip!/activemq-3.1/modules/core/src/java" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
@@ -52,6 +54,11 @@
       </library>
     </orderEntry>
     <orderEntryProperties />
+  </component>
+  <component name="org.mevenide.idea.module.ModuleSettings">
+    <favoriteGoals>
+      <list size="0" />
+    </favoriteGoals>
   </component>
 </module>
 
