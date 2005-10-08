@@ -272,18 +272,25 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
             // persist the state
             File cont = new File(rootDir,"continuation");
+            ObjectOutputStream oos = null;
             try {
                 SerializationContext.set(engine,SerializationContext.Mode.CONTINUATION);
 
-                ObjectOutputStream oos = new ObjectOutputStream(
+                oos = new ObjectOutputStream(
                     new BufferedOutputStream(new FileOutputStream(cont)));
                 oos.writeObject(continuation);
                 continuation = null;
-                oos.close();
             } catch (IOException e) {
                 throw new ConversationDeath("failed to persist the state of the conversation "+cont, e);
             } finally {
                 SerializationContext.remove();
+                if(oos!=null) {
+                    try {
+                        oos.close();
+                    } catch (IOException e) {
+                        // ignore
+                    }
+                }
             }
 
             try { // this needs to be done outside the EngineImpl.SERIALIZATION_CONTEXT
