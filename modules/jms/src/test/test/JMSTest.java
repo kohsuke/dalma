@@ -2,7 +2,8 @@ package test;
 
 import dalma.endpoints.jms.JMSEndPoint;
 import dalma.endpoints.jms.MessageHandler;
-import dalma.test.Launcher;
+import dalma.test.WorkflowTestProgram;
+import junit.textui.TestRunner;
 import org.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.Message;
@@ -16,20 +17,24 @@ import java.util.UUID;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class JMSTest extends Launcher implements MessageHandler {
-    public JMSTest(String[] args) throws Exception {
-        super(args);
+public class JMSTest extends WorkflowTestProgram implements MessageHandler {
+    public JMSTest(String name) throws Exception {
+        super(name);
     }
 
     public static void main(String[] args) throws Exception {
-        new JMSTest(args);
+        TestRunner.run(JMSTest.class);
     }
 
     JMSEndPoint ep;
+    QueueSession qs;
+    QueueConnection qcon;
 
-    protected void setUpEndPoints() throws Exception {
-        QueueConnection qcon = new ActiveMQConnectionFactory("tcp://localhost:61616").createQueueConnection();
-        QueueSession qs = qcon.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        qcon = new ActiveMQConnectionFactory("tcp://localhost:61616").createQueueConnection();
+        qs = qcon.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
         ep = new JMSEndPoint(
             "jms",
             qs, qs.createQueue("dalma-out"), qs.createQueue("dalma-in"));
@@ -37,6 +42,23 @@ public class JMSTest extends Launcher implements MessageHandler {
         engine.addEndPoint(ep);
 
         qcon.start();
+    }
+
+    public void test() throws Throwable {
+        qs.createSender(qs.createQueue("dalma-in")).send(
+            qs.createTextMessage("hello")
+        );
+
+        // for now
+        Thread.sleep(3000);
+        engine.waitForCompletion();
+        engine.checkError();
+    }
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        qs.close();
+        qcon.close();
     }
 
     public void onNewMessage(Message message) throws Exception {
