@@ -68,7 +68,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
      * access need to be synchronized.
      * Keyed by their {@link ConversationImpl#id}.
      */
-    transient final Map<Integer,ConversationImpl> conversations = new HashMap<Integer,ConversationImpl>();
+    transient final Map<Integer,ConversationImpl> conversations = new Hashtable<Integer,ConversationImpl>();
 
     /**
      * All {@link EndPoint}s that bleong to this engine.
@@ -80,6 +80,11 @@ public final class EngineImpl implements EngineSPI, Serializable {
      * Records the currently running conversations.
      */
     static final ThreadLocal<ConversationImpl> currentConversations = new ThreadLocal<ConversationImpl>();
+
+    /**
+     * Signals when all the conversation completes.
+     */
+    transient final Object completionLock = new Object();
 
     public EngineImpl(File rootDir,ClassLoader classLoader,Executor executor) throws IOException {
         this.rootDir = rootDir;
@@ -304,17 +309,20 @@ public final class EngineImpl implements EngineSPI, Serializable {
         this.logger = logger;
     }
 
+    public void waitForCompletion() throws InterruptedException {
+        while(!conversations.isEmpty())
+            synchronized(completionLock) {
+                completionLock.wait();
+            }
+    }
+
     ConversationImpl getConversation(int id) {
-        synchronized(conversations) {
-            return conversations.get(id);
-        }
+        return conversations.get(id);
     }
 
     public ConversationImpl createConversation(Runnable target) throws IOException {
         ConversationImpl conv = new ConversationImpl(this,target);
-        synchronized(conversations) {
-            conversations.put(conv.id,conv);
-        }
+        conversations.put(conv.id,conv);
         queue(conv);
         return conv;
     }

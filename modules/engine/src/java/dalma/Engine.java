@@ -111,4 +111,9 @@ public interface Engine {
      *      if null, the engine will stop logging.
      */
     void setLogger(Logger logger);
+
+    /**
+     * Waits until all the conversation in the engine exits.
+     */
+    void waitForCompletion() throws InterruptedException ;
 }

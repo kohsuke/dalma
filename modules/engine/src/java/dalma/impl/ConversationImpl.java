@@ -326,6 +326,11 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         Map<Integer,ConversationImpl> convs = engine.conversations;
         synchronized(convs) {
             convs.remove(id);
+            if(convs.isEmpty()) {
+                synchronized(engine.completionLock) {
+                    engine.completionLock.notifyAll();
+                }
+            }
         }
 
         if(state==ConversationState.SUSPENDED) {
