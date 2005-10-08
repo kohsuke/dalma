@@ -42,10 +42,10 @@ public class JMSTest extends WorkflowTestProgram implements MessageHandler {
         Queue in = qs.createQueue("dalma-in");
 
         ep1 = new JMSEndPoint("jms1", qs, out, in);
-        ep1.setNewMessageHandler(this);
         engine.addEndPoint(ep1);
 
         ep2 = new JMSEndPoint("jms2", qs, in, out);
+        ep2.setNewMessageHandler(this);
         engine.addEndPoint(ep2);
 
         qcon.start();
@@ -88,11 +88,14 @@ public class JMSTest extends WorkflowTestProgram implements MessageHandler {
             try {
                 System.out.println("A: Hello");
                 TextMessage msg = ep.createMessage(TextMessage.class);
-                msg.setText("Hello");
+                msg.setText("A:Hello");
                 msg = (TextMessage)ep.waitForReply(msg);
+
+                System.out.println("A: Got "+msg.getText());
+                assertTrue(msg.getText().contains("B:"));
                 System.out.println("A: Bye");
                 msg = ep.createReplyMessage(TextMessage.class,msg);
-                msg.setText("bye");
+                msg.setText("A: Bye");
                 ep.send(msg);
             } catch (JMSException e) {
                 throw new Error(e);
@@ -107,25 +110,27 @@ public class JMSTest extends WorkflowTestProgram implements MessageHandler {
         private final JMSEndPoint ep;
 
         // initial msg
-        private Message msg;
+        private TextMessage msg;
 
-        public Bob(JMSEndPoint ep, Message email) {
+        public Bob(JMSEndPoint ep, TextMessage email) {
             this.ep = ep;
             this.msg = email;
         }
 
         public void run() {
             try {
-                UUID uuid = UUID.randomUUID();
+                TextMessage msg = this.msg;
 
-                System.out.println("B: started "+uuid);
-                Message msg = this.msg;
+                System.out.println("B: Got "+msg.getText());
+                assertTrue(msg.getText().contains("A:"));
 
                 TextMessage reply = ep.createReplyMessage(TextMessage.class,msg);
-                reply.setText("Hello! "+uuid);
-
+                reply.setText("B: Hello back");
                 System.out.println("B: Hello back");
-                msg = ep.waitForReply(reply);
+                msg = (TextMessage)ep.waitForReply(reply);
+
+                System.out.println("B: Got "+msg.getText());
+                assertTrue(msg.getText().contains("A:"));
                 System.out.println("B: dying");
             } catch (Exception e) {
                 throw new Error(e);
