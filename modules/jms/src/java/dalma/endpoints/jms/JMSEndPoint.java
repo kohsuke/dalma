@@ -78,7 +78,7 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
     protected String send(Message msg) {
         try {
             sender.send(msg);
-            return msg.getJMSCorrelationID();
+            return msg.getJMSMessageID();
         } catch (JMSException e) {
             throw new QueueException(e);
         }
