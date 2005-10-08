@@ -3,28 +3,26 @@ package dalma.impl;
 import dalma.Conversation;
 import dalma.EndPoint;
 import dalma.Executor;
-import dalma.spi.EngineSPI;
 import dalma.spi.EndPointFactory;
+import dalma.spi.EngineSPI;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Hashtable;
 import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Queue;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
-import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.text.ParseException;
-import java.net.URL;
+import java.util.logging.Logger;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -177,21 +175,27 @@ public final class EngineImpl implements EngineSPI, Serializable {
                 ConversationImpl old = currentConversations.get();
                 currentConversations.set(conv);
                 try {
-                    conv.run();
-                } catch( Error t ) {
-                    // if the conversation stops unexpectedly, kill that conversation
-                    // because we won't be able to resume it.
+                    try {
+                        conv.run();
+                    } catch( Error t ) {
+                        // if the conversation stops unexpectedly, kill that conversation
+                        // because we won't be able to resume it.
+                        errors.add(t);
+                        conv.remove();
+                    } catch( RuntimeException e ) {
+                        // ditto
+                        errors.add(e);
+                        conv.remove();
+                    } finally {
+                        if(old==null)
+                            currentConversations.remove();
+                        else
+                            currentConversations.set(old);
+                    }
+                } catch(Throwable t) {
+                    // even if the error recovery process fails,
+                    // don't let the worker thread die.
                     errors.add(t);
-                    conv.remove();
-                } catch( RuntimeException e ) {
-                    // ditto
-                    errors.add(e);
-                    conv.remove();
-                } finally {
-                    if(old==null)
-                        currentConversations.remove();
-                    else
-                        currentConversations.set(old);
                 }
             }
         });
