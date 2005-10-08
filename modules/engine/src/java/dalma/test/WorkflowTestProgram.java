@@ -1,17 +1,15 @@
 package dalma.test;
 
-import dalma.Engine;
 import dalma.Conversation;
+import dalma.Engine;
 import dalma.helpers.ThreadPoolExecutor;
 import dalma.impl.EngineImpl;
 import dalma.impl.Util;
 import junit.framework.TestCase;
-import org.apache.commons.javaflow.ContinuationClassLoader;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.FileInputStream;
-import java.net.URLClassLoader;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Properties;
 
@@ -31,10 +29,7 @@ public abstract class WorkflowTestProgram extends TestCase {
 
     protected void setUp() throws Exception {
         // creates a new class loader that loads test classes with javaflow enhancements
-        URLClassLoader baseLoader = (URLClassLoader)Launcher.class.getClassLoader();
-        classLoader = new ContinuationClassLoader(
-            baseLoader.getURLs(),
-            new MaskingClassLoader(baseLoader));
+        classLoader = new TestClassLoader(Launcher.class.getClassLoader());
 
         root = File.createTempFile("dalma","test-case");
         root.delete();
