@@ -47,6 +47,11 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
         } catch (JMSException e) {
             throw new Error(e); // what else can we do?
         }
+        try {
+            sender.close();
+        } catch (JMSException e) {
+            throw new Error(e); // what else can we do?
+        }
     }
 
     /**
