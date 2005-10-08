@@ -10,8 +10,6 @@ import java.text.ParseException;
 /**
  * Workflow engine.
  *
- * TODO: think about the reconstruction of this. how should it work?
- *
  * @author Kohsuke Kawaguchi
  */
 public interface Engine {
