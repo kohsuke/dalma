@@ -144,6 +144,7 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
             MultiplexedEndPoint<Key,Msg> endPoint = getEndPoint();
             try {
                 key = endPoint.send(outgoing);
+                assert key!=null;
                 endPoint.register(this);
             } finally {
                 outgoing = null;
