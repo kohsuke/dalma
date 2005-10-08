@@ -48,8 +48,7 @@ public class EmailTest extends WorkflowTestProgram {
 
     public void test() throws Throwable {
         createConversation(Alice.class,ep2,ep1.getAddress());
-        // TODO: wait for the completion of the conversation
-        Thread.currentThread().suspend();
+        engine.waitForCompletion();
     }
 
     public static final class Alice implements Runnable, Serializable {
