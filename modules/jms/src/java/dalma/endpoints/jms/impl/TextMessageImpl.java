@@ -9,15 +9,21 @@ import java.io.Serializable;
  *
  * @author Kohsuke Kawaguchi
  */
-public class TextMessageImpl extends MessageImpl implements TextMessage {
+public class TextMessageImpl extends MessageImpl<TextMessage> implements TextMessage {
     private String text;
 
     public TextMessageImpl() {
     }
 
-    public TextMessageImpl(TextMessage s) throws JMSException {
-        super(s);
+    public TextMessageImpl wrap(TextMessage s) throws JMSException {
+        super.wrap(s);
         this.text = s.getText();
+        return this;
+    }
+
+    public void writeTo(TextMessage d) throws JMSException {
+        super.writeTo(d);
+        d.setText(text);
     }
 
     public void clearBody() throws JMSException {

@@ -13,19 +13,29 @@ import java.util.Map;
  *
  * @author Kohsuke Kawaguchi
  */
-public class MapMessageImpl extends MessageImpl implements MapMessage {
+public class MapMessageImpl extends MessageImpl<MapMessage> implements MapMessage {
 
     private Map<String,Object> data = new HashMap<String,Object>();
 
     public MapMessageImpl() {
     }
 
-    public MapMessageImpl(MapMessage s) throws JMSException {
-        super(s);
+    public MapMessageImpl wrap(MapMessage s) throws JMSException {
+        super.wrap(s);
         Enumeration e = s.getMapNames();
         while(e.hasMoreElements()) {
-            String key = (String) e.nextElement();;
+            String key = (String) e.nextElement();
             data.put(key,s.getObject(key));
+        }
+        return this;
+    }
+
+    public void writeTo(MapMessage d) throws JMSException {
+        super.writeTo(d);
+        Enumeration e = getMapNames();
+        while(e.hasMoreElements()) {
+            String key = (String)e.nextElement();
+            d.setObject(key,getObject(key));
         }
     }
 

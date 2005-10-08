@@ -21,4 +21,11 @@ final class Buffer extends ByteArrayOutputStream {
     public InputStream newInputStream() {
         return new ByteArrayInputStream(buf,0,count);
     }
+
+    public byte[] getBuffer() {
+        return buf;
+    }
+    public int size() {
+        return count;
+    }
 }

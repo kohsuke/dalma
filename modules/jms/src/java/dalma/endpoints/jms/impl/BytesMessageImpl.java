@@ -4,6 +4,7 @@ import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MessageEOFException;
 import javax.jms.MessageFormatException;
+import javax.jms.Message;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -16,7 +17,7 @@ import java.io.Serializable;
  * @author Kohsuke Kawaguchi
  * @ThirdParty this class contains code released under ASL.
  */
-public class BytesMessageImpl extends MessageImpl implements BytesMessage {
+public class BytesMessageImpl extends MessageImpl<BytesMessage> implements BytesMessage {
     private DataOutputStream dataOut;
     private Buffer buffer;
     private DataInputStream dataIn;
@@ -25,14 +26,26 @@ public class BytesMessageImpl extends MessageImpl implements BytesMessage {
     public BytesMessageImpl() {
     }
 
-    public BytesMessageImpl(BytesMessage s) throws JMSException {
-        super(s);
+    public BytesMessageImpl wrap(BytesMessage s) throws JMSException {
+        super.wrap(s);
         long len = s.getBodyLength();
         if(len>0) {
             byte[] data = new byte[(int)len];
             s.readBytes(data);
             buffer = new Buffer(data);
         }
+        return this;
+    }
+
+    public void writeTo(BytesMessage d) throws JMSException {
+        super.writeTo(d);
+        if(dataOut!=null)
+            try {
+                dataOut.flush();
+            } catch (IOException e) {
+                throw new Error(e); // impossible
+            }
+        d.writeBytes(buffer.getBuffer(),0,buffer.size());
     }
 
     public void clearBody() throws JMSException {

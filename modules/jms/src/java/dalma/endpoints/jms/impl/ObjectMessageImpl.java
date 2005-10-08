@@ -1,8 +1,7 @@
 package dalma.endpoints.jms.impl;
 
-import javax.jms.ObjectMessage;
-import javax.jms.Message;
 import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
 import java.io.Serializable;
 
 /**
@@ -10,15 +9,21 @@ import java.io.Serializable;
  *
  * @author Kohsuke Kawaguchi
  */
-public class ObjectMessageImpl extends MessageImpl implements ObjectMessage {
+public class ObjectMessageImpl extends MessageImpl<ObjectMessage> implements ObjectMessage {
     private Serializable object;
 
     public ObjectMessageImpl() {
     }
 
-    public ObjectMessageImpl(ObjectMessage s) throws JMSException {
-        super(s);
+    public ObjectMessageImpl wrap(ObjectMessage s) throws JMSException {
+        super.wrap(s);
         object = s.getObject();
+        return this;
+    }
+
+    public void writeTo(ObjectMessage d) throws JMSException {
+        super.writeTo(d);
+        d.setObject(object);
     }
 
     public void clearBody() throws JMSException {

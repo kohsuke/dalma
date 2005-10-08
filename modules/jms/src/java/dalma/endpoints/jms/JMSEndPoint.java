@@ -1,6 +1,7 @@
 package dalma.endpoints.jms;
 
 import dalma.EndPoint;
+import dalma.ReplyIterator;
 import dalma.endpoints.jms.impl.BytesMessageImpl;
 import dalma.endpoints.jms.impl.ObjectMessageImpl;
 import dalma.endpoints.jms.impl.StreamMessageImpl;
@@ -21,6 +22,8 @@ import javax.jms.QueueSession;
 import javax.jms.StreamMessage;
 import javax.jms.TextMessage;
 import java.util.logging.Level;
+import java.util.Date;
+import java.util.concurrent.TimeoutException;
 
 /**
  * {@link EndPoint} that connects to two JMS queues.
@@ -89,9 +92,12 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
         }
     }
 
-    protected String send(Message msg) {
+    /**
+     * Sends a message and returns immediately.
+     */
+    public String send(Message msg) {
         try {
-            sender.send(msg);
+            sender.send(unwrap(msg));
             return msg.getJMSMessageID();
         } catch (JMSException e) {
             throw new QueueException(e);
@@ -128,35 +134,67 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
      * @param type
      *      one of 5 {@link Message}-derived types defined in JMS.
      */
-    public <T extends Message> T createMessage(Class<T> type) throws JMSException {
+    public <T extends Message> T createMessage(Class<T> type) {
         if(type==BytesMessage.class)
-            return type.cast(session.createBytesMessage());
+            return type.cast(new BytesMessageImpl());
         if(type==MapMessage.class)
-            return type.cast(session.createMapMessage());
+            return type.cast(new MapMessageImpl());
         if(type==ObjectMessage.class)
-            return type.cast(session.createObjectMessage());
+            return type.cast(new ObjectMessageImpl());
         if(type==StreamMessage.class)
-            return type.cast(session.createStreamMessage());
+            return type.cast(new StreamMessageImpl());
         if(type==TextMessage.class)
-            return type.cast(session.createTextMessage());
+            return type.cast(new TextMessageImpl());
         throw new IllegalArgumentException();
     }
 
     /**
-     * Wraps the provider-specific JMS Message object into our serializable wrapper.
+     * Wraps a provider-specific JMS Message object into our serializable wrapper.
      */
     private <T extends Message> T wrap(T msg) throws JMSException {
         if(msg instanceof BytesMessage)
-            return (T)new BytesMessageImpl((BytesMessage)msg);
+            return (T)new BytesMessageImpl().wrap((BytesMessage)msg);
         if(msg instanceof MapMessage)
-            return (T)new MapMessageImpl((MapMessage)msg);
+            return (T)new MapMessageImpl().wrap((MapMessage)msg);
         if(msg instanceof ObjectMessage)
-            return (T)new ObjectMessageImpl((ObjectMessage)msg);
+            return (T)new ObjectMessageImpl().wrap((ObjectMessage)msg);
         if(msg instanceof StreamMessage)
-            return (T)new StreamMessageImpl((StreamMessage)msg);
+            return (T)new StreamMessageImpl().wrap((StreamMessage)msg);
         if(msg instanceof TextMessage)
-            return (T)new TextMessageImpl((TextMessage)msg);
+            return (T)new TextMessageImpl().wrap((TextMessage)msg);
         throw new IllegalArgumentException();
+    }
+
+    /**
+     * Unwraps our serializable wrapper into a provider-specific JMS Message.
+     */
+    private <T extends Message> T unwrap(T msg) throws JMSException {
+        if(msg instanceof BytesMessageImpl) {
+            BytesMessage r = session.createBytesMessage();
+            ((BytesMessageImpl)msg).writeTo(r);
+            return (T)r;
+        }
+        if(msg instanceof MapMessageImpl) {
+            MapMessage r = session.createMapMessage();
+            ((MapMessageImpl)msg).writeTo(r);
+            return (T)r;
+        }
+        if(msg instanceof ObjectMessage) {
+            ObjectMessage r = session.createObjectMessage();
+            ((ObjectMessageImpl)msg).writeTo(r);
+            return (T)r;
+        }
+        if(msg instanceof StreamMessage) {
+            StreamMessage r = session.createStreamMessage();
+            ((StreamMessageImpl)msg).writeTo(r);
+            return (T)r;
+        }
+        if(msg instanceof TextMessage) {
+            TextMessage r = session.createTextMessage();
+            ((TextMessageImpl)msg).writeTo(r);
+            return (T)r;
+        }
+        return msg;
     }
 
     /**
@@ -168,10 +206,15 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
         return reply;
     }
 
-    /**
-     * Sends/publishes a JMS message and blocks until a reply is received.
-     */
-    public Message waitForReply(Message message) {
-        return super.waitForReply(message);
+    public Message waitForReply(Message msg) {
+        return super.waitForReply(msg);
+    }
+
+    public Message waitForReply(Message msg, Date timeout) throws TimeoutException {
+        return super.waitForReply(msg, timeout);
+    }
+
+    public ReplyIterator<Message> waitForMultipleReplies(Message outgoing, Date expirationDate) {
+        return super.waitForMultipleReplies(outgoing, expirationDate);
     }
 }

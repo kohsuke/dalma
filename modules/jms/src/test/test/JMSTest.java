@@ -11,6 +11,8 @@ import javax.jms.QueueConnection;
 import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.jms.Queue;
+import javax.jms.JMSException;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -26,7 +28,8 @@ public class JMSTest extends WorkflowTestProgram implements MessageHandler {
         TestRunner.run(JMSTest.class);
     }
 
-    JMSEndPoint ep;
+    JMSEndPoint ep1;
+    JMSEndPoint ep2;
     QueueSession qs;
     QueueConnection qcon;
 
@@ -35,19 +38,21 @@ public class JMSTest extends WorkflowTestProgram implements MessageHandler {
 
         qcon = new ActiveMQConnectionFactory("tcp://localhost:61616").createQueueConnection();
         qs = qcon.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-        ep = new JMSEndPoint(
-            "jms",
-            qs, qs.createQueue("dalma-out"), qs.createQueue("dalma-in"));
-        ep.setNewMessageHandler(this);
-        engine.addEndPoint(ep);
+        Queue out = qs.createQueue("dalma-out");
+        Queue in = qs.createQueue("dalma-in");
+
+        ep1 = new JMSEndPoint("jms1", qs, out, in);
+        ep1.setNewMessageHandler(this);
+        engine.addEndPoint(ep1);
+
+        ep2 = new JMSEndPoint("jms2", qs, in, out);
+        engine.addEndPoint(ep2);
 
         qcon.start();
     }
 
     public void test() throws Throwable {
-        qs.createSender(qs.createQueue("dalma-in")).send(
-            qs.createTextMessage("hello")
-        );
+        createConversation(Alice.class,ep1);
 
         // for now
         Thread.sleep(3000);
@@ -66,16 +71,45 @@ public class JMSTest extends WorkflowTestProgram implements MessageHandler {
 
     public void onNewMessage(Message message) throws Exception {
         System.out.println("new message");
-        createConversation(ConversationImpl.class,ep,message);
+        createConversation(Bob.class,ep2,message);
     }
 
-    public static final class ConversationImpl implements Runnable, Serializable {
+    /**
+     * Activating side.
+     */
+    public static final class Alice implements Runnable, Serializable {
+        private final JMSEndPoint ep;
+
+        public Alice(JMSEndPoint ep) {
+            this.ep = ep;
+        }
+
+        public void run() {
+            try {
+                System.out.println("A: Hello");
+                TextMessage msg = ep.createMessage(TextMessage.class);
+                msg.setText("Hello");
+                msg = (TextMessage)ep.waitForReply(msg);
+                System.out.println("A: Bye");
+                msg = ep.createReplyMessage(TextMessage.class,msg);
+                msg.setText("bye");
+                ep.send(msg);
+            } catch (JMSException e) {
+                throw new Error(e);
+            }
+        }
+    }
+
+    /**
+     * Passive side.
+     */
+    public static final class Bob implements Runnable, Serializable {
         private final JMSEndPoint ep;
 
         // initial msg
         private Message msg;
 
-        public ConversationImpl(JMSEndPoint ep, Message email) {
+        public Bob(JMSEndPoint ep, Message email) {
             this.ep = ep;
             this.msg = email;
         }
@@ -84,19 +118,17 @@ public class JMSTest extends WorkflowTestProgram implements MessageHandler {
             try {
                 UUID uuid = UUID.randomUUID();
 
-                System.out.println("started "+uuid);
+                System.out.println("B: started "+uuid);
                 Message msg = this.msg;
 
-                while(true) {
-                    TextMessage reply = ep.createReplyMessage(TextMessage.class,msg);
-                    reply.setText("Hello! "+uuid);
+                TextMessage reply = ep.createReplyMessage(TextMessage.class,msg);
+                reply.setText("Hello! "+uuid);
 
-                    System.out.println("sent a reply");
-                    msg = ep.waitForReply(msg);
-                    System.out.println("got a reply");
-                }
+                System.out.println("B: Hello back");
+                msg = ep.waitForReply(reply);
+                System.out.println("B: dying");
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new Error(e);
             }
         }
         private static final long serialVersionUID = 1L;

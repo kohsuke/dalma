@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @ThirdParty this class contains code released under ASL.
  * @author Kohsuke Kawaguchi
  */
-abstract class MessageImpl implements Message, Serializable {
+abstract class MessageImpl<T extends Message> implements Message, Serializable {
     String jmsMessageId;
     long jmsTimestamp;
     private String jmsCorrelationID;
@@ -36,7 +36,7 @@ abstract class MessageImpl implements Message, Serializable {
 
     protected MessageImpl() {}
 
-    protected MessageImpl(Message s) throws JMSException {
+    protected MessageImpl wrap(T s) throws JMSException {
         this.original = s;
         jmsMessageId        = s.getJMSMessageID();
         jmsTimestamp        = s.getJMSTimestamp();
@@ -54,6 +54,28 @@ abstract class MessageImpl implements Message, Serializable {
             String key = (String) e.nextElement();
             properties.put(key,s.getObjectProperty(key));
         }
+        clearBody();
+        return this;
+    }
+
+    protected void writeTo(T d) throws JMSException {
+        d.setJMSMessageID(jmsMessageId);
+        d.setJMSTimestamp(jmsTimestamp);
+        d.setJMSCorrelationID(jmsCorrelationID);
+        d.setJMSReplyTo(jmsReplyTo);
+        d.setJMSDestination(jmsDestination);
+        d.setJMSDeliveryMode(jmsDeliveryMode);
+        d.setJMSRedelivered(jmsRedelivered);
+        d.setJMSType(jmsType);
+        d.setJMSExpiration(jmsExpiration);
+        d.setJMSPriority(jmsPriority);
+        d.clearProperties();
+        Enumeration e = getPropertyNames();
+        while(e.hasMoreElements()) {
+            String key = (String) e.nextElement();
+            d.setObjectProperty(key,getObjectProperty(key));
+        }
+        d.clearBody();
     }
 
     public String getJMSMessageID() throws JMSException {

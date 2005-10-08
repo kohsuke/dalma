@@ -6,6 +6,7 @@ import javax.jms.MessageFormatException;
 import javax.jms.MessageNotReadableException;
 import javax.jms.MessageNotWriteableException;
 import javax.jms.StreamMessage;
+import javax.jms.Message;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -15,7 +16,7 @@ import java.io.IOException;
  * @ThirdParty this class contains code released under ASL.
  * @author Kohsuke Kawaguchi
  */
-public class StreamMessageImpl extends MessageImpl implements StreamMessage {
+public class StreamMessageImpl extends MessageImpl<StreamMessage> implements StreamMessage {
     /**
      * A {@link StreamMessage} can be in two modes.
      * read-only/write-only
@@ -30,8 +31,8 @@ public class StreamMessageImpl extends MessageImpl implements StreamMessage {
     public StreamMessageImpl() {
     }
 
-    public StreamMessageImpl(StreamMessage s) throws JMSException {
-        super(s);
+    public StreamMessageImpl wrap(StreamMessage s) throws JMSException {
+        super.wrap(s);
         try {
             while(true) {
                 writeObject(s.readObject());
@@ -39,6 +40,18 @@ public class StreamMessageImpl extends MessageImpl implements StreamMessage {
         } catch (MessageEOFException e) {
             // reached EOF
             reset();
+        }
+        return this;
+    }
+
+    public void writeTo(StreamMessage d) throws JMSException {
+        super.writeTo(d);
+        try {
+            while(true) {
+                d.writeObject(readObject());
+            }
+        } catch( MessageEOFException e) {
+            // EOF
         }
     }
 
