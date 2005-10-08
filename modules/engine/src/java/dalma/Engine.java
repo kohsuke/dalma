@@ -115,5 +115,24 @@ public interface Engine {
     /**
      * Waits until all the conversation in the engine exits.
      */
-    void waitForCompletion() throws InterruptedException ;
+    void waitForCompletion() throws InterruptedException;
+
+    /**
+     * Checks if conversations in the engine had any fatal error.
+     *
+     * <p>
+     * If a conversation in this engine dies by throwing an {@link Error}
+     * or {@link RuntimeException}, the engine puts such exception in
+     * the 'error queue' and kills that conversation.
+     *
+     * <p>
+     * Applications can invoke this method to check the error queue.
+     * If there's any error in the queue, this method throws it as
+     * an {@link Error} or {@link RuntimeException}, respectively.
+     *
+     * <p>
+     * If the error queue is empty, this method simply returns without
+     * blocking.
+     */
+    void checkError();
 }

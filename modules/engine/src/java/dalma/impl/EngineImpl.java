@@ -18,6 +18,9 @@ import java.util.Map;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Queue;
+import java.util.List;
+import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.text.ParseException;
@@ -85,6 +88,11 @@ public final class EngineImpl implements EngineSPI, Serializable {
      * Signals when all the conversation completes.
      */
     transient final Object completionLock = new Object();
+
+    /**
+     * Uncaught exceptions that are thrown by the conversations.
+     */
+    transient final List<Throwable> errors = new Vector<Throwable>();
 
     public EngineImpl(File rootDir,ClassLoader classLoader,Executor executor) throws IOException {
         this.rootDir = rootDir;
@@ -170,10 +178,14 @@ public final class EngineImpl implements EngineSPI, Serializable {
                 currentConversations.set(conv);
                 try {
                     conv.run();
-                } catch( Throwable t ) {
+                } catch( Error t ) {
                     // if the conversation stops unexpectedly, kill that conversation
                     // because we won't be able to resume it.
-                    t.printStackTrace();    // TODO: how should we report this?
+                    errors.add(t);
+                    conv.remove();
+                } catch( RuntimeException e ) {
+                    // ditto
+                    errors.add(e);
                     conv.remove();
                 } finally {
                     if(old==null)
@@ -314,6 +326,16 @@ public final class EngineImpl implements EngineSPI, Serializable {
             synchronized(completionLock) {
                 completionLock.wait();
             }
+    }
+
+    public void checkError() {
+        if(!errors.isEmpty()) {
+            Throwable t = errors.remove(0);
+            if(t instanceof Error)
+                throw (Error)t;
+            else
+                throw (RuntimeException)t;
+        }
     }
 
     ConversationImpl getConversation(int id) {
