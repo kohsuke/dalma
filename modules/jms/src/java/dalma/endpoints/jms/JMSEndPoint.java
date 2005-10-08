@@ -1,6 +1,11 @@
 package dalma.endpoints.jms;
 
 import dalma.EndPoint;
+import dalma.endpoints.jms.impl.BytesMessageImpl;
+import dalma.endpoints.jms.impl.ObjectMessageImpl;
+import dalma.endpoints.jms.impl.StreamMessageImpl;
+import dalma.endpoints.jms.impl.TextMessageImpl;
+import dalma.endpoints.jms.impl.MapMessageImpl;
 import dalma.spi.port.MultiplexedEndPoint;
 
 import javax.jms.BytesMessage;
@@ -58,7 +63,11 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
      * Invoked by JMS.
      */
     public void onMessage(Message message) {
-        super.handleMessage(message);
+        try {
+            super.handleMessage(wrap(message));
+        } catch (JMSException e) {
+            logger.log(Level.WARNING,"JMSEndPoint encountered an JMS error",e);
+        }
     }
 
     protected String getKey(Message msg) {
@@ -130,6 +139,23 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
             return type.cast(session.createStreamMessage());
         if(type==TextMessage.class)
             return type.cast(session.createTextMessage());
+        throw new IllegalArgumentException();
+    }
+
+    /**
+     * Wraps the provider-specific JMS Message object into our serializable wrapper.
+     */
+    private <T extends Message> T wrap(T msg) throws JMSException {
+        if(msg instanceof BytesMessage)
+            return (T)new BytesMessageImpl((BytesMessage)msg);
+        if(msg instanceof MapMessage)
+            return (T)new MapMessageImpl((MapMessage)msg);
+        if(msg instanceof ObjectMessage)
+            return (T)new ObjectMessageImpl((ObjectMessage)msg);
+        if(msg instanceof StreamMessage)
+            return (T)new StreamMessageImpl((StreamMessage)msg);
+        if(msg instanceof TextMessage)
+            return (T)new TextMessageImpl((TextMessage)msg);
         throw new IllegalArgumentException();
     }
 
