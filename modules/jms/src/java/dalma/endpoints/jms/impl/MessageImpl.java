@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @ThirdParty this class contains code released under ASL.
  * @author Kohsuke Kawaguchi
  */
-abstract class MessageImpl<T extends Message> implements Message, Serializable {
+public abstract class MessageImpl<T extends Message> implements Message, Serializable {
     String jmsMessageId;
     long jmsTimestamp;
     private String jmsCorrelationID;
@@ -36,7 +36,7 @@ abstract class MessageImpl<T extends Message> implements Message, Serializable {
 
     protected MessageImpl() {}
 
-    protected MessageImpl wrap(T s) throws JMSException {
+    public MessageImpl wrap(T s) throws JMSException {
         this.original = s;
         jmsMessageId        = s.getJMSMessageID();
         jmsTimestamp        = s.getJMSTimestamp();
