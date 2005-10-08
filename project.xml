@@ -54,12 +54,23 @@
       <version>trunk</version>
     </dependency>
     <dependency>
+      <groupId>bcel</groupId>
+      <artifactId>bcel</artifactId>
+      <version>20050813</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
       <id>xpp3</id>
       <version>1.1.3.3</version>
     </dependency>
     <dependency>
       <id>xstream</id>
       <version>1.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.0</version>
     </dependency>
 
     <!-- test dependency -->
