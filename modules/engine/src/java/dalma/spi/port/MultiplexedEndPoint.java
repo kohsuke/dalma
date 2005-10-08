@@ -32,6 +32,11 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
 
     /**
      * Sends out an message and waits for a single reply.
+     *
+     * <p>
+     * This method blocks the conversation indefinitely until a reply is received.
+     *
+     * @return  always non-null.
      */
     protected Msg waitForReply(Msg msg) {
         return ConversationSPI.getCurrentConversation().suspend(new OneTimeDock<Key,Msg>(this,msg));
@@ -39,6 +44,8 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
 
     /**
      * Sends out an message and waits for a single reply with timeout.
+     *
+     * TODO:javadoc
      */
     protected Msg waitForReply(Msg msg, Date timeout) throws TimeoutException {
         return ConversationSPI.getCurrentConversation().suspend(
@@ -47,6 +54,8 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
 
     /**
      * Sends out an message and waits for multiple replies.
+     *
+     * TODO:javadoc
      */
     protected ReplyIterator<Msg> waitForMultipleReplies(Msg outgoing, Date expirationDate ) {
         return new ReplyIteratorImpl<Key,Msg>(this,outgoing,expirationDate);
