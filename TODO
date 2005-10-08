@@ -14,6 +14,8 @@ TODO
     - consider integrating with Exchange Server
     - consider sendmail integration
 
+    - is it possible to share the same transport session to send multiple e-mails?
+
 Notes
 =====
 - MimeMessage is not serializable
