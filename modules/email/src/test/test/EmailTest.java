@@ -3,6 +3,7 @@ package test;
 import dalma.ReplyIterator;
 import dalma.endpoints.email.EmailEndPoint;
 import dalma.endpoints.email.NewMailHandler;
+import dalma.endpoints.email.MimeMessageEx;
 import dalma.test.WorkflowTestProgram;
 import junit.textui.TestRunner;
 
@@ -33,7 +34,7 @@ public class EmailTest extends WorkflowTestProgram {
         super.setUp();
 
         // passive side
-        ep1 = (EmailEndPoint) engine.addEndPoint("email",getProperty("email.endpoint1"));
+        ep1 = (EmailEndPoint) engine.addEndPoint("email1",getProperty("email.endpoint1"));
         ep1.setNewMailHandler(new NewMailHandler() {
             public void onNewMail(MimeMessage mail) throws Exception {
                 System.out.println("new e-mail");
@@ -42,12 +43,13 @@ public class EmailTest extends WorkflowTestProgram {
         });
 
         // active side
-        ep2 = (EmailEndPoint) engine.addEndPoint("email",getProperty("email.endpoint2"));
+        ep2 = (EmailEndPoint) engine.addEndPoint("email2",getProperty("email.endpoint2"));
     }
 
-    @Override
-    protected void runTest() throws Throwable {
-        createConversation(Alice.class,ep2);
+    public void test() throws Throwable {
+        createConversation(Alice.class,ep2,ep1.getAddress());
+        // TODO: wait for the completion of the conversation
+        Thread.currentThread().suspend();
     }
 
     public static final class Alice implements Runnable, Serializable {
@@ -63,24 +65,31 @@ public class EmailTest extends WorkflowTestProgram {
             try {
                 UUID uuid = UUID.randomUUID();
 
+                System.out.println("A: initiating conversation. UUID="+uuid);
+
                 // ep2 -> ep1 to iniciate a conversation
-                MimeMessage msg = new MimeMessage(ep.getSession());
+                MimeMessage msg = new MimeMessageEx(ep.getSession());
                 msg.setRecipient(Message.RecipientType.TO,adrs);
                 msg.setSubject("new conv");
                 msg.setText(uuid.toString());
                 msg = ep.waitForReply(msg);
+                System.out.println("A: got a reply");
 
                 // send multiple replies
                 for( int i=0; i<10; i++ ) {
                     MimeMessage reply = (MimeMessage) msg.reply(false);
                     reply.setText(uuid.toString());
+                    System.out.println("A: sending a reply");
                     ep.send(reply);
                 }
 
                 // and finally say bye
+                System.out.println("A: sending bye");
                 MimeMessage reply = (MimeMessage) msg.reply(false);
                 reply.setText("bye");
                 ep.send(reply);
+
+                System.out.println("A: exiting");
             } catch (MessagingException e) {
                 e.printStackTrace();
             }
@@ -102,8 +111,8 @@ public class EmailTest extends WorkflowTestProgram {
             try {
                 MimeMessage msg = email;
 
-                UUID uuid = UUID.fromString(msg.getContent().toString());
-                System.out.println("started "+uuid);
+                UUID uuid = UUID.fromString(msg.getContent().toString().trim());
+                System.out.println("B: started "+uuid);
 
 
                 msg = (MimeMessage) msg.reply(false);
@@ -116,12 +125,12 @@ public class EmailTest extends WorkflowTestProgram {
                         break;
 
                     // make sure that the UUID matches
-                    assertEquals(uuid,UUID.fromString(msg.getContent().toString()));
+                    assertEquals(uuid,UUID.fromString(in.getContent().toString().trim()));
 
-                    System.out.println("got a reply.");
+                    System.out.println("B: got a reply.");
                 }
 
-                System.out.println("done");
+                System.out.println("B: done");
             } catch (Exception e) {
                 e.printStackTrace();
             }
