@@ -7,6 +7,7 @@ import dalma.endpoints.jms.impl.ObjectMessageImpl;
 import dalma.endpoints.jms.impl.StreamMessageImpl;
 import dalma.endpoints.jms.impl.TextMessageImpl;
 import dalma.endpoints.jms.impl.MapMessageImpl;
+import dalma.endpoints.jms.impl.MessageImpl;
 import dalma.spi.port.MultiplexedEndPoint;
 
 import javax.jms.BytesMessage;
@@ -97,8 +98,14 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
      */
     public String send(Message msg) {
         try {
-            sender.send(unwrap(msg));
-            return msg.getJMSMessageID();
+            Message providerMsg = unwrap(msg);
+            sender.send(providerMsg);
+            if(msg instanceof MessageImpl) {
+                // JMS sets various properties as a result of the send operation
+                // propagate them back to the message
+                ((MessageImpl)msg).wrap(providerMsg);
+            }
+            return providerMsg.getJMSMessageID();
         } catch (JMSException e) {
             throw new QueueException(e);
         }
