@@ -30,7 +30,7 @@
   </define:taglib>
 
 
-  <goal name="dist"
+  <goal name="dist:build"
         description="creates a distribution image">
     <!-- build all modules -->
     <!--j:set var="goal" value="jar:install"/>
@@ -85,9 +85,13 @@
       <dalma:copy-deps pom="${p}" out="${moduleOut}" kind="endpoint" />
     </j:forEach>
 
+    <!-- build archive files -->
     <j:set var="prefix" value="${pom.artifactId}-${pom.currentVersion}" />
-    <a:zip file="target/${prefix}.zip">
+    <a:zip zipfile="${maven.dist.dir}/${maven.final.name}.zip">
       <a:zipfileset prefix="${prefix}" dir="${out}" />
     </a:zip>
+    <a:tar tarfile="${maven.dist.dir}/${maven.final.name}.tar.gz" compression="gzip">
+      <a:tarfileset prefix="${prefix}" dir="${out}" />
+    </a:tar>
   </goal>
 </project>
