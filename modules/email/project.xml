@@ -21,7 +21,7 @@
       <version>1.3.3</version>
       <properties>
         <jar.manifest.classpath>true</jar.manifest.classpath>
-        <dist>yes</dist>
+        <dist>endpoint</dist>
       </properties>
     </dependency>
     <dependency>
@@ -29,7 +29,7 @@
       <version>1.0.3</version>
       <properties>
         <jar.manifest.classpath>true</jar.manifest.classpath>
-        <dist>yes</dist>
+        <dist>endpoint</dist>
       </properties>
     </dependency>
   </dependencies>

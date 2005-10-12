@@ -1,7 +1,34 @@
-<project default="default" xmlns:j="jelly:core" xmlns:a="jelly:ant" xmlns:m="jelly:maven" xmlns:deploy="deploy">
+<project default="default"
+         xmlns:j="jelly:core"
+         xmlns:a="jelly:ant"
+         xmlns:m="jelly:maven"
+         xmlns:deploy="deploy"
+         xmlns:define="jelly:define"
+         xmlns:dalma="dalma">
   <goal name="site:generate">
     <attainGoal name="multiproject:site" />
   </goal>
+
+  <define:taglib uri="dalma">
+    <!--
+      copy dependency jars.
+
+      @pom  - pom
+      @out  - output directory
+      @kind - copy jars that have this value in the property
+    -->
+    <define:tag name="copy-deps">
+      <j:forEach var="lib" items="${pom.artifacts}">
+        <j:if test="${lib.dependency.getProperty('dist')==kind}">
+          <a:copy todir="${out}" file="${lib.path}" />
+          <!--a:echo message="Base  : ${lib.file.parent}"/>
+          <a:echo message="File  : ${lib.file.name}"/>
+          <a:echo message="Path  : ${lib.path}"/-->
+        </j:if>
+      </j:forEach>
+    </define:tag>
+  </define:taglib>
+
 
   <goal name="dist"
         description="creates a distribution image">
@@ -13,18 +40,54 @@
 
     <a:mkdir dir="${out}" />
 
-    <j:forEach var="lib" items="${pom.artifacts}">
-      <j:if test="${lib.dependency.getProperty('dist')!=null}">
-        <a:copy todir="${out}" file="${lib.path}" />
-        <!--a:echo message="Base  : ${lib.file.parent}"/>
-        <a:echo message="File  : ${lib.file.name}"/>
-        <a:echo message="Path  : ${lib.path}"/-->
-      </j:if>
-    </j:forEach>
+    <dalma:copy-deps pom="${pom}" out="${out}" kind="engine" />
 
+    <!-- copy the engine jar -->
     <a:copy todir="${out}">
-      <a:fileset dir="." includes="modules/*/target/*.jar" />
+      <a:fileset dir="." includes="modules/engine/target/*.jar" />
       <a:mapper type="flatten" />
     </a:copy>
+
+    <!-- copy docs -->
+    <a:copy todir="${out}" file="${basedir}/LICENSE.txt" />
+    <a:copy todir="${out}">
+      <a:fileset dir="${basedir}/docs" includes="**/*" />
+    </a:copy>
+
+
+    <!-- this parses module POMs into 'multiprojects'. Somehow I need to do this twice -->
+    <attainGoal name="multiproject:projects-init" />
+    <m:reactor
+      basedir="${maven.multiproject.basedir}"
+      banner="Gathering project list"
+      includes="${maven.multiproject.includes}"
+      excludes="${maven.multiproject.excludes}"
+      postProcessing="true"
+      collectOnly="true"
+      collectionVar="multiprojects"
+      ignoreFailures="${maven.multiproject.ignoreFailures}"
+    />
+
+    <!-- deploy each module into the distribution image -->
+    <j:forEach var="p" items="${multiprojects}">
+      <a:echo>Processing ${p.artifactId}</a:echo>
+      <j:set var="moduleDir" value="${p.file.parentFile}" />
+      <j:set var="moduleOut" value="${out}/${moduleDir.name}" />
+
+      <j:if test="${moduleDir.name}=='engine'">
+        <j:continue />  <!-- skip engine. it's not a module -->
+      </j:if>
+
+      <a:mkdir dir="${moduleOut}" />
+      <a:copy todir="${moduleOut}">
+        <a:fileset dir="${moduleDir}/target" includes="*.jar" />
+      </a:copy>
+      <dalma:copy-deps pom="${p}" out="${moduleOut}" kind="endpoint" />
+    </j:forEach>
+
+    <j:set var="prefix" value="${pom.artifactId}-${pom.currentVersion}" />
+    <a:zip file="target/${prefix}.zip">
+      <a:zipfileset prefix="${prefix}" dir="${out}" />
+    </a:zip>
   </goal>
 </project>

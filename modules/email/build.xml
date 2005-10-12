@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
-<project name="email" default="sorry">
+<project name="email" default="sorry" basedir="../..">
+
+  <property file="${basedir}/ant.properties" />
+
   <target name="sorry">
     <fail message="Please use maven to build this project" />
   </target>
