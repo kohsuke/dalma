@@ -1,5 +1,30 @@
-<project default="default" xmlns:j="jelly:core" xmlns:ant="jelly:ant" xmlns:maven="jelly:maven">
+<project default="default" xmlns:j="jelly:core" xmlns:a="jelly:ant" xmlns:m="jelly:maven" xmlns:deploy="deploy">
   <goal name="site:generate">
     <attainGoal name="multiproject:site" />
+  </goal>
+
+  <goal name="dist"
+        description="creates a distribution image">
+    <!-- build all modules -->
+    <!--j:set var="goal" value="jar:install"/>
+    <attainGoal name="multiproject:goal"/-->
+
+    <j:set var="out" value="target/dist" />
+
+    <a:mkdir dir="${out}" />
+
+    <j:forEach var="lib" items="${pom.artifacts}">
+      <j:if test="${lib.dependency.getProperty('dist')!=null}">
+        <a:copy todir="${out}" file="${lib.path}" />
+        <!--a:echo message="Base  : ${lib.file.parent}"/>
+        <a:echo message="File  : ${lib.file.name}"/>
+        <a:echo message="Path  : ${lib.path}"/-->
+      </j:if>
+    </j:forEach>
+
+    <a:copy todir="${out}">
+      <a:fileset dir="." includes="modules/*/target/*.jar" />
+      <a:mapper type="flatten" />
+    </a:copy>
   </goal>
 </project>

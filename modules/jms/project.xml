@@ -11,6 +11,9 @@
     <dependency>
       <id>dalma</id>
       <version>${pom.currentVersion}</version>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+      </properties>
     </dependency>
     <dependency>
       <id>jms</id>

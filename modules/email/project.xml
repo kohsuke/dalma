@@ -11,15 +11,26 @@
     <dependency>
       <id>dalma</id>
       <version>${pom.currentVersion}</version>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+      </properties>
     </dependency>
     <!-- javamail -->
     <dependency>
       <id>javamail</id>
       <version>1.3.3</version>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+        <dist>yes</dist>
+      </properties>
     </dependency>
     <dependency>
       <id>activation</id>
       <version>1.0.3</version>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+        <dist>yes</dist>
+      </properties>
     </dependency>
   </dependencies>
 </project>

@@ -16,6 +16,10 @@ TODO
 
     - is it possible to share the same transport session to send multiple e-mails?
 
+JMS
+===
+    - normal applications look up destinations and connection factory from JNDI
+
 Notes
 =====
 - MimeMessage is not serializable
