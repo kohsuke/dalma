@@ -1,14 +1,16 @@
 package dalma;
 
 import dalma.impl.EngineImpl;
+import dalma.helpers.ThreadPoolExecutor;
+import dalma.helpers.Java5Executor;
+import dalma.helpers.ReloadingConversationClassLoader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.concurrent.Executors;
 
 /**
  * Factory for {@link Engine}.
@@ -107,5 +109,42 @@ public class EngineFactory {
      */
     public static Engine newInstance(File rootDir,ClassLoader classLoader, Executor executor) throws IOException {
         return new EngineImpl(rootDir,classLoader,executor);
+    }
+
+    /**
+     * The easiest way to create a new {@link Engine}.
+     *
+     * <p>
+     * This method creates a new {@link Engine} with the following configuration.
+     *
+     * <ol>
+     *  <li>"./dalma" directory is used to store the data.
+     *  <li>the conversation programs are assumed to be in the specified
+     *      package name. A new {@link ClassLoader} is created to load
+     *      classes in this package with necessary bytecode instrumentation.
+     *  <li>If you are running in JRE 5.0 or later,
+     *      {@link Executors#newCachedThreadPool()}
+     *      is used to run conversions. If you are running in earlier versions
+     *      of JRE, then a single worker thread is used to run conversations.
+     *
+     * @param packagePrefix
+     *      String like "org.acme.foo." See {@link ReloadingConversationClassLoader#ReloadingConversationClassLoader(ClassLoader, String)}
+     *      for details.
+     */
+    public static Engine newInstance(String packagePrefix) throws IOException {
+        Executor exec;
+
+        try {
+            exec = new Java5Executor(Executors.newCachedThreadPool());
+        } catch (Throwable e) {
+            // must be running in earlier JVM
+            // TODO: implement CachedThreadPool
+            exec = new ThreadPoolExecutor(1);
+        }
+
+        ClassLoader cl = new ReloadingConversationClassLoader(
+            EngineFactory.class.getClassLoader(), packagePrefix );
+
+        return newInstance(new File("dalma"), cl, exec );
     }
 }
