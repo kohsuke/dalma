@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
  * <p>
  * This class is mostly useful when you are configuring {@link Engine} from IoC containers
  * such as Spring. When you are creating an {@link Engine} programatically, consider
- * using {@link #newInstance(File, ClassLoader, Executor)} directly.
+ * using {@link #newEngine(File, ClassLoader, Executor)} directly.
  *
  * @author Kohsuke Kawaguchi
  */
@@ -107,7 +107,7 @@ public class EngineFactory {
      * @param executor
      *      see {@link #setExecutor(Executor)}
      */
-    public static Engine newInstance(File rootDir,ClassLoader classLoader, Executor executor) throws IOException {
+    public static Engine newEngine(File rootDir,ClassLoader classLoader, Executor executor) throws IOException {
         return new EngineImpl(rootDir,classLoader,executor);
     }
 
@@ -131,7 +131,7 @@ public class EngineFactory {
      *      String like "org.acme.foo." See {@link ReloadingConversationClassLoader#ReloadingConversationClassLoader(ClassLoader, String)}
      *      for details.
      */
-    public static Engine newInstance(String packagePrefix) throws IOException {
+    public static Engine newEngine(String packagePrefix) throws IOException {
         Executor exec;
 
         try {
@@ -145,6 +145,6 @@ public class EngineFactory {
         ClassLoader cl = new ReloadingConversationClassLoader(
             EngineFactory.class.getClassLoader(), packagePrefix );
 
-        return newInstance(new File("dalma"), cl, exec );
+        return newEngine(new File("dalma"), cl, exec );
     }
 }

@@ -16,7 +16,7 @@ import java.text.ParseException;
  */
 public class EndPointStringTest extends TestCase {
     public void test1() throws Exception {
-        Engine engine = EngineFactory.newInstance(
+        Engine engine = EngineFactory.newEngine(
             new File("target/endpoint-string-test"),
             getClass().getClassLoader(),
             new ThreadPoolExecutor(3));
