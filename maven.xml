@@ -85,13 +85,39 @@
       <dalma:copy-deps pom="${p}" out="${moduleOut}" kind="endpoint" />
     </j:forEach>
 
-    <!-- build archive files -->
-    <j:set var="prefix" value="${pom.artifactId}-${pom.currentVersion}" />
-    <a:zip zipfile="${maven.dist.dir}/${maven.final.name}.zip">
+    <!-- build binary archive files -->
+    <j:set var="prefix" value="dalma-${pom.currentVersion}" />
+    <a:zip zipfile="${maven.dist.dir}/${prefix}.zip">
       <a:zipfileset prefix="${prefix}" dir="${out}" />
     </a:zip>
-    <a:tar tarfile="${maven.dist.dir}/${maven.final.name}.tar.gz" compression="gzip">
+    <a:tar tarfile="${maven.dist.dir}/${prefix}.tar.gz" compression="gzip" longfile="gnu">
       <a:tarfileset prefix="${prefix}" dir="${out}" />
     </a:tar>
+
+
+    <!-- build source bundle -->
+    <a:mkdir dir="target/src-dist" />
+    <a:copy todir="target/src-dir">
+      <a:fileset dir="${basedir}">
+        <a:include name="**/project.xml" />
+        <a:include name="**/maven.xml" />
+        <a:include name="**/project.properties" />
+        <a:include name="**/src/**/*" />
+        <a:exclude name="**/target" />
+        <a:exclude name="**/experiments" />
+      </a:fileset>
+    </a:copy>
+    <a:zip zipfile="${maven.dist.dir}/${prefix}-src.zip">
+      <a:zipfileset prefix="${prefix}" dir="target/src-dir" />
+    </a:zip>
+    <a:tar tarfile="${maven.dist.dir}/${prefix}-src.tar.gz" compression="gzip" longfile="gnu">
+      <a:tarfileset prefix="${prefix}" dir="target/src-dir" />
+    </a:tar>
+  </goal>
+
+  <goal name="release" prereqs="dist:build"
+    description="builds the distribution files and uploads them to java.net">
+    <j:set var="maven.final.name" value="dalma-${pom.currentVersion}" />
+    <attainGoal name="javanet:dist" />
   </goal>
 </project>
