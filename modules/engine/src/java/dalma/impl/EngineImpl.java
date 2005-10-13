@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -237,16 +238,16 @@ public final class EngineImpl implements EngineSPI, Serializable {
         }
     }
 
-    public synchronized EndPoint addEndPoint(String name, String connectionString) throws ParseException {
+    public synchronized EndPoint addEndPoint(String name, String endpointURL) throws ParseException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         if(cl==null)        cl = getClass().getClassLoader();
         if(cl==null)        cl = ClassLoader.getSystemClassLoader();
 
         Properties properties = loadEndPointFactories(cl);
-        int idx = connectionString.indexOf(':');
+        int idx = endpointURL.indexOf(':');
         if(idx<0)
-            throw new ParseException("no scheme in "+connectionString,-1);
-        String scheme = connectionString.substring(0,idx);
+            throw new ParseException("no scheme in "+endpointURL,-1);
+        String scheme = endpointURL.substring(0,idx);
 
         EndPointFactory epf;
         Object value = properties.get(scheme);
@@ -272,9 +273,20 @@ public final class EngineImpl implements EngineSPI, Serializable {
             epf = (EndPointFactory)value;
         }
 
-        EndPoint ep = epf.create(name, connectionString);
+        EndPoint ep = epf.create(name, endpointURL);
         addEndPoint(ep);
         return ep;
+    }
+
+    public Map<String, EndPoint> addEndPoints(Properties endpointURLs) throws ParseException {
+        Map<String,EndPoint> r = new TreeMap<String,EndPoint>();
+
+        for (Map.Entry e : endpointURLs.entrySet()) {
+            EndPoint ep = addEndPoint(e.getKey().toString(), e.getValue().toString());
+            r.put(ep.getName(),ep);
+        }
+        
+        return r;
     }
 
     /**

@@ -11,7 +11,7 @@ import java.text.ParseException;
  * @author Kohsuke Kawaguchi
  */
 public class JMSEndPointFactory implements EndPointFactory {
-    public EndPoint create(String endPointName, String connectionString) throws ParseException {
+    public EndPoint create(String endPointName, String endpointURL) throws ParseException {
         throw new UnsupportedOperationException();
     }
 }

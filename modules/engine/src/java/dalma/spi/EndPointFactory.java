@@ -10,5 +10,5 @@ import java.text.ParseException;
  * @author Kohsuke Kawaguchi
  */
 public interface EndPointFactory {
-    EndPoint create(String endPointName, String connectionString) throws ParseException;
+    EndPoint create(String endPointName, String endpointURL) throws ParseException;
 }

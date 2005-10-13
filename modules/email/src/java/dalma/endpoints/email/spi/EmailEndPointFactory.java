@@ -23,15 +23,15 @@ import java.util.Properties;
  * @author Kohsuke Kawaguchi
  */
 public class EmailEndPointFactory implements EndPointFactory {
-    public EndPoint create(String endPointName, String connectionString) throws ParseException {
+    public EndPoint create(String endPointName, String endpointURL) throws ParseException {
         // split into the SMTP part and listener part
-        int idx = connectionString.indexOf('!');
+        int idx = endpointURL.indexOf('!');
         if(idx<0)
             throw new ParseException("the smtp protocol string needs to contain '!'",-1);
 
         try {
-            URI smtp = new URI(connectionString.substring(0,idx));
-            String listener = connectionString.substring(idx + 1);
+            URI smtp = new URI(endpointURL.substring(0,idx));
+            String listener = endpointURL.substring(idx + 1);
 
             Listener listenerObject;
 

@@ -2,6 +2,7 @@ package dalma;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 import java.io.IOException;
 import java.text.ParseException;
@@ -74,13 +75,13 @@ public interface Engine {
      * Creates and adds a new {@link EndPoint} to this engine.
      *
      * <p>
-     * See <a href="https://dalma.dev.java.net/nonav/maven/connectionString.html">
+     * See <a href="https://dalma.dev.java.net/nonav/maven/endpointURL.html">
      * this document for details</a>.
      *
      * @param endPointName
      *      name of the endpoint. this will become the value
      *      returned from {@link EndPoint#getName()}. Must not be null.
-     * @param connectionString
+     * @param endpointURL
      *      configuration of an endpoint encoded in an URI form.
      *      must not be null.
      * @throws ParseException
@@ -90,7 +91,33 @@ public interface Engine {
      * @return
      *      the endpoint created from the connection string.
      */
-    EndPoint addEndPoint(String endPointName, String connectionString) throws ParseException;
+    EndPoint addEndPoint(String endPointName, String endpointURL) throws ParseException;
+
+    /**
+     * Adds multiple {@link EndPoint}s to this engine at once.
+     *
+     * <p>
+     * Suppose you have a property file like this:
+     * <pre>
+     * email1=smtp://hangman@kohsuke.org!pop3://username:password@mail.kohsuke.org
+     * email2=smtp://oracle@kohsuke.org!pop3://username:password@mail.kohsuke.org
+     * </pre>
+     * <p>
+     * You can then read this file into {@link Properties}, and then pass that
+     * into this method to add two {@link EndPoint}s with one method call.
+     * <p>
+     * This is convenient when you are externalizing the endpoint configuration
+     * in a property file.
+     *
+     * @param endpointURLs
+     *      {@link Properties} that has the endpoint name as a key and
+     *      endpoint URL as a value. Can be empty but must not be null.
+     * @return
+     *      a map that contains the newly created {@link EndPoint}s keyed by their names.
+     * @throws ParseException
+     *      if Dalma fails to parse any of the endpoint URLs.
+     */
+    Map<String,EndPoint> addEndPoints(Properties endpointURLs) throws ParseException;
 
     /**
      * Stops the engine and releases all the resources it acquired.
