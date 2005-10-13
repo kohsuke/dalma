@@ -8,6 +8,8 @@
 
     <menu name="Dalma">
       <item name="Home"                    href="index.html"/>
+      <item name="Download"                href="https://dalma.dev.java.net/servlets/ProjectDocumentList" />
+      <item name="Tutorial"                href="tutorial.html" />
     </menu>
 
     <menu name="Components">
@@ -16,7 +18,7 @@
       <item name="JMS endpoint"            href="dalma-endpoint-jms/index.html"/>
     </menu>
 
-    <menu name="Programming with Dalma">
+    <menu name="Advanced Topics">
       <item name="Configuring Engine"      href="configure.html" />
     </menu>
   </body>
