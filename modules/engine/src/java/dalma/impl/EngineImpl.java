@@ -304,6 +304,11 @@ public final class EngineImpl implements EngineSPI, Serializable {
         }
     }
 
+    private void makeSureStarted() {
+        if(!started)
+            throw new IllegalStateException("engine is not started");
+    }
+
     private void makeSureNotStarted() {
         if(started)
             throw new IllegalStateException("engine is already started");
@@ -336,6 +341,8 @@ public final class EngineImpl implements EngineSPI, Serializable {
     }
 
     public void stop() throws InterruptedException {
+        makeSureStarted();
+
         // clone first to avoid concurrent modification
         Collection<EndPointImpl> eps;
         synchronized(endPoints) {
@@ -358,6 +365,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
     }
 
     public void waitForCompletion() throws InterruptedException {
+        makeSureStarted();
         while(!conversations.isEmpty())
             synchronized(completionLock) {
                 completionLock.wait();
@@ -365,6 +373,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
     }
 
     public void checkError() {
+        makeSureStarted();
         if(!errors.isEmpty()) {
             Throwable t = errors.remove(0);
             if(t instanceof Error)
@@ -379,6 +388,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
     }
 
     public ConversationImpl createConversation(Runnable target) throws IOException {
+        makeSureStarted();
         ConversationImpl conv = new ConversationImpl(this,target);
         conversations.put(conv.id,conv);
         queue(conv);
