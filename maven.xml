@@ -86,6 +86,7 @@
     </j:forEach>
 
     <!-- build binary archive files -->
+    <a:mkdir dir="${maven.dist.dir}" />
     <j:set var="prefix" value="dalma-${pom.currentVersion}" />
     <a:zip zipfile="${maven.dist.dir}/${prefix}.zip">
       <a:zipfileset prefix="${prefix}" dir="${out}" />
