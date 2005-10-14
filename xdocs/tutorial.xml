@@ -44,7 +44,7 @@ Engine engine = EngineFactory.newEngine("foo.workflow.");
     This instantiation is the simplest possible way you can construct an engine. If you need more control, check <a href="apidocs/index.html?dalma/EngineFactory.html">EngineFactory documentation</a>.
   </p>
 </section>
-<section name="Setup endpoints">
+<section name="Set up endpoints">
   <p>
     Next, we'll add endpoints to an engine, like this:
   </p>
@@ -63,7 +63,7 @@ EmailEndPoint eep = (EmailEndPoint)engine.addEndPoint("endPoint1","smtp://hangma
 <source>
 eep.setNewMailHandler(new NewMailHandler() {
   public void onNewMail(MimeMessage mail) {
-    // empty for now
+    ;
   }
 });
 </source>
@@ -81,9 +81,74 @@ engine.start();
     Engine runs asynchronously by using other threads, so this method call returns immediately. The main thread can do anything it wants at this point, but in this tutorial I just let the main thread exit by returning from the main method. Since engine has its own thread, the JVM will keep running in this way (if you really wanted to shut down the JVM, you can invoke <tt>Engine.stop()</tt> method.
   </p>
 </section>
-<section name="Handle new e-mail">
+<section name="Write a simple workflow">
   <p>
-    When a new message arrives,
+    Now we are ready to write a workflow program. Let's write a simple one that just keep replying to the user's message.
+  </p>
+<source>
+package foo.workflow;
+import ...;
+
+public class MyWorkflow implements Runnable, Serializable {
+  // initial message received
+  private MimeMessage msg;
+  
+  private final EmailEndPoint eep;
+  
+  public MyWorkflow(EmailEndPoint eep, MimeMessage msg) {
+    this.eep = eep;
+    this.msg = msg;
+  }
+  
+  public void run() {
+    // decide when to stop this workflow. one day from now
+    Calendar cal = new GregorianCalendar();
+    cal.add(DATE,1);
+    Date dt = cal.getTime();
+    
+    int counter = 0; // pointless counter
+    
+    do {
+        // create a reply message
+        msg = msg.reply(false);
+        msg.setText(String.valueOf(counter));
+        
+        // send it and wait for a reply
+        msg = eep.waitForReply(msg,dt);
+    } while(msg!=null);
+  }
+}
+</source>
+  <p>
+    A workflow program is simply a <tt>Runnable</tt> object. The <tt>run</tt> method is invoked by the engine, and when this method returns the conversation ends. There will be one instance of this per one running workflow instance (which is called "conversation".)
+    It also needs to implement <tt>Serializable</tt>, because when a conversation is suspended, its state is persisted to a disk by using Java serialization.
+  </p><p>
+    We'll start this conversation when a fresh message is received, so the constructor takes the first message received. The workflow immediately replies to a received message, and waits for the sender to further reply. When your conversation blocks, the engine actually persists its state to disk, and remove your conversation from memory. The Java thread that run it will be used to run other conversations. But this all happens behind the scene, and except for the fact that your objects need to be serializable, this is largely transparent.
+  </p><p>
+    When a reply is received, your conversation is resumed, and execution returns normally from the <tt>waitForReply</tt> method with a non-null return value. The conversation sends out another reply, and waits for a further reply.
+  </p><p>
+    Eventually time elapses, and when one day passes, the <tt>waitForReply</tt> method will return with null. At this point the run method exits, and the conversation is considered complete.
+  </p>
+</section>
+<section name="New mail handler">
+  <p>
+    Finally, we come back to the new mail handler. When an e-mail that is not a reply to any of the running conversations is received by an e-mail endpoint, it's passed to the new mail handler. In this tutorial, we'll simply create a new conversation into the engine.
+  </p>
+<source>
+eep.setNewMailHandler(new NewMailHandler() {
+  public void onNewMail(MimeMessage mail) {
+    engine.createConversation(MyWorkflow.class, eep, msg);
+  }
+});
+</source>
+</section>
+<section name="Run">
+  <p>
+    That's it. Run this program, and see for yourself that the workflow replies to your e-mail. You can even kill the JVM, restart it, and see that the engine still remembers your running conversations, as if nothing has happened.
+  </p><p>
+    You can also run this program under the debugger. You can set breakpoints, inspect variables, and pretty much everything works normally. Now you got your first working dalma workflow.
+  </p><p>
+    <b>TODO: complete source code in a zip file</b>
   </p>
 </section>
 </body>
