@@ -27,7 +27,7 @@ public abstract class WorkflowTestProgram extends TestCase {
         super(name);
     }
 
-    protected void setUp() throws Exception {
+    protected final void setUp() throws Exception {
         // creates a new class loader that loads test classes with javaflow enhancements
         classLoader = new TestClassLoader(Launcher.class.getClassLoader());
 
@@ -46,7 +46,13 @@ public abstract class WorkflowTestProgram extends TestCase {
         });
 
         engine = new EngineImpl(root,classLoader,new ThreadPoolExecutor(3,true));
+
+        setupEndPoints();
+
+        engine.start();
     }
+
+    protected abstract void setupEndPoints() throws Exception;
 
     /**
      * Creates a new conversation instance with given parameters.

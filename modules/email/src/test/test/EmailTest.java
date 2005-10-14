@@ -30,9 +30,7 @@ public class EmailTest extends WorkflowTestProgram {
     EmailEndPoint ep1;
     EmailEndPoint ep2;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    protected void setupEndPoints() throws Exception {
         // passive side
         ep1 = (EmailEndPoint) engine.addEndPoint("email1",getProperty("email.endpoint1"));
         ep1.setNewMailHandler(new NewMailHandler() {

@@ -17,9 +17,7 @@ public class EndPointNameCollisionTest extends WorkflowTestProgram {
         TestRunner.run(EndPointNameCollisionTest.class);
     }
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    protected void setupEndPoints() throws Exception {
         engine.addEndPoint("email",getProperty("email.endpoint1"));
         try {
             engine.addEndPoint("email",getProperty("email.endpoint2"));

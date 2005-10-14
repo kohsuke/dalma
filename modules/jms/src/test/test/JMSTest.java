@@ -33,9 +33,7 @@ public class JMSTest extends WorkflowTestProgram implements MessageHandler {
     QueueSession qs;
     QueueConnection qcon;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    protected void setupEndPoints() throws Exception {
         qcon = new ActiveMQConnectionFactory("tcp://localhost:61616").createQueueConnection();
         qs = qcon.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
         Queue out = qs.createQueue("dalma-out");
