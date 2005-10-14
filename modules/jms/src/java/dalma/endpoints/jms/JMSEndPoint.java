@@ -217,7 +217,7 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
         return super.waitForReply(msg);
     }
 
-    public Message waitForReply(Message msg, Date timeout) throws TimeoutException {
+    public Message waitForReply(Message msg, Date timeout) {
         return super.waitForReply(msg, timeout);
     }
 

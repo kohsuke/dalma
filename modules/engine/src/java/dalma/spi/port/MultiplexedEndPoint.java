@@ -47,7 +47,7 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
      *
      * TODO:javadoc
      */
-    protected Msg waitForReply(Msg msg, Date timeout) throws TimeoutException {
+    protected Msg waitForReply(Msg msg, Date timeout) {
         return ConversationSPI.getCurrentConversation().suspend(
             new OneTimeDock<Key,Msg>(this,msg), TimerEndPoint.<Msg>createDock(timeout) );
     }

@@ -280,15 +280,31 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      * Sends an e-mail out and waits for a reply to come back,
      * at most the time specfied.
      *
-     * @throws TimeoutException
-     *      if a response was not received within the specified timeout period.
      * @param outgoing
      *      The message to be sent. Must not be null.
      * @return
      *      a message that represents the received reply.
-     *      always a non-null valid message.
+     *      if a response was not received within the specified timeout period,
+     *      null is returned.
      */
-    public MimeMessage waitForReply(MimeMessage outgoing,long timeout, TimeUnit unit) throws TimeoutException {
+    public MimeMessage waitForReply(MimeMessage outgoing,long timeout, TimeUnit unit) {
         return super.waitForReply(outgoing, unit.fromNow(timeout));
+    }
+
+    /**
+     * Sends an e-mail out and waits for a reply to come back,
+     * until the specified date.
+     *
+     * @param outgoing
+     *      The message to be sent. Must not be null.
+     * @param timeoutDate
+     *      the time when this method returns even if no reply is received by then.
+     * @return
+     *      a message that represents the received reply.
+     *      if a response was not received within the specified timeout period,
+     *      null is returned.
+     */
+    public MimeMessage waitForReply(MimeMessage outgoing,Date timeoutDate) {
+        return super.waitForReply(outgoing,timeoutDate);
     }
 }
