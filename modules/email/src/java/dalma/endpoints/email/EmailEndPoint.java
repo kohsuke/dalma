@@ -94,6 +94,10 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
         listener.setEndPoint(this);
     }
 
+    protected void start() {
+        listener.start();
+    }
+
     protected void stop() {
         listener.stop();
     }

@@ -14,6 +14,16 @@ public abstract class EndPointImpl extends EndPoint {
         super(name);
     }
 
+
+    /**
+     * Called when {@link Engine#start()} is invoked.
+     *
+     * <p>
+     * This method is invoked once and only once.
+     * {@link EndPoint} can start accepting incoming messages.
+     */
+    protected abstract void start();
+
     /**
      * Called when {@link Engine#stop()} is invoked.
      *

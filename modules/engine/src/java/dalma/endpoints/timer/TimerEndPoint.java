@@ -69,6 +69,10 @@ public class TimerEndPoint extends EndPointImpl {
         }
     }
 
+    protected void start() {
+        ; // nothing to do
+    }
+
     protected void stop() {
         timer.cancel();
     }

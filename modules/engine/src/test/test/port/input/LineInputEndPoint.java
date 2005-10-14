@@ -26,13 +26,10 @@ public final class LineInputEndPoint extends EndPointImpl implements Runnable {
      */
     private static final List<LineDock> queue = new ArrayList<LineDock>();
 
-    private final Thread thread;
+    private final Thread thread = new Thread(this);
 
     private LineInputEndPoint() {
         super(LineInputEndPoint.class.getName());
-        // start the monitor thread
-        thread = new Thread(this);
-        thread.start();
     }
 
     public void run() {
@@ -51,6 +48,11 @@ public final class LineInputEndPoint extends EndPointImpl implements Runnable {
         } catch (IOException e) {
             throw new Error(e); // can never happen
         }
+    }
+
+    protected void start() {
+        // start the monitor thread
+        thread.start();
     }
 
     protected void stop() {

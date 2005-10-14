@@ -30,6 +30,9 @@ public class MailDirListener extends Listener {
     protected void setEndPoint(EmailEndPoint ep) {
         super.setEndPoint(ep);
         thread.setDaemon(true);
+    }
+
+    protected void start() {
         thread.start();
     }
 

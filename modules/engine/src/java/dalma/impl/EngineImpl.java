@@ -93,6 +93,11 @@ public final class EngineImpl implements EngineSPI, Serializable {
      */
     transient final List<Throwable> errors = new Vector<Throwable>();
 
+    /**
+     * True once the engine is started.
+     */
+    transient private boolean started;
+
     public EngineImpl(File rootDir,ClassLoader classLoader,Executor executor) throws IOException {
         this.rootDir = rootDir;
         this.executor = executor;
@@ -229,6 +234,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
     }
 
     public void addEndPoint(EndPoint ep) {
+        makeSureNotStarted();
         synchronized(endPoints) {
             if(endPoints.containsKey(ep.getName()))
                 throw new IllegalArgumentException("There's already an EndPoint of the name "+ep.getName());
@@ -287,6 +293,20 @@ public final class EngineImpl implements EngineSPI, Serializable {
         }
         
         return r;
+    }
+
+    public void start() {
+        makeSureNotStarted();
+        started = true;
+        synchronized(endPoints) {
+            for (EndPointImpl ep : endPoints.values())
+                ep.start();
+        }
+    }
+
+    private void makeSureNotStarted() {
+        if(started)
+            throw new IllegalStateException("engine is already started");
     }
 
     /**

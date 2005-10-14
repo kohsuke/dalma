@@ -52,6 +52,11 @@ public abstract class Listener {
     }
 
     /**
+     * @see EndPointImpl#start()
+     */
+    protected abstract void start();
+
+    /**
      * @see EndPointImpl#stop()
      */
     protected abstract void stop();

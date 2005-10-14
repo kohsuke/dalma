@@ -35,6 +35,9 @@ public class IMAP4Listener extends Listener {
         super.setEndPoint(ep);
 
         thread.setDaemon(true);
+    }
+
+    protected void start() {
         thread.start();
     }
 

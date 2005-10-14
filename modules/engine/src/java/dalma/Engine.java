@@ -68,6 +68,8 @@ public interface Engine {
      *
      * @throws IllegalArgumentException
      *      if there's already an {@link EndPoint} that has the same name.
+     * @throws IllegalStateException
+     *      if the engine is already started.
      */
     void addEndPoint(EndPoint endPoint);
 
@@ -88,6 +90,8 @@ public interface Engine {
      *      if there's an error in the connection string.
      * @throws IllegalArgumentException
      *      if there's already an {@link EndPoint} that has the same name.
+     * @throws IllegalStateException
+     *      if the engine is already started.
      * @return
      *      the endpoint created from the connection string.
      */
@@ -116,8 +120,22 @@ public interface Engine {
      *      a map that contains the newly created {@link EndPoint}s keyed by their names.
      * @throws ParseException
      *      if Dalma fails to parse any of the endpoint URLs.
+     * @throws IllegalStateException
+     *      if the engine is already started.
      */
     Map<String,EndPoint> addEndPoints(Properties endpointURLs) throws ParseException;
+
+    /**
+     * Starts the engine and activates all the {@link EndPoint}s.
+     *
+     * <p>
+     * This method must be called after all the {@link EndPoint}s are
+     * added to the engine, and before a conversation is submitted.
+     *
+     * @throws IllegalStateException
+     *      if the engin has already been started.
+     */
+    void start();
 
     /**
      * Stops the engine and releases all the resources it acquired.

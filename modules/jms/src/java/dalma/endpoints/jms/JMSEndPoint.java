@@ -3,11 +3,11 @@ package dalma.endpoints.jms;
 import dalma.EndPoint;
 import dalma.ReplyIterator;
 import dalma.endpoints.jms.impl.BytesMessageImpl;
+import dalma.endpoints.jms.impl.MapMessageImpl;
+import dalma.endpoints.jms.impl.MessageImpl;
 import dalma.endpoints.jms.impl.ObjectMessageImpl;
 import dalma.endpoints.jms.impl.StreamMessageImpl;
 import dalma.endpoints.jms.impl.TextMessageImpl;
-import dalma.endpoints.jms.impl.MapMessageImpl;
-import dalma.endpoints.jms.impl.MessageImpl;
 import dalma.spi.port.MultiplexedEndPoint;
 
 import javax.jms.BytesMessage;
@@ -22,9 +22,8 @@ import javax.jms.ObjectMessage;
 import javax.jms.QueueSession;
 import javax.jms.StreamMessage;
 import javax.jms.TextMessage;
-import java.util.logging.Level;
 import java.util.Date;
-import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 
 /**
  * {@link EndPoint} that connects to two JMS queues.
@@ -48,6 +47,10 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
         sender =session.createProducer(out);
         consumer = session.createConsumer(in);
         consumer.setMessageListener(this);
+    }
+
+    protected void start() {
+        // TODO: shall we control queue connection by ourselves, so that we can start it here?
     }
 
     protected void stop() {
