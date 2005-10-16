@@ -115,7 +115,12 @@ public final class EngineImpl implements EngineSPI, Serializable {
             // load data into this object
             df.unmarshal(this);
         }
+    }
 
+    /**
+     * Loads persisted conversations from disk.
+     */
+    private void loadConversations() {
         // restore conversations
         File convDir = getConversationsDir();
         convDir.mkdirs();
@@ -218,6 +223,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
     }
 
     public synchronized Collection<Conversation> getConversations() {
+        makeSureStarted();
         synchronized(conversations) {
             return new ArrayList<Conversation>(conversations.values());
         }
@@ -302,6 +308,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
             for (EndPointImpl ep : endPoints.values())
                 ep.start();
         }
+        loadConversations();
     }
 
     private void makeSureStarted() {
@@ -384,6 +391,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
     }
 
     ConversationImpl getConversation(int id) {
+        makeSureStarted();
         return conversations.get(id);
     }
 
