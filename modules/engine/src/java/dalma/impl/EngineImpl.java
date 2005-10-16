@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.FileReader;
+import java.io.Reader;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -24,6 +26,10 @@ import java.util.Vector;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.bsf.BSFManager;
+import org.apache.bsf.BSFException;
+import org.apache.commons.io.IOUtils;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -297,8 +303,26 @@ public final class EngineImpl implements EngineSPI, Serializable {
             EndPoint ep = addEndPoint(e.getKey().toString(), e.getValue().toString());
             r.put(ep.getName(),ep);
         }
-        
+
         return r;
+    }
+
+    public void configureWithBSF(File scriptFile) throws IOException {
+        BSFManager bsfm = new BSFManager();
+        bsfm.registerBean("engine",this);
+        Reader f = new FileReader(scriptFile);
+        try {
+            try {
+                String language = BSFManager.getLangFromFilename(scriptFile.getPath());
+                bsfm.exec(language,scriptFile.getPath(),1,1,IOUtils.toString(f));
+            } catch (BSFException e) {
+                IOException x = new IOException(e.getMessage());
+                x.initCause(e);
+                throw x;
+            }
+        } finally {
+            f.close();
+        }
     }
 
     public void start() {

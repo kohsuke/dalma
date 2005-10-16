@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 
 /**
@@ -28,6 +29,12 @@ public class EngineFactory {
     private ClassLoader classLoader;
     private Executor executor;
     private final Map<String,EndPoint> endPoints = new HashMap<String,EndPoint>();
+
+    /**
+     * Creates a new uninitialized {@link EngineFactory}.
+     */
+    public EngineFactory() {
+    }
 
     /**
      * Sets the directory to be used for persisting the state of conversations.
@@ -65,11 +72,7 @@ public class EngineFactory {
     }
 
     /**
-     * Copies the list of {@link EndPoint}s from the given list.
-     *
-     * <p>
-     * This method completely removes all the {@link EndPoint}s configured so far
-     * by the specified {@link EndPoint}s.
+     * Adds multiple {@link EndPoint}s from the given list.
      *
      * <p>
      * Note that this method copies the values from the collection but not the
@@ -80,6 +83,17 @@ public class EngineFactory {
     public void setEndPoints(Collection<? extends EndPoint> endPoints) {
         for (EndPoint endPoint : endPoints)
             addEndPoint(endPoint);
+    }
+
+    /**
+     * Creates {@link EndPoint}s from endpoint URLs and adds them
+     * to the engine when it's created.
+     *
+     * @param endPoints
+     *      Keys are endpoint names, and values are endpoint URLs.
+     */
+    public void setEndPointURLs(Map<String,String> endPoints) {
+
     }
 
     /**

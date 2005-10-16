@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.io.IOException;
+import java.io.File;
 import java.text.ParseException;
 
 
@@ -124,6 +125,38 @@ public interface Engine {
      *      if the engine is already started.
      */
     Map<String,EndPoint> addEndPoints(Properties endpointURLs) throws ParseException;
+
+    /**
+     * Configures an engine by using <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework</a>.
+     *
+     * <p>
+     * This method is intended to run a script that configures endpoints.
+     * By moving the endpoint configuration to a script, you can allow it
+     * to be changed at runtime.
+     *
+     * <p>
+     * For this method to work, you need to have:
+     * <ol>
+     *  <li><tt>bsf.jar</tt> in your classpath
+     *  <li>scripting language engine that you use in your classpath
+     *      (for example, if you use BeanShell, you need <tt>bsh.jar</tt>)
+     * </ol>
+     *
+     * <p>
+     * The file extension is used to determine the scripting language engine.
+     * For the list of languages available out-of-box with BSF and their
+     * registered file extensions, see
+     * <a href="http://svn.apache.org/viewcvs.cgi/jakarta/bsf/trunk/src/org/apache/bsf/Languages.properties?view=markup">this document</a>.
+     * For example, beanshell is ".bsh", groovy is ".groovy", JavaScript is ".js".
+     *
+     * <p>
+     * The {@link Engine} object is made available to the script with the name 'engine'.
+     *
+     * @param scriptFile
+     *      The file that contains the script to be run. Must not be null.
+     * @see http://dalma.dev.java.net/nonav/maven/configure.html#Configuring_with_Bean_Scripting_Framework
+     */
+    void configureWithBSF(File scriptFile) throws IOException;
 
     /**
      * Starts the engine and activates all the {@link EndPoint}s.
