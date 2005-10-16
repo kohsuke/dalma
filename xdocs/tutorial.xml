@@ -49,12 +49,13 @@ Engine engine = EngineFactory.newEngine("foo.workflow.");
     Next, we'll add endpoints to an engine, like this:
   </p>
 <source>
-EmailEndPoint eep = (EmailEndPoint)engine.addEndPoint("endPoint1","smtp://hangman@kohsuke.org!pop3://username:password@mail.kohsuke.org");
+EmailEndPoint eep = (EmailEndPoint)engine.addEndPoint(
+  "endPoint1","smtp://hangman@kohsuke.org!pop3://username:password@mail.kohsuke.org");
 </source>
   <p>
     The first parameter is the name of a newly added endpoint. Endpoints are identified by their name inside an engine. Persisted conversations use names to connect back to endpoints when they are resumed.
   </p><p>
-    The second parameter is an endpoint URL (<a href="endpointURL.html">more info</a>) that captures the configuration of an endpoint in one string. This somewhat ugly string is convenient because in most cases endpoint configurations are highly environment-dependent and therefore you don't want to hard-code them in your program.
+    The second parameter is an endpoint URL (<a href="endpoint.html#endpointURL">more info</a>) that captures the configuration of an endpoint in one string. This somewhat ugly string is convenient because in most cases endpoint configurations are highly environment-dependent and therefore you don't want to hard-code them in your program.
   </p><p>
     You can also choose to create endpoints programatically, or you can use Spring, Groovy, and etc to configure endpoints. See <a href="configure.html">this document</a> for more details.
   </p><p>
@@ -141,6 +142,9 @@ eep.setNewMailHandler(new NewMailHandler() {
   }
 });
 </source>
+  <p>
+    <b>TODO: this is a lie. we don't have this version of the <tt>createConversation</tt> method. What would be the easy-to-use API in this case? feedback appreciated.</b>
+  </p>
 </section>
 <section name="Run">
   <p>

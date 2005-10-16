@@ -1,0 +1,25 @@
+<document>
+<properties>
+  <title>Dalma Endpoint</title>
+</properties>
+<body>
+<section name="What is endpoint?">
+  <p>
+    An endpoint is a library that plugs into the Dalma engine and provides connectivity to the outside world for conversations.
+  </p>
+  <img src="endpoint.png" />
+  <p>
+    In particular, endpoints provide blocking I/O, where a conversation sends out some data, then waits for some data to come back. Endpoints collaborate with the engine to transparently move the state of blocking conversations to a disk and bring them back to life when data arrives.
+  </p><p>
+    An endpoint typically represents one communication channel --- such as an e-mail address, a JMS queue, an IRC connection, etc. An endpoint also typically perform <i>de-multiplexing</i>; for example, more than one conversations may be using one e-mail address at the same time to talk to other systems. When receiving a message, the e-mail endpoint is responsible for delivering it to the right conversation.
+  </p>
+</section>
+<section name="Writing an endpoint">
+  <p>
+    Dalma ships with several endpoint implementations, but it can be implemented by 3rd parties.
+  </p><p>
+    <b>More TBD</b>
+  </p>
+</section>
+</body>
+</document>

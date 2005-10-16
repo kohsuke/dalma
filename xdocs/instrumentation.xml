@@ -1,0 +1,29 @@
+<document>
+<properties>
+  <title>Dalma Bytecode Instrumentation</title>
+</properties>
+<body>
+  <p>
+    To transparently resume/restore execution state from/to disk, Dalma relies on <a href="http://jakarta.apache.org/commons/sandbox/javaflow/">javaflow</a>. While no knowledge of javaflow is required to use Dalma, you do need to know that this magic is implemented by using bytecode instrumentation.
+  </p><p>
+    The consequence is that whenever you call an endpoint, all the methods in the stack frame needs to be instrumented. Typically, this means all your code that implements the conversation needs to be instrumented (note that you can call uninstrumented libraries from your conversation freely, provided that those libraries won't call into endpoints.)
+  </p>
+<section name="Runtime instrumentation">
+  <p>
+    The simplest way to instrument your conversation classes is to use <a href="apidocs/index.html?dalma/helpers/ReloadingConversationClassLoader.html"><tt>ReloadingConversationClassLoader</tt></a> or other <tt>ClassLoader</tt>s defined in javaflow to instrument classes at runtime, as seen in the tutorial.
+  </p><p>
+    This does not require any change to your build process, but it has several downsides. The biggest of which is that you'd have to play with multiple <tt>ClassLoader</tt>s. This is often error-prone and cause some of the most tricky bugs. In particular, this makes it difficult for your code outside the engine to access the state of running conversations (such as accessing some fields of conversations from the main thread.)
+  </p>
+</section>
+<section name="Static instrumentation">
+  <p>
+    Alternatively, you can choose to instrument classes as a part of your build process, by using <a href="#">the javaflow Ant task</a> <b>(TODO)</b>. This needs a change to your build script, but at the runtime, you no longer have to use multiple <tt>ClassLoader</tt>s, and hence it eliminates most of the danger that the runtime instrumentation approach has.
+  </p><p>
+    The following example illustrates a typical use of the javaflow ant task:
+  </p>
+<source>
+TBD
+</source>
+</section>
+</body>
+</document>
