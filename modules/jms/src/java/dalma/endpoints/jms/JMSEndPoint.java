@@ -23,6 +23,7 @@ import javax.jms.ObjectMessage;
 import javax.jms.QueueSession;
 import javax.jms.StreamMessage;
 import javax.jms.TextMessage;
+import javax.jms.Session;
 import java.util.Date;
 import java.util.logging.Level;
 
@@ -32,7 +33,7 @@ import java.util.logging.Level;
  * @author Kohsuke Kawaguchi
  */
 public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements MessageListener {
-    private final QueueSession session;
+    private final Session session;
 
     private final MessageProducer sender;
     private final MessageConsumer consumer;
@@ -52,12 +53,13 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
      *      JMS messages are sent/received through this session. must not be null.
      * @param out
      *      The default {@link Destination} where out-going messages are sent to.
-     *      must not be null.
+     *      can be null, in which case every out-going message must have a
+     *      {@link Destination} set (such as when every outgoing message is a reply.)
      * @param in
      *      The {@link Destination} where in-coming messages are picked up.
      *      must not be null.
      */
-    public JMSEndPoint(String name, QueueSession session, Destination out, Destination in) throws JMSException {
+    public JMSEndPoint(String name, Session session, Destination out, Destination in) throws JMSException {
         super(name);
         this.session = session;
         sender =session.createProducer(out);
