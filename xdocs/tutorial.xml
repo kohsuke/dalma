@@ -55,7 +55,7 @@ EmailEndPoint eep = (EmailEndPoint)engine.addEndPoint(
   <p>
     The first parameter is the name of a newly added endpoint. Endpoints are identified by their name inside an engine. Persisted conversations use names to connect back to endpoints when they are resumed.
   </p><p>
-    The second parameter is an endpoint URL (<a href="endpoint.html#endpointURL">more info</a>) that captures the configuration of an endpoint in one string. This somewhat ugly string is convenient because in most cases endpoint configurations are highly environment-dependent and therefore you don't want to hard-code them in your program.
+    The second parameter is an endpoint URL (<a href="endpoint.html#Endpoint_URL">more info</a>) that captures the configuration of an endpoint in one string. This somewhat ugly string is convenient because in most cases endpoint configurations are highly environment-dependent and therefore you don't want to hard-code them in your program.
   </p><p>
     You can also choose to create endpoints programatically, or you can use Spring, Groovy, and etc to configure endpoints. See <a href="configure.html">this document</a> for more details.
   </p><p>

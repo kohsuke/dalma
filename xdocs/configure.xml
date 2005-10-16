@@ -1,22 +1,107 @@
-<document><body>
+<document>
+<properties>
+  <title>Configuring engine</title>
+</properties>
+<body>
 <section name="Configuring engine">
   <p>
     Often a dalma engine needs to be configured in a highly environment-specific way. For example, if you are using the e-mail endpoint, you don't know what the e-mail address you'll bind to until you actually deploy the program. Or you might want to test the workflow application with a different e-mail address.
   </p><p>
     When you are in this situation, it's better not to programatically configure the engine from your application. Instead, consider the following approaches.
   </p>
-  <subsection name="Configuring with Spring">
+  <subsection name="Configuring with Property File">
     <p>
-      Dalma's <tt>Engine</tt> object can be configured from Spring beans framework. The following XML shows a sample Spring bean configuration file:
+      Dalma <tt>Engine</tt> (more precisely its endpoints) can be configured from a property file that simply lists <a href="endpoint.html#Endpoint_URL">endpoint URLs</a> keyed by endpoint names, like this:
     </p>
 <source><![CDATA[
+my-endpoint-1=smtp://hangman@kohsuke.org!pop3://username:password@mail.kohsuke.org
+my-jms-endpoint=jms://?factory=jndi://jms/QueueConnectionFactory&in=jndi://jms/request-queue&out=jndi://jms/response-queue
 ]]></source>
+    <p>
+      Perhaps this is the simplest approach to the endpoint cofiguration. In this way you can also allow the endpoint configurations to be changed at runtime.
+    </p><p>
+      The following code will read this property file and configures an engine:
+    </p>
+<source>
+Properties props = new Properties();
+props.load(new FileInputStream("endpoints.propertie"));
+
+Engine engine = EngineFactory.newEngine(...);
+engine.addEndPoints(props);
+</source>
+  </subsection>
+  <subsection name="Configuring Programatically">
+    <p>
+      Endpoints can be simply built from your Java program like this:
+    </p>
+<source><![CDATA[
+Engine engine = EngineFactory.newEngine(...);
+
+EmailEndPoint eep = new EmailEndPoint(
+  "ep-name",new InternetAddress("Hangman <hangman@kohsuke.org>"),
+  new MailDirListener(new File("./hangman-mails"),3000));
+engine.addEndPoint(eep);
+]]></source>
+    <p>
+      If you endpoint doesn't need to be changed at runtime, this would be the most straight-forward approach.
+    </p>
+  </subsection>
+  <subsection name="Configuring with Bean Scripting Framework">
+    <p>
+      By using a scripting language, such as <a href="http://www.beanshell.org">BeanShell</http>, <a href="http://groovy.codehaus.org/">Groovy</a>, or <a href="http://www.mozilla.org/rhino/">JavaScript</a>, you can achieve the benefit of the runtime configurability without losing the full power of a programming language.
+    </p><p>
+      Dalma <tt>Engine</tt> comes with a convenience method of doing this by using <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework</a>. For example, the following code runs a BeanShell script file <tt>conf/init-engine.bsh</tt>:
+    </p>
+<source>
+engine.configureWithBSF(new File("./conf/init-engine.bsh"));
+</source>
+    <p>
+      ... where <tt>init-engine.bsh</tt> could be written as something like:
+    </p>
+<source>
+import dalma.endpoints.email.*;
+EmailEndPoint eep = new EmailEndPoint(
+  "ep-name",new InternetAddress("Hangman <hangman@kohsuke.org>"),
+  new MailDirListener(new File("./hangman-mails"),3000));
+engine.addEndPoint(eep);
+</source>
+    <p>
+      The 'engine' obejct is made available to the script.
+    </p>
+  </subsection>
+  <subsection name="Configuring with Spring">
+    <p>
+      Dalma <tt>Engine</tt> can be configured from Spring beans framework (although it's somewhat verbose to my personal taste.) The following XML shows a sample Spring bean configuration file:
+    </p>
+<source><![CDATA[<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <bean id="engine" class="dalma.EngineFactory">
+    <property name="endPointURLs">
+      <map>
+        <entry key="endPointName1">
+          <value>smtp://hangman@kohsuke.org!pop3://username:password@mail.kohsuke.org</value>
+        </entry>
+        <entry key="endPointName2">
+          <value>jms://?factory=jndi://jms/QueueConnectionFactory&in=jndi://jms/request-queue&out=jndi://jms/response-queue</value>
+        </entry>
+      </list>
+    </property>
+    <property name="executor">
+      <bean class="dalma.helpers.ThreadPoolExecutor">
+        <constructor-arg type="int">
+          <value>3</value>
+        </constructor-arg>
+      </bean>
+    </property>
+  </bean>
+</beans>]]></source>
     <p>
       Your application can then load this fully configured engine by the following code:
     </p>
 <source>
 XmlBeanFactory xbf = new XmlBeanFactory(new FileSystemResource(new File("dalma-engine.xml")));
-Engine engine = (Engine)xbf.getBean("engine");
+EngineFactory ef = (EngineFactory)xbf.getBean("engine");
+Engine e = ef.newInstance();
 </source>
     <p>
       If you are going to use Dalma within Spring, this would be an obvious choice. Consult <a href="http://www.springframework.org/documentation">Spring documentation</a> for more about Spring,

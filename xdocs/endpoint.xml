@@ -13,6 +13,25 @@
   </p><p>
     An endpoint typically represents one communication channel --- such as an e-mail address, a JMS queue, an IRC connection, etc. An endpoint also typically perform <i>de-multiplexing</i>; for example, more than one conversations may be using one e-mail address at the same time to talk to other systems. When receiving a message, the e-mail endpoint is responsible for delivering it to the right conversation.
   </p>
+  <subsection name="Endpoint name">
+    <p>
+      Inside an engine, endpoints are distinguished by names that uniquely identifies them. For example, there can be two <tt>EmailEndPoint</tt>s but they must have different names. When a suspended conversation is persisted, any reference to endpoints it has will be replaced by their names. When resumed, those names will be resolved to endpoints. This allows an engine to be shut down and restarted with reconfigured endpoints, all transparently from running conversations.
+    </p>
+  </subsection>
+  <subsection name="Endpoint URL">
+    <p>
+      An Endpoint can be programatically instanciated by a series of method/constructor calls, but it can be more conveniently constructed from a string called <i>endpoint URL</i>. You can think of it as configuration of an endpoint packed into one string.
+    </p><p>
+      Each endpoint implementation defines its own URL structure and query parameters, so consult endpoint documentations for details.
+    </p>
+    <ol>
+      <li><a href="dalma-endpoint-mail/endpointURL.html">Email endpoint URL</a></li>
+      <li><a href="dalma-endpoint-jms/endpointURL.html">JMS endpoint URL</a></li>
+    </ol>
+    <p>
+      See <a href="configure.html">this document</a> for more about how to configure an engine by using endpoint URLs.
+    </p>
+  </subsection>
 </section>
 <section name="Writing an endpoint">
   <p>
