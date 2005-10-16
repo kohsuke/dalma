@@ -116,9 +116,8 @@
     </a:tar>
   </goal>
 
-  <goal name="release" prereqs="dist:build"
-    description="builds the distribution files and uploads them to java.net">
+  <preGoal name="javanet:dist">
+    <j:set var="maven.javanet.release.folder" value="/nightly" />
     <j:set var="maven.final.name" value="dalma-${pom.currentVersion}" />
-    <attainGoal name="javanet:dist" />
-  </goal>
+  </preGoal>
 </project>
