@@ -2,6 +2,7 @@ package dalma.endpoints.jms;
 
 import dalma.EndPoint;
 import dalma.ReplyIterator;
+import dalma.Engine;
 import dalma.endpoints.jms.impl.BytesMessageImpl;
 import dalma.endpoints.jms.impl.MapMessageImpl;
 import dalma.endpoints.jms.impl.MessageImpl;
@@ -41,6 +42,21 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
      */
     private MessageHandler newMessageHandler;
 
+    /**
+     * Creates a new {@link JMSEndPoint}.
+     *
+     * @param name
+     *      name that uniquely identifies endpoints inside an {@link Engine}.
+     *      must not be null.
+     * @param session
+     *      JMS messages are sent/received through this session. must not be null.
+     * @param out
+     *      The default {@link Destination} where out-going messages are sent to.
+     *      must not be null.
+     * @param in
+     *      The {@link Destination} where in-coming messages are picked up.
+     *      must not be null.
+     */
     public JMSEndPoint(String name, QueueSession session, Destination out, Destination in) throws JMSException {
         super(name);
         this.session = session;
