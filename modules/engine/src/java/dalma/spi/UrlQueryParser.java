@@ -101,6 +101,13 @@ public class UrlQueryParser {
     }
 
     /**
+     * Returns true if the query has a parameter of the given name.
+     */
+    public boolean has(String key) {
+        return values.containsKey(key);
+    }
+
+    /**
      * Adds all the key/value pairs into the given map.
      */
     public void addTo(Map<? super String,? super String> map) {
