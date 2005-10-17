@@ -1,3 +1,6 @@
+<!DOCTYPE document [
+  <!ENTITY testBsh SYSTEM "../modules/email/src/test/test/test.bsh">
+]>
 <document>
 <properties>
   <title>Configuring engine</title>
@@ -48,7 +51,7 @@ engine.addEndPoint(eep);
   </subsection>
   <subsection name="Configuring with Bean Scripting Framework">
     <p>
-      By using a scripting language, such as <a href="http://www.beanshell.org">BeanShell</http>, <a href="http://groovy.codehaus.org/">Groovy</a>, or <a href="http://www.mozilla.org/rhino/">JavaScript</a>, you can achieve the benefit of the runtime configurability without losing the full power of a programming language.
+      By using a scripting language, such as <a href="http://www.beanshell.org">BeanShell</a>, <a href="http://groovy.codehaus.org/">Groovy</a>, or <a href="http://www.mozilla.org/rhino/">JavaScript</a>, you can achieve the benefit of the runtime configurability without losing the full power of a programming language.
     </p><p>
       Dalma <tt>Engine</tt> comes with a convenience method of doing this by using <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework</a>. For example, the following code runs a BeanShell script file <tt>conf/init-engine.bsh</tt>:
     </p>
@@ -58,13 +61,7 @@ engine.configureWithBSF(new File("./conf/init-engine.bsh"));
     <p>
       ... where <tt>init-engine.bsh</tt> could be written as something like:
     </p>
-<source>
-import dalma.endpoints.email.*;
-EmailEndPoint eep = new EmailEndPoint(
-  "ep-name",new InternetAddress("Hangman <hangman@kohsuke.org>"),
-  new MailDirListener(new File("./hangman-mails"),3000));
-engine.addEndPoint(eep);
-</source>
+    <source>&testBsh;</source>
     <p>
       The 'engine' obejct is made available to the script.
     </p>
