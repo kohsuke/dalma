@@ -3,6 +3,7 @@ package dalma.impl;
 import dalma.Conversation;
 import dalma.EndPoint;
 import dalma.Executor;
+import dalma.Engine;
 import dalma.spi.EndPointFactory;
 import dalma.spi.EngineSPI;
 
@@ -308,11 +309,11 @@ public final class EngineImpl implements EngineSPI, Serializable {
     }
 
     public void configureWithBSF(File scriptFile) throws IOException {
-        BSFManager bsfm = new BSFManager();
-        bsfm.registerBean("engine",this);
         Reader f = new FileReader(scriptFile);
         try {
             try {
+                BSFManager bsfm = new BSFManager();
+                bsfm.declareBean("engine",this, Engine.class);
                 String language = BSFManager.getLangFromFilename(scriptFile.getPath());
                 bsfm.exec(language,scriptFile.getPath(),1,1,IOUtils.toString(f));
             } catch (BSFException e) {
