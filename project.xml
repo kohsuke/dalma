@@ -16,7 +16,7 @@
 
   <organization>
     <url>http://www.java.net/</url>
-    <logo>https://${maven.javanet.project}.dev.java.net/branding/images/header_jnet_new.jpg</logo>
+    <logo>https://${maven.javanet.project}.dev.java.net/maven/images/java.net-logo.png</logo>
   </organization>
   <issueTrackingUrl>https://${maven.javanet.project}.dev.java.net/servlets/ProjectIssues</issueTrackingUrl>
   <mailingLists>
@@ -92,6 +92,12 @@
       </properties>
     </dependency>
 
+    <!-- non-core dependency -->
+    <dependency>
+      <id>bsf</id>
+      <version>2.3.0</version>
+    </dependency>
+
     <!-- test dependency -->
     <dependency>
       <groupId>springframework</groupId>
@@ -102,6 +108,10 @@
       <groupId>springframework</groupId>
       <artifactId>spring-core</artifactId>
       <version>1.2.5</version>
+    </dependency>
+    <dependency>
+      <id>bsh</id>
+      <version>2.0b1</version>
     </dependency>
     <dependency>
       <id>junit</id>
