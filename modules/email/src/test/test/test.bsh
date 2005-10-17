@@ -1,0 +1,8 @@
+import dalma.endpoints.email.*;
+import javax.mail.internet.*;
+import java.io.File;
+
+EmailEndPoint eep = new EmailEndPoint(
+  "ep-name",new InternetAddress("hangman@kohsuke.org"),
+  new MailDirListener(new File("./hangman-mails"),3000));
+engine.addEndPoint(eep);
