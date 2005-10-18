@@ -33,13 +33,17 @@ import java.util.logging.Logger;
  * to deliver e-mails to a running dalma engine without polling.
  *
  * <p>
- * For example, with the following <tt>/var/qmail/alias/.qmail-dalma</tt> file,
- * qmail would deliver newly received e-mails to the running
+ * For example, with the following <tt>/var/qmail/alias/.qmail-dalma</tt>
+ * or <tt>~/.forward</tt> file,
+ * qmail/exim would deliver newly received e-mails to the running
  * dalma engine through a {@link TCPListener}, assuming that it's listening
  * on the port 19550.
  * <pre>
  * | /bin/telnet localhost 19550
  * </pre>
+ *
+ * <p>
+ * Doing this with sendmail requires tinkering with <tt>/etc/aliases</tt>.
  *
  * @author Kohsuke Kawaguchi
  */
