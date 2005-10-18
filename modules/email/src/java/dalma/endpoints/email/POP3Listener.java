@@ -12,6 +12,18 @@ import java.util.logging.Logger;
 /**
  * {@link Listener} that picks up messages from a POP3 server.
  *
+ * <p>
+ * This {@link Listener} periodically connects to a POP3 server
+ * and retrieves e-mails from there. The basic connection parameters
+ * are configured through the constructor, and the rest can be
+ * controlled through JavaMail properties on {@link EmailEndPoint}
+ * (see {@link EmailEndPoint#getSession()}.)
+ *
+ * <p>
+ * Once retrieved, e-mails are deleted from the server, regardless
+ * of whether the processing of the e-mail succeeded or not (Otherwise
+ * this listener will end up reading the same message over and over.)
+ *
  * @author Kohsuke Kawaguchi
  */
 public class POP3Listener extends Listener {
@@ -23,6 +35,19 @@ public class POP3Listener extends Listener {
 
     private static final Logger logger = Logger.getLogger(POP3Listener.class.getName());
 
+    /**
+     * Creates a new {@link POP3Listener}.
+     *
+     * @param host
+     *      Name of the POP3 server, such as "mail.acme.org"
+     *      must not be null.
+     * @param uid
+     *      The user name used to log in to the POP3 server.
+     * @param password
+     *      The password used to log in to the POP3 server.
+     * @param interval
+     *      The polling interval in milliseconds.
+     */
     public POP3Listener(String host, String uid, String password, int interval) {
         this.host = host;
         this.uid = uid;
@@ -46,6 +71,8 @@ public class POP3Listener extends Listener {
         try {
             thread.join();
         } catch (InterruptedException e) {
+            // process this interruption later
+            Thread.currentThread().interrupt();
         }
     }
 

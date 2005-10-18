@@ -5,6 +5,7 @@ import dalma.endpoints.email.EmailEndPoint;
 import dalma.endpoints.email.Listener;
 import dalma.endpoints.email.MailDirListener;
 import dalma.endpoints.email.POP3Listener;
+import dalma.endpoints.email.TCPListener;
 import dalma.spi.EndPointFactory;
 import dalma.spi.UrlQueryParser;
 
@@ -14,6 +15,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.InetSocketAddress;
 import java.text.ParseException;
 import java.util.Properties;
 
@@ -43,6 +45,9 @@ public class EmailEndPointFactory implements EndPointFactory {
             else
             if(listener.startsWith("maildir://"))
                 listenerObject = createMailDirListener(listener,idx+1);
+            else
+            if(listener.startsWith("tcp://"))
+                listenerObject = createTcpListener(listener,idx+1);
             else
                 throw new ParseException("Unsupported scheme: "+listener,idx+1);
 
@@ -133,5 +138,16 @@ public class EmailEndPointFactory implements EndPointFactory {
         int interval = query.getValue("interval",3000);
 
         return new MailDirListener(dir,interval);
+    }
+
+    private Listener createTcpListener(String listener, int startIndex) throws URISyntaxException, ParseException {
+        try {
+            URI uri = new URI(listener);
+            if(uri.getPort()==-1)
+                throw new ParseException("tcp protocol requres a port number",-1);
+            return new TCPListener(new InetSocketAddress(uri.getHost(),uri.getPort()));
+        } catch (URISyntaxException e) {
+            throw new URISyntaxException(e.getInput(),e.getReason(),e.getIndex()+startIndex);
+        }
     }
 }
