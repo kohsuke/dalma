@@ -1,8 +1,11 @@
 <document>
+  <properties>
+    <title>Introduction</title>
+  </properties>
   <body>
     <section name="Overview">
       <p>
-        This e-mail endpoint implements an <a href="/nonav/maven/dalma/apidocs/dalma/EndPoint.html"><tt>Endpoint</tt></a> for the SMTP internet mail system. With this endpoint, a workflow can:
+        This e-mail endpoint is an <a href="../endpoint.html">endpoint</a> for the SMTP internet mail system. With this endpoint, a workflow can:
       </p>
       <ol>
         <li>
@@ -13,14 +16,14 @@
         </li>
       </ol>
       <p>
+        This endpoint is implemented by using JavaMail. Out-going e-mails are sent by talking to a SMTP server. Incoming e-mails can be fetched from various sources, such as POP3, IMAP4, and the <a href="http://en.wikipedia.org/wiki/Maildir">Maildir</a> format.
+        All of them are fetched by polling.
+      </p><p>
         See <a href="apidocs">javadoc</a> and <a href="hangman.xml">Hangman sample</a> for more details.
       </p>
     </section>
     <section name="Configuring End-point">
       <p>
-        This endpoint is implemented by using JavaMail. Out-going e-mails are sent by talking to a SMTP server. Incoming e-mails can be fetched from various sources, such as POP3, IMAP4, and the <a href="http://en.wikipedia.org/wiki/Maildir">Maildir</a> format.
-        All of them are fetched by polling.
-      </p><p>
         This endpoint requires you to configure a few settings through the constructor parameters. There are a large number of other configurations, such as the SMTP server name, that are exposed from JavaMail. See
         <a href="http://java.sun.com/products/javamail/javadocs/com/sun/mail/smtp/package-summary.html">this document for SMTP-related configurations</a>,
         <a href="http://java.sun.com/products/javamail/javadocs/com/sun/mail/pop3/package-summary.html">this document for POP3-related configurations</a>, and
