@@ -45,7 +45,8 @@ public class EmailTest extends WorkflowTestProgram {
     }
 
     public void test() throws Throwable {
-        createConversation(Alice.class,ep2,ep1.getAddress());
+        for( int i=0; i<10; i++ )
+            createConversation(Alice.class,ep2,ep1.getAddress());
         engine.waitForCompletion();
     }
 
