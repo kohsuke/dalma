@@ -2,13 +2,12 @@ package test;
 
 import dalma.TimeUnit;
 import dalma.endpoints.email.EmailEndPoint;
-import dalma.endpoints.email.MailDirListener;
 import dalma.endpoints.email.NewMailHandler;
+import dalma.endpoints.email.TCPListener;
 import dalma.test.Launcher;
 
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.io.File;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.UUID;
@@ -18,13 +17,13 @@ import java.util.UUID;
  *
  * @author Kohsuke Kawaguchi
  */
-public class GeneratorTest extends Launcher implements NewMailHandler {
-    public GeneratorTest(String[] args) throws Exception {
+public class GeneratorDemo extends Launcher implements NewMailHandler {
+    public GeneratorDemo(String[] args) throws Exception {
         super(args);
     }
 
     public static void main(String[] args) throws Exception {
-        new GeneratorTest(args);
+        new GeneratorDemo(args);
     }
 
     EmailEndPoint ep;
@@ -33,7 +32,7 @@ public class GeneratorTest extends Launcher implements NewMailHandler {
         ep = new EmailEndPoint(
             "email",
             new InternetAddress("kohsuke-dalma@griffon.kohsuke.org","dalma engine"),
-            new MailDirListener(new File("mail"),3000));
+            new TCPListener(9920));
         ep.setNewMailHandler(this);
         engine.addEndPoint(ep);
     }
