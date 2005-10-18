@@ -17,7 +17,12 @@ public class BsfTest extends WorkflowTestProgram {
 
     protected void setupEndPoints() throws Exception {
         String url = getClass().getResource("test.bsh").toExternalForm();
-        String file = URLDecoder.decode(url.substring("file:/".length()),"UTF-8");
+        String fileName = url.substring("file:".length());
+        while(fileName.startsWith("/"))
+            fileName = fileName.substring(1);
+        if(File.pathSeparatorChar==':')
+            fileName = '/'+fileName;    // on Unix
+        String file = URLDecoder.decode(fileName,"UTF-8");
         engine.configureWithBSF(new File(file));
     }
 
