@@ -48,6 +48,7 @@ public abstract class Launcher {
 
         engine = new EngineImpl(root,classLoader,new ThreadPoolExecutor(1));
         setUpEndPoints();
+        engine.start();
 
         if(args.length>0) {
             init();
