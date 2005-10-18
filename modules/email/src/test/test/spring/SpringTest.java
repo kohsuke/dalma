@@ -16,6 +16,7 @@ public class SpringTest extends TestCase {
         EngineFactory ef = (EngineFactory)xbf.getBean("engine");
         Engine engine = ef.newInstance();
         assertNotNull(engine.getEndPoint("e-mail"));
+        engine.start();
         engine.stop();
     }
 }

@@ -29,7 +29,5 @@ public class EndPointStringTest extends TestCase {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        engine.stop();
     }
 }
