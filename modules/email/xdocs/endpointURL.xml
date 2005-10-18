@@ -11,8 +11,10 @@
 smtp://<smtp protocol part>!pop3://<pop3 protocol part>
 smtp://<smtp protocol part>!imap4://<imap4 protocol part>
 smtp://<smtp protocol part>!maildir://<maildir protocol part>
+smtp://<smtp protocol part>!tcp://<tcp protocol part>
 ]]></source>
      <p>
+       The second URL specifies the way this endpoint receives incoming messages, and there are four ways to do it.
        The complete example of some e-mail endpoint URLs follow:
      </p>
 <source><![CDATA[
@@ -45,8 +47,35 @@ smtp://daemon@kohsuke.org?mail.imap.socketFactory.class=javax.net.ssl.SSLSocketF
           The other query parameters are simply passed to JavaMail. See <a href="configure.html#Configuring_JavaMail">this document</a> for more about what parameters are available. Note that since this endpoint URL implementation cannot know about all the properties recognized by JavaMail, it does not perform error checks on property names.
        </p>
       </subsection>
+      <subsection name="POP3 protocol part">
+        <p>
+          Using <tt>pop3://...</tt> specifies that the endpoint will use POP3 polling to fetch incoming e-mails. The POP3 portion of the endpoint URL has the following format:
+        </p>
+        </p>
+<source><![CDATA[pop3://<userid>:<password>@<server name>&<query parameters>]]></source>
+        <p>
+           Mandatory <i>userid</i> and <i>password</i> specifies the login information used to connect to the server. The <i>server name</i> portion specifies a host name (or an IP address) of the POP3 server. The following query parameter is defined:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <td>Name</td>
+              <td>Description</td>
+            </tr>
+          </thead><tbody>
+            <tr>
+              <td>interval</td>
+              <td>Specifies the polling interval in milliseconds. If none is given a reasonable default will be picked.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          JavaMail offers <a href="http://java.sun.com/products/javamail/javadocs/com/sun/mail/pop3/package-summary.html">a set of properties that configure its POP3 support</a>. You can set those properties as query parameters on the <tt>smtp://</tt> protocol portion and they will take effect on the POP3 connection.
+        </p>
+      </subsection>
       <subsection name="IMAP4 protocol part">
         <p>
+          Using <tt>imap4://...</tt> specifies that the endpoint will use IMAP4 polling to fetch incoming e-mails.
           IMAP4 portion of the endpoint URL has exactly the same format as POP3, except
           the scheme portion.
         </p>
@@ -57,13 +86,28 @@ smtp://daemon@kohsuke.org?mail.imap.socketFactory.class=javax.net.ssl.SSLSocketF
       </subsection>
       <subsection name="maildir protocol part">
         <p>
-          Maildir portion of the endpoint URL has the following format:
+          Using <tt>maildir://...</tt> specifies that the endpoint will periodically check the specified directory for incoming e-mails. Maildir portion of the endpoint URL has the following format:
         </p>
 <source><![CDATA[maildir://<path-to-maildir>&<query parameters>]]></source>
         <p>
           <i>path-to-maildir</i> is the directory name of the maildir to check. It can be absolute or relative to the current directory of the application. Note that to specify an absolute path name on Unix, the URL will look like <tt>maildir:///var/spool/kohsuke/mail</tt> with three hyphens. On Windows it will look like <tt>maildir://c:/var/spool/kohsuke/mail</tt> with two hyphens.
         </p><p>
           Because Java lacks file system change notification, this connectivity is implemented by polling. The interval of the polling can be changed by using the optional <tt>interval</tt> query parameter. See the POP3 protocol part section for details.
+        </p>
+      </subsection>
+      <subsection name="TCP protocol part">
+        <p>
+          Using <tt>tcp://...</tt> specifies that the endpoint will wait for incoming messages on a TCP port. TCP portion of the endpoint URL has the following format:
+        </p>
+<source><![CDATA[tcp://<host>:<port>/]]></source>
+        <p>
+          The <i>host</i> specifies the IP address to listen to. It can be a host name, or an IP. In particular, it can be <tt>localhost</tt> to indicate that the connections can be made only from the same machine (good for security), or it can be <tt>0.0.0.0</tt> to indicate that the connections can be received from any IP address on the machine (good if you've got a mail server on another machine.)
+        </p><p>
+          The mandatory <i>port</i> specifies the TCP port number to listen to. 
+        </p><p>
+          Unlike other three listeners, the TCP listener does not rely on polling. Instead, it listens on a specified TCP port and waits for clients (usually MTAs) to deliver e-mails through a TCP socket. A client is expected to send one complete e-mail per one connection (including mail headers and body.)
+        </p><p>
+          See <a href="apidocs/index.html?dalma/endpoint/email/TCPListener.html">the javadoc for more details</a>.
         </p>
       </subsection>
     </section>
