@@ -28,7 +28,7 @@ public class IMAP4Listener extends Listener {
         this.uid = uid;
         this.password = password;
         this.interval = interval;
-        this.thread = new Thread(new Runner());
+        this.thread = new Thread(new Runner(),"IMAP4 listener thread for "+uid+'@'+host);
     }
 
     protected void setEndPoint(EmailEndPoint ep) {

@@ -24,7 +24,7 @@ public class MailDirListener extends Listener {
     public MailDirListener(File dir, int interval) {
         this.dir = dir;
         this.interval = interval;
-        this.thread = new Thread(new Runner());
+        this.thread = new Thread(new Runner(),"MailDir listener thread for "+dir.getPath());
     }
 
     protected void setEndPoint(EmailEndPoint ep) {

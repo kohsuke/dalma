@@ -54,7 +54,7 @@ public class POP3Listener extends Listener {
         this.password = password;
         this.interval = interval;
 
-        thread = new Thread(new Runner());
+        thread = new Thread(new Runner(),"POP3 listener thread for "+uid+'@'+host);
     }
 
     protected void setEndPoint(EmailEndPoint ep) {
