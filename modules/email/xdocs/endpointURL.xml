@@ -51,7 +51,6 @@ smtp://daemon@kohsuke.org?mail.imap.socketFactory.class=javax.net.ssl.SSLSocketF
         <p>
           Using <tt>pop3://...</tt> specifies that the endpoint will use POP3 polling to fetch incoming e-mails. The POP3 portion of the endpoint URL has the following format:
         </p>
-        </p>
 <source><![CDATA[pop3://<userid>:<password>@<server name>&<query parameters>]]></source>
         <p>
            Mandatory <i>userid</i> and <i>password</i> specifies the login information used to connect to the server. The <i>server name</i> portion specifies a host name (or an IP address) of the POP3 server. The following query parameter is defined:
