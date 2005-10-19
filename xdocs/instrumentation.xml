@@ -12,8 +12,14 @@
   <p>
     The simplest way to instrument your conversation classes is to use <a href="apidocs/index.html?dalma/helpers/ParallelInstrumentingClassLoader.html"><tt>ParallelInstrumentingClassLoader</tt></a> or other <tt>ClassLoader</tt>s defined in javaflow to instrument classes at runtime, as seen in the tutorial.
   </p><p>
+    
     This does not require any change to your build process, but it has several downsides. The biggest of which is that you'd have to play with multiple <tt>ClassLoader</tt>s. This is often error-prone and cause some of the most tricky bugs. In particular, this makes it difficult for your code outside the engine to access the state of running conversations (such as accessing some fields of conversations from the main thread.)
+    
+    See the following picture. In this approach, your conversation class "Foo" gets loaded twice by two <tt>ClassLoader</tt>s.
   </p>
+  <div align="center">
+  	<img src="classloader.png" />
+  </div>
 </section>
 <section name="Static instrumentation">
   <p>
