@@ -9,13 +9,11 @@ import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 /**
@@ -38,6 +36,8 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      * The JavaMail configuration.
      */
     private final Session session;
+
+    private final SenderThread sender;
 
     /**
      * Creates a new e-mail end point.
@@ -89,6 +89,7 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
         this.address = address;
         this.listener = listener;
         this.session = session;
+        this.sender = new SenderThread(session);
         if(address==null || listener==null || session==null)
             throw new IllegalArgumentException();
         listener.setEndPoint(this);
@@ -96,10 +97,12 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
 
     protected void start() {
         listener.start();
+        sender.start();
     }
 
     protected void stop() {
         listener.stop();
+        sender.shutDown();
     }
 
     /**
@@ -209,7 +212,7 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
             UUID uuid = UUID.randomUUID();
             msg.setHeader("Message-ID",'<'+uuid.toString()+"@localhost>");
 
-            Transport.send(msg);
+            sender.queue(msg);
 
             return uuid;
         } catch (MessagingException e) {
