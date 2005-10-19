@@ -5,7 +5,7 @@
 <body>
 <section name="What is endpoint?">
   <p>
-    An endpoint is a library that plugs into the Dalma engine and provides connectivity to the outside world for conversations.
+    An endpoint is a library that plugs into the Dalma engine and provides connectivity to the outside world for conversations. It derives from <a href="dalma/apidocs/dalma/EndPoint.html">EndPoint</a> class.
   </p>
   <img src="endpoint.png" />
   <p>
