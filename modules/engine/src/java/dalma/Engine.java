@@ -165,6 +165,10 @@ public interface Engine {
      * This method must be called after all the {@link EndPoint}s are
      * added to the engine, and before a conversation is submitted.
      *
+     * <p>
+     * This method may throw an exception if any of the dalma components
+     * (such as the engine and endpoints) fail to start correctly.
+     *
      * @throws IllegalStateException
      *      if the engin has already been started.
      */

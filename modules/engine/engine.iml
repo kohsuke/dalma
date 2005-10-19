@@ -63,6 +63,18 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/test/bsh-2.0b4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../lib/test/bsh-2.0b4-src.zip!/BeanShell-2.0b4/bsf/src" />
+          <root url="jar://$MODULE_DIR$/../../lib/test/bsh-2.0b4-src.zip!/BeanShell-2.0b4/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
   <component name="org.mevenide.idea.module.ModuleSettings">
