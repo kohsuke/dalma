@@ -20,7 +20,7 @@ import java.io.IOException;
  *
  * @author Kohsuke Kawaguchi
  */
-public class ReloadingConversationClassLoader extends ClassLoader {
+public class ParallelInstrumentingClassLoader extends ClassLoader {
     private ResourceTransformer transformer = new BcelClassTransformer();
 
     private final String prefix;
@@ -37,7 +37,7 @@ public class ReloadingConversationClassLoader extends ClassLoader {
      *      "org.acme.foo.Abc" or "org.acme.foo.bar.Zot" will be instrumented,
      *      but not "org.acme.Joe" or "org.acme.foobar.Zot".
      */
-    public ReloadingConversationClassLoader(ClassLoader parent, String prefix) {
+    public ParallelInstrumentingClassLoader(ClassLoader parent, String prefix) {
         super(parent);
         this.prefix = prefix;
         if(prefix==null)

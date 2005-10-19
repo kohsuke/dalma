@@ -3,14 +3,13 @@ package dalma;
 import dalma.impl.EngineImpl;
 import dalma.helpers.ThreadPoolExecutor;
 import dalma.helpers.Java5Executor;
-import dalma.helpers.ReloadingConversationClassLoader;
+import dalma.helpers.ParallelInstrumentingClassLoader;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.concurrent.Executors;
 
 /**
@@ -142,7 +141,7 @@ public class EngineFactory {
      *      of JRE, then a single worker thread is used to run conversations.
      *
      * @param packagePrefix
-     *      String like "org.acme.foo." See {@link ReloadingConversationClassLoader#ReloadingConversationClassLoader(ClassLoader, String)}
+     *      String like "org.acme.foo." See {@link ParallelInstrumentingClassLoader#ReloadingConversationClassLoader(ClassLoader, String)}
      *      for details.
      */
     public static Engine newEngine(String packagePrefix) throws IOException {
@@ -156,7 +155,7 @@ public class EngineFactory {
             exec = new ThreadPoolExecutor(1);
         }
 
-        ClassLoader cl = new ReloadingConversationClassLoader(
+        ClassLoader cl = new ParallelInstrumentingClassLoader(
             EngineFactory.class.getClassLoader(), packagePrefix );
 
         return newEngine(new File("dalma"), cl, exec );
