@@ -12,8 +12,6 @@ TODO
     - consider integrating with Exchange Server
     - consider sendmail integration
 
-    - is it possible to share the same transport session to send multiple e-mails?
-
     - put a picture in the 'bytecode instrumentation' section
     - 'redistribution' page
 
@@ -21,3 +19,13 @@ Notes
 =====
 - MimeMessage is not serializable
   this makes it ugly to work with e-mails.
+
+James integration
+=================
+- Wraps a Dalma to as a phoenix component
+  then you can connect to it from a mailet like this (replace UserStore with DalmaPhoenixWrapper):
+
+  (From AvalonListservManager:)
+  ComponentManager compMgr = (ComponentManager)getMailetContext().getAttribute(Constants.AVALON_COMPONENT_MANAGER);
+  UsersStore usersStore = (UsersStore) compMgr.lookup("org.apache.james.services.UsersStore");
+
