@@ -125,6 +125,24 @@ public class EngineFactory {
     }
 
     /**
+     * Creates or loads a new {@link Engine} with a single invocation.
+     *
+     * <p>
+     * This method is a convenient version of {@link #newEngine(File, ClassLoader, Executor)}
+     * that uses the current thread's context class loader.
+     *
+     * @param rootDir
+     *      see {@link #setRootDir(File)}
+     * @param executor
+     *      see {@link #setExecutor(Executor)}
+     */
+    public static Engine newEngine(File rootDir,Executor executor) throws IOException {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        if(cl==null)    cl = EngineFactory.class.getClassLoader();
+        return newEngine(rootDir,cl,executor);
+    }
+
+    /**
      * The easiest way to create a new {@link Engine}.
      *
      * <p>
@@ -141,7 +159,7 @@ public class EngineFactory {
      *      of JRE, then a single worker thread is used to run conversations.
      *
      * @param packagePrefix
-     *      String like "org.acme.foo." See {@link ParallelInstrumentingClassLoader#ReloadingConversationClassLoader(ClassLoader, String)}
+     *      String like "org.acme.foo." See {@link ParallelInstrumentingClassLoader#ParallelInstrumentingClassLoader(ClassLoader, String)}
      *      for details.
      */
     public static Engine newEngine(String packagePrefix) throws IOException {
