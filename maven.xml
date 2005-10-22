@@ -136,4 +136,15 @@
     <j:set var="maven.javanet.release.folder" value="/nightly" />
     <j:set var="maven.final.name" value="dalma-${pom.currentVersion}" />
   </preGoal>
+
+  <goal name="clean">
+    <attainGoal name="multiproject:projects-init" />
+    <m:reactor
+      basedir="${maven.multiproject.basedir}"
+      includes="${maven.multiproject.includes}"
+      excludes="${maven.multiproject.excludes}"
+      goals="clean"
+    />
+  </goal>
+
 </project>
