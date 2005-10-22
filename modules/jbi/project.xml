@@ -21,6 +21,7 @@
       <jar>jbi.jar</jar>
       <properties>
         <jar.manifest.classpath>true</jar.manifest.classpath>
+        <dist>endpoint</dist>
       </properties>
     </dependency>
     <!-- test dependency -->
