@@ -10,7 +10,6 @@
     <menu name="Dalma E-mail Endpoint">
       <item name="Home"                    href="index.html"/>
       <item name="Endpoint URL"            href="endpointURL.html"/>
-      <item name="Hangman sample"          href="hangman.html" />
     </menu>
   </body>
 </project>

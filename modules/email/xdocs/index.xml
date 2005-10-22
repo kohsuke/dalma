@@ -12,19 +12,18 @@
           send an e-mail and block until a reply is received
         </li>
         <li>
-          start a new conversation when a new e-mail is received
+          do something (like starting a new conversation) when a new e-mail is received
         </li>
       </ol>
       <p>
         This endpoint is implemented by using JavaMail. Out-going e-mails are sent by talking to a SMTP server. Incoming e-mails can be fetched from various sources, such as POP3, IMAP4, and the <a href="http://en.wikipedia.org/wiki/Maildir">Maildir</a> format.
-        All of them are fetched by polling.
       </p><p>
-        See <a href="apidocs">javadoc</a> and <a href="hangman.xml">Hangman sample</a> for more details.
+        See <a href="apidocs/">javadoc</a> and <a href="../hangman.html">Hangman sample</a> for more details.
       </p>
     </section>
     <section name="Configuring End-point">
       <p>
-        This endpoint requires you to configure a few settings through the constructor parameters. There are a large number of other configurations, such as the SMTP server name, that are exposed from JavaMail. See
+        This endpoint requires you to configure a few settings through the endpoint URLs or the constructor parameters. There are a large number of other configurations, such as the SMTP server name, that are exposed from JavaMail. See
         <a href="http://java.sun.com/products/javamail/javadocs/com/sun/mail/smtp/package-summary.html">this document for SMTP-related configurations</a>,
         <a href="http://java.sun.com/products/javamail/javadocs/com/sun/mail/pop3/package-summary.html">this document for POP3-related configurations</a>, and
         <a href="http://java.sun.com/products/javamail/javadocs/com/sun/mail/imap/package-summary.html">this document for IMAP-related configurations</a>.
