@@ -6,15 +6,14 @@ import dalma.test.WorkflowTestProgram;
 import junit.textui.TestRunner;
 import org.activemq.ActiveMQConnectionFactory;
 
+import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.Queue;
 import javax.jms.QueueConnection;
 import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import javax.jms.Queue;
-import javax.jms.JMSException;
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -55,7 +54,6 @@ public class JMSTest extends WorkflowTestProgram implements MessageHandler {
         // for now
         Thread.sleep(3000);
         engine.waitForCompletion();
-        engine.checkError();
     }
 
     protected void tearDown() throws Exception {
