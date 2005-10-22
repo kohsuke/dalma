@@ -198,11 +198,11 @@ public final class EngineImpl implements EngineSPI, Serializable {
                     } catch( Error t ) {
                         // if the conversation stops unexpectedly, kill that conversation
                         // because we won't be able to resume it.
-                        errors.add(t);
+                        addToErrorQueue(t);
                         conv.remove();
                     } catch( RuntimeException e ) {
                         // ditto
-                        errors.add(e);
+                        addToErrorQueue(e);
                         conv.remove();
                     } finally {
                         if(old==null)
@@ -213,10 +213,17 @@ public final class EngineImpl implements EngineSPI, Serializable {
                 } catch(Throwable t) {
                     // even if the error recovery process fails,
                     // don't let the worker thread die.
-                    errors.add(t);
+                    addToErrorQueue(t);
                 }
             }
         });
+    }
+
+    private void addToErrorQueue(Throwable t) {
+        synchronized(errors) {
+            errors.add(t);
+            errors.notify();
+        }
     }
 
     /**
@@ -404,15 +411,22 @@ public final class EngineImpl implements EngineSPI, Serializable {
             }
     }
 
-    public void checkError() {
+    public void checkError() throws InterruptedException {
         makeSureStarted();
-        if(!errors.isEmpty()) {
+        synchronized(errors) {
+            while(errors.isEmpty()) {
+                wait();
+            }
             Throwable t = errors.remove(0);
             if(t instanceof Error)
                 throw (Error)t;
             else
                 throw (RuntimeException)t;
         }
+    }
+
+    public boolean hasError() {
+        return !errors.isEmpty();
     }
 
     ConversationImpl getConversation(int id) {

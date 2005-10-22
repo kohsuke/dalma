@@ -196,6 +196,13 @@ public interface Engine {
 
     /**
      * Waits until all the conversation in the engine exits.
+     *
+     * <p>
+     * This is different from the {@link #stop()} method;
+     * this method simply blocks the calling thread until
+     * all the conversations in this engine completes.
+     * Just because there's no conversation in the engine doesn't mean
+     * that the engine is going to shutdown.
      */
     void waitForCompletion() throws InterruptedException;
 
@@ -213,8 +220,14 @@ public interface Engine {
      * an {@link Error} or {@link RuntimeException}, respectively.
      *
      * <p>
-     * If the error queue is empty, this method simply returns without
-     * blocking.
+     * If the error queue is empty, this method blocks.
      */
-    void checkError();
+    void checkError() throws InterruptedException;
+
+    /**
+     * Returns true if the error queue is empty.
+     *
+     * @see #checkError()
+     */
+    boolean hasError();
 }
