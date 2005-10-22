@@ -85,6 +85,22 @@
       <dalma:copy-deps pom="${p}" out="${moduleOut}" kind="endpoint" />
     </j:forEach>
 
+    <!-- copy sample applications -->
+    <a:copy todir="${out}">
+      <a:fileset dir=".">
+        <a:include name="samples/*/build.xml" />
+      </a:fileset>
+      <a:filterset begintoken="$" endtoken="}">
+        <a:filter token="{VERSION" value="${pom.currentVersion}" />
+      </a:filterset>
+    </a:copy>
+    <a:copy todir="${out}">
+      <a:fileset dir=".">
+        <a:include name="samples/*/*.txt" />
+        <a:include name="samples/*/src/**/*" />
+      </a:fileset>
+    </a:copy>
+
     <!-- build binary archive files -->
     <a:mkdir dir="${maven.dist.dir}" />
     <j:set var="prefix" value="dalma-${pom.currentVersion}" />
