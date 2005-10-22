@@ -239,6 +239,9 @@
       <module fileurl="file://$PROJECT_DIR$/dalma.iml" filepath="$PROJECT_DIR$/dalma.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/email/email.iml" filepath="$PROJECT_DIR$/modules/email/email.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/engine/engine.iml" filepath="$PROJECT_DIR$/modules/engine/engine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/hangman/hangman.iml" filepath="$PROJECT_DIR$/samples/hangman/hangman.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/james/james.iml" filepath="$PROJECT_DIR$/modules/james/james.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/jbi/jbi.iml" filepath="$PROJECT_DIR$/modules/jbi/jbi.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/jms/jms.iml" filepath="$PROJECT_DIR$/modules/jms/jms.iml" />
     </modules>
   </component>
