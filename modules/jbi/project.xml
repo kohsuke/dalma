@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <pomVersion>3</pomVersion>
+  <extend>../../project.xml</extend>
+  <name>Dalma JBI endpoint</name>
+  <id>dalma-endpoint-jbi</id>
+  <description>endpoint that connects to Java Business Integration</description>
+  <shortDescription>JBI endpoint for dalma</shortDescription>
+  
+  <dependencies>
+    <dependency>
+      <id>dalma</id>
+      <version>${pom.currentVersion}</version>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>jbi</id>
+      <version>1.0</version>
+      <jar>jbi.jar</jar>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+      </properties>
+    </dependency>
+    <!-- test dependency -->
+  </dependencies>
+</project>
