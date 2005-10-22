@@ -54,6 +54,7 @@
       <version>trunk</version>
       <properties>
         <dist>engine</dist>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
     </dependency>
     <dependency>
@@ -86,6 +87,15 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>1.0</version>
+      <properties>
+        <dist>engine</dist>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+      <version>1.0.4</version>
       <properties>
         <dist>engine</dist>
         <jar.manifest.classpath>true</jar.manifest.classpath>
