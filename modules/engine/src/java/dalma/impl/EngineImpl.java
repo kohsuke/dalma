@@ -330,7 +330,11 @@ public final class EngineImpl implements EngineSPI, Serializable {
                 bsfm.declareBean("engine",this, Engine.class);
                 String language = BSFManager.getLangFromFilename(scriptFile.getPath());
                 bsfm.exec(language,scriptFile.getPath(),1,1,IOUtils.toString(f));
-            } catch (BSFException e) {
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                // we'd really like to just catch BSFException, but if I do that,
+                // we'll need BSF just to load this class
                 IOException x = new IOException(e.getMessage());
                 x.initCause(e);
                 throw x;
