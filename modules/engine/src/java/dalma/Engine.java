@@ -207,27 +207,21 @@ public interface Engine {
     void waitForCompletion() throws InterruptedException;
 
     /**
-     * Checks if conversations in the engine had any fatal error.
+     * Gets the {@link ErrorHandler}.
      *
-     * <p>
-     * If a conversation in this engine dies by throwing an {@link Error}
-     * or {@link RuntimeException}, the engine puts such exception in
-     * the 'error queue' and kills that conversation.
-     *
-     * <p>
-     * Applications can invoke this method to check the error queue.
-     * If there's any error in the queue, this method throws it as
-     * an {@link Error} or {@link RuntimeException}, respectively.
-     *
-     * <p>
-     * If the error queue is empty, this method blocks.
+     * This method returns the value set by the last {@link #setErrorHandler(ErrorHandler)}
+     * invocation. The property is initially null, in which case the engine uses
+     * {@link ErrorHandler#DEFAULT}.
      */
-    void checkError() throws InterruptedException;
+    ErrorHandler getErrorHandler();
 
     /**
-     * Returns true if the error queue is empty.
+     * Sets the {@link ErrorHandler}.
      *
-     * @see #checkError()
+     * <p>
+     * This {@link ErrorHandler} receives uncaught exceptions thrown from conversations.
+     *
+     * @see ErrorHandler
      */
-    boolean hasError();
+    void setErrorHandler(ErrorHandler errorHandler);
 }

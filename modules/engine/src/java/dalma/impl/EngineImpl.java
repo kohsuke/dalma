@@ -2,17 +2,21 @@ package dalma.impl;
 
 import dalma.Conversation;
 import dalma.EndPoint;
-import dalma.Executor;
 import dalma.Engine;
+import dalma.ErrorHandler;
+import dalma.Executor;
 import dalma.spi.EndPointFactory;
 import dalma.spi.EngineSPI;
+import org.apache.bsf.BSFException;
+import org.apache.bsf.BSFManager;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
-import java.io.Serializable;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -20,17 +24,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.bsf.BSFManager;
-import org.apache.bsf.BSFException;
-import org.apache.commons.io.IOUtils;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -96,14 +94,14 @@ public final class EngineImpl implements EngineSPI, Serializable {
     transient final Object completionLock = new Object();
 
     /**
-     * Uncaught exceptions that are thrown by the conversations.
-     */
-    transient final List<Throwable> errors = new Vector<Throwable>();
-
-    /**
      * True once the engine is started.
      */
     transient private boolean started;
+
+    /**
+     * Possibly null {@link ErrorHandler}.
+     */
+    transient private ErrorHandler errorHandler;
 
     public EngineImpl(File rootDir,ClassLoader classLoader,Executor executor) throws IOException {
         this.rootDir = rootDir;
@@ -216,14 +214,23 @@ public final class EngineImpl implements EngineSPI, Serializable {
                     addToErrorQueue(t);
                 }
             }
+
         });
     }
 
     private void addToErrorQueue(Throwable t) {
-        synchronized(errors) {
-            errors.add(t);
-            errors.notify();
-        }
+        if(errorHandler==null)
+            ErrorHandler.DEFAULT.onError(t);
+        else
+            errorHandler.onError(t);
+    }
+
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
+
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
     /**
@@ -409,24 +416,6 @@ public final class EngineImpl implements EngineSPI, Serializable {
             synchronized(completionLock) {
                 completionLock.wait();
             }
-    }
-
-    public void checkError() throws InterruptedException {
-        makeSureStarted();
-        synchronized(errors) {
-            while(errors.isEmpty()) {
-                wait();
-            }
-            Throwable t = errors.remove(0);
-            if(t instanceof Error)
-                throw (Error)t;
-            else
-                throw (RuntimeException)t;
-        }
-    }
-
-    public boolean hasError() {
-        return !errors.isEmpty();
     }
 
     ConversationImpl getConversation(int id) {
