@@ -137,7 +137,7 @@
     <j:set var="maven.final.name" value="dalma-${pom.currentVersion}" />
   </preGoal>
 
-  <goal name="clean">
+  <goal name="multiproject:clean">
     <attainGoal name="multiproject:projects-init" />
     <m:reactor
       basedir="${maven.multiproject.basedir}"
