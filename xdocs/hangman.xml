@@ -1,0 +1,87 @@
+<document>
+  <properties>
+    <title>Hangman sample</title>
+  </properties>
+  <body>
+    <section name="Overview">
+      <p>
+        Dalma engine ships with the hangman example that implements <a href="http://en.wikipedia.org/wiki/Hangman">the hangman game</a> by using <a href="dalma-endpoint-email/">the e-mail endpoint</a>.
+      </p>
+      <subsection name="How to run">
+        <p>
+          First, build the sample as follows. This will compile the sample into a jar file.
+        </p>
+<source>
+$ cd /paht/to/the/distribution/dir
+$ cd samples/hangman
+$ ant
+</source>
+        <p>
+          To run this sample, type the following command:
+        </p>
+<source>
+$ java -jar target/hangman.jar &lt;email endpointURL>
+</source>
+        <p>
+          The <i>&lt;email endpointURL></i> specifies how the program connects to the mail server. It can be something like <tt>"smtp://hangman@kohsuke.org!pop3://userid:password@mail.kohsuke.org/"</tt>. See <a href="dalma-endpoint-email/endpointURL.html">this document for details</a>
+        </p>
+        <p>
+          If started successfully, you'll see the following message:
+        </p>
+        <source>engine started and ready for action</source>
+        <p>
+        	Now you can write an e-mail to the e-mail address you specified in the above endpoint URL, and it will start a new hangman game. When the e-mail is received by the program, you'll see the following message:
+        </p>
+        <source><![CDATA[Starting a new game for Kohsuke Kawaguchi <kohsuke.kawaguchi@sun.com>]]></source>
+        <p>
+          And the program sends a reply e-mail like this:
+        </p>
+<source>
+Word: _ _ _ _
+
+You Chose: __________________________
+
+6 more guesses
+</source>
+        <p>
+          Pick a character from A to Z by replying to this e-mail, like this:
+        </p>
+<source>
+hangman@kohsuke.org wrote:
+> Word: _ _ _ _
+> 
+> You Chose: __________________________
+> 
+> 6 more guesses
+> 
+> 
+
+x
+
+-- 
+Kohsuke Kawaguchi
+Sun Microsystems                   kohsuke.kawaguchi@sun.com
+</source>
+        <p>
+          When this e-mail gets delivered to the program, it prints out the following line, and sends back a reply. Repeat this process until you find the correct answer, or you run out of your chances.
+        </p>
+        <source><![CDATA[Received a reply from Kohsuke Kawaguchi <kohsuke.kawaguchi@sun.com>]]></source>
+        <p>
+          The conversation logic is implemented in the <a href="/source/browse/dalma/dalma/samples/hangman/src/java/dalma/sample/hangman/HangmanWorkflow.java?view=markup"><tt>HangmanWorkflow</tt></a> class, and it should be straight-forward to follow.
+        </p>
+      </subsection>
+      <subsection name="More about this game">
+        <p>
+          This sample can handle multiple concurrent hangman games very naturally --- there will be one instance of <tt>HangmanWorkflow</tt> for one on-going game. Send mutliple e-mails to the program from a single e-mail address, and you can see that they create different Hangman games.
+        </p><p>
+          The other experiment you should do is to kill the program and restart it. Dalma persists the state of on-going conversations, so information about the on-going hangman games will survive the VM shutdown.
+        </p>
+      </subsection>
+      <subsection name="Source code">
+        <p>
+          <a href="/source/browse/dalma/dalma/samples/hangman/src/java/dalma/sample/hangman/">See the complete source code online.</a>
+        </p>
+      </subsection>
+    </section>
+  </body>
+</document>

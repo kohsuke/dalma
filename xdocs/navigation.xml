@@ -10,6 +10,7 @@
       <item name="Home"                         href="index.html"/>
       <item name="Download"                     href="https://dalma.dev.java.net/servlets/ProjectDocumentList" />
       <item name="Tutorial"                     href="tutorial.html" />
+      <item name="Hangman example"              href="hangman.html" />
     </menu>
 
     <menu name="Components">
