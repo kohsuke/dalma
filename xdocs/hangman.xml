@@ -76,10 +76,13 @@ Sun Microsystems                   kohsuke.kawaguchi@sun.com
         </p><p>
           The other experiment you should do is to kill the program and restart it. Dalma persists the state of on-going conversations, so information about the on-going hangman games will survive the VM shutdown.
         </p>
-      </subsection>
-      <subsection name="Source code">
         <p>
-          <a href="/source/browse/dalma/dalma/samples/hangman/src/java/dalma/sample/hangman/">See the complete source code online.</a>
+          You can browse <a href="/source/browse/dalma/dalma/samples/hangman/src/java/dalma/sample/hangman/">the complete source code online</a>.
+        </p>
+      </subsection>
+      <subsection name="But I don't have a mail account I can play with!">
+        <p>
+          I deployed this sample at <tt>hangman at kohsuke dot org</tt>, so you can write to this e-mail address and play the hangman game. To make it interesting, this program shuts down every half an hour and restarted half an hour later.
         </p>
       </subsection>
     </section>
