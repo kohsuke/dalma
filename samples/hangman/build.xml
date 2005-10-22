@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<project name="dalma-hangman" default="jar">
+
+  <path id="hangman.path">
+    <!-- dalma engine -->
+    <fileset dir="../.." includes="*.jar" />
+    <!-- email endpoint -->
+    <fileset dir="../.." includes="email/*.jar" />
+  </path>
+
+  <target name="compile">
+    <mkdir dir="target/classes" />
+    <javac srcdir="src/java" destdir="target/classes">
+      <classpath refid="hangman.path" />
+    </javac>
+  </target>
+
+  <target name="instrument" depends="compile">
+    <taskdef name="javaflow"
+             classname="org.apache.commons.javaflow.ant.AntRewriteTask"
+             classpathref="hangman.path" />
+    <javaflow srcdir="target/classes" destdir="target/classes">
+      <include name="**/*Workflow.class" />
+    </javaflow>
+  </target>
+
+  <target name="jar" depends="instrument">
+    <jar file="target/hangman.jar">
+      <manifest>
+        <attribute name="Class-Path" value="../../../dalma-${VERSION}.jar ../../../email/dalma-endpoint-email-${VERSION}.jar" />
+        <attribute name="Main-Class" value="dalma.sample.hangman.Main" />
+      </manifest>
+      <fileset dir="target/classes" />
+      <fileset dir="src/java" />
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="target" />
+    <delete dir="hangman-data" />
+  </target>
+</project>
