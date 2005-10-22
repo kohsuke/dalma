@@ -58,11 +58,8 @@ public class HangmanWorkflow implements Runnable, Serializable {
                 System.out.println("Received a reply from "+mail.getFrom()[0]);
 
                 // pick up the char the user chose
-                String body = getMailBody(mail.getContent()).trim();
-                if(body.length()!=1)
-                    continue;
-                char ch = Character.toLowerCase(body.charAt(0));
-                if(ch<'a' || 'z'<ch)
+                char ch =getSelectedChar(mail.getContent());
+                if(ch==0)
                     continue;
 
                 if(word.indexOf(ch)<0) {
@@ -90,13 +87,31 @@ public class HangmanWorkflow implements Runnable, Serializable {
     }
 
     /**
+     * Picks up a character chosen by the user.
+     *
+     * The algorithm is to find the first line that contains just one character.
+     */
+    private static char getSelectedChar(Object content) throws MessagingException, IOException {
+        String body = getMailBody(content);
+        for( String line : body.split("\n") ) {
+            line = line.trim();
+            if(line.length()==1) {
+                char ch = Character.toLowerCase(line.charAt(0));
+                if('a'<=ch && ch<='z')
+                    return ch;
+            }
+        }
+        return 0;
+    }
+
+    /**
      * Obtains the mail body as a string.
      *
      * E-mail contents can be delivered in so many forms
      * (plain text, HTML, or S/MIME packaged, ...), so this has to be
      * somewhat arbitrary and ugly.
      */
-    private String getMailBody(Object content) throws MessagingException, IOException {
+    private static String getMailBody(Object content) throws MessagingException, IOException {
         if(content instanceof MimeMultipart) {
             MimeMultipart mp= (MimeMultipart) content;
             return getMailBody(mp.getBodyPart(0).getContent());
