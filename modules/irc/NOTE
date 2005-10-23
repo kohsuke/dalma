@@ -1,0 +1,13 @@
+RFCs
+    http://www.irchelp.org/irchelp/rfc/
+    2810,2811,2812,2813
+
+channel names are case insensitive (RFC2811/2.1)
+channel names are prefixed by '&', '#', '+' or '!' (RFC2811/2.1)
+    '&' : server local
+    '+' : no channel mode support
+    '!' : channel created by the user
+
+channel mode list (RFC2811/4)
+512 chars per one command max (RFC2812/2.3)
+

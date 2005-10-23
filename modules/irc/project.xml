@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <pomVersion>3</pomVersion>
+  <extend>../../project.xml</extend>
+  <name>Dalma IRC endpoint</name>
+  <id>dalma-endpoint-irc</id>
+  <description>endpoint that connects to the IRC system</description>
+  <shortDescription>IRC endpoint for dalma</shortDescription>
+  
+  <dependencies>
+    <dependency>
+      <id>dalma</id>
+      <version>${pom.currentVersion}</version>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>martyr</id>
+      <version>0.3.9</version>
+      <jar>martyr.jar</jar>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+        <dist>endpoint</dist>
+      </properties>
+    </dependency>
+  </dependencies>
+</project>
