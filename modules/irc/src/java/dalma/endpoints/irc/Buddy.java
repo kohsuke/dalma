@@ -1,6 +1,6 @@
 package dalma.endpoints.irc;
 
-import dalma.Dock;
+import java.io.Serializable;
 
 /**
  * An IRC user (and an implicit {@link Session} that represents
@@ -8,7 +8,7 @@ import dalma.Dock;
  *
  * @author Kohsuke Kawaguchi
  */
-public class Buddy {
+public class Buddy implements Serializable {
     /*package*/ String name;
 
     private final IRCEndPoint endpoint;
@@ -59,4 +59,5 @@ public class Buddy {
         chat = null;
     }
 
+    private static final long serialVersionUID = 1L;
 }

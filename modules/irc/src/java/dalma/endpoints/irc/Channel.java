@@ -6,11 +6,13 @@ import f00f.net.irc.martyr.commands.JoinCommand;
 import f00f.net.irc.martyr.commands.KickCommand;
 import f00f.net.irc.martyr.commands.PartCommand;
 import f00f.net.irc.martyr.commands.RawCommand;
+import f00f.net.irc.martyr.commands.MessageCommand;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Represents a channel in IRC.
@@ -19,6 +21,11 @@ import java.util.List;
  */
 public final class Channel extends Session {
     private final String name;
+
+    /**
+     * True if the endpoint is a member of this channel.
+     */
+    private boolean joined;
 
 
     public Channel(IRCEndPoint endpoint,String name) {
@@ -35,12 +42,33 @@ public final class Channel extends Session {
         return name;
     }
 
-    public void join() {
+    /**
+     * Join this channel.
+     *
+     * @throws IllegalStateException
+     *      if we've already joined this channel.
+     */
+    public synchronized void join() {
+        makeSureNotJoined();
         endpoint.connection.sendCommand(new JoinCommand(name));
+        joined = true;
     }
 
-    public void join(String secret) {
+    /**
+     * Join this channel.
+     *
+     * @throws IllegalStateException
+     *      if we've already joined this channel.
+     */
+    public synchronized void join(String secret) {
+        makeSureNotJoined();
         endpoint.connection.sendCommand(new JoinCommand(name,secret));
+        joined = true;
+    }
+
+    private synchronized void makeSureNotJoined() {
+        if(joined)
+            throw new IllegalStateException("already joined");
     }
 
     /**
@@ -58,6 +86,7 @@ public final class Channel extends Session {
     }
 
     public void knock(String msg) {
+        makeSureNotJoined();
         endpoint.connection.sendCommand(new RawCommand(name,msg));
     }
 
@@ -98,9 +127,37 @@ public final class Channel extends Session {
     }
 
     /**
+     * Sends a message to this {@link Channel}.
+     */
+    public void send(String message) {
+        endpoint.connection.sendCommand(new MessageCommand(name,message));
+    }
+
+    /**
      * Sends the 'PART' message and leaves from this channel.
      */
-    public void close() {
+    public synchronized void close() {
         endpoint.connection.sendCommand(new PartCommand(name));
+        joined = false;
+    }
+
+    protected Object writeReplace() {
+        return new Moniker(endpoint,name);
+    }
+
+    private static final class Moniker implements Serializable {
+        private final IRCEndPoint endPoint;
+        private final String channelName;
+
+        public Moniker(IRCEndPoint endPoint, String channelName) {
+            this.endPoint = endPoint;
+            this.channelName = channelName;
+        }
+
+        private Object readResolve() {
+            return endPoint.getChannel(channelName);
+        }
+
+        private static final long serialVersionUID = 1L;
     }
 }

@@ -154,4 +154,19 @@ public class IRCEndPoint extends EndPointImpl {
             return buddy;
         }
     }
+
+    /**
+     * Gets the {@link Channel} object that represents given channel name.
+     */
+    public Channel getChannel(String channelName) {
+        // TODO: when do we join?
+        synchronized(channels) {
+            Channel ch = channels.get(channelName);
+            if(ch==null) {
+                ch = new Channel(this,channelName);
+                channels.put(channelName,ch);
+            }
+            return ch;
+        }
+    }
 }

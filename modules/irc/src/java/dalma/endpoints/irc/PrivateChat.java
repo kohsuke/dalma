@@ -2,6 +2,8 @@ package dalma.endpoints.irc;
 
 import f00f.net.irc.martyr.commands.MessageCommand;
 
+import java.io.Serializable;
+
 /**
  * Represents a private communication channel between another user.
  *
@@ -29,11 +31,25 @@ public final class PrivateChat extends Session {
         endpoint.connection.sendCommand(new MessageCommand(buddy.getName(),message));
     }
 
-    public String waitForNextMessage() {
-        // TODO
-        return super.waitForNextMessage();
-    }
     public void close() {
         buddy.onChatClosed();
+    }
+
+    protected Object writeReplace() {
+        return new Moniker(buddy);
+    }
+
+    private static final class Moniker implements Serializable {
+        private final Buddy buddy;
+
+        public Moniker(Buddy buddy) {
+            this.buddy = buddy;
+        }
+
+        private Object readResolve() {
+            return buddy.getChat();
+        }
+
+        private static final long serialVersionUID = 1L;
     }
 }

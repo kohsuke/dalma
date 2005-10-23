@@ -1,11 +1,13 @@
 package dalma.endpoints.irc;
 
+import java.io.Serializable;
+
 /**
  * Message received from IRC.
  *
  * @author Kohsuke Kawaguchi
  */
-public final class Message {
+public final class Message implements Serializable {
     private final Buddy sender;
     private final String text;
     private final Channel receiver;
@@ -47,4 +49,6 @@ public final class Message {
     public String toString() {
         return sender.toString()+" : "+text;
     }
+
+    private static final long serialVersionUID = 1L;
 }
