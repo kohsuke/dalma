@@ -17,6 +17,7 @@
       <item name="Engine (core)"                href="dalma/index.html"/>
       <item name="E-mail endpoint"              href="dalma-endpoint-email/index.html"/>
       <item name="JMS endpoint"                 href="dalma-endpoint-jms/index.html"/>
+      <item name="IRC endpoint"                 href="dalma-endpoint-irc/index.html"/>
     </menu>
 
     <menu name="Basic Concepts">
