@@ -67,6 +67,13 @@ public final class Channel extends Session {
         joined = true;
     }
 
+    /**
+     * Returns true if we
+     */
+    public synchronized boolean isJoined() {
+        return getChannelInfo()!=null;
+    }
+
     private synchronized void makeSureNotJoined() {
         if(joined)
             throw new IllegalStateException("already joined");
@@ -108,11 +115,20 @@ public final class Channel extends Session {
     /**
      * Gets the object that represents information about this channel
      * from martyr.
+     *
+     * @return null
+     *      if we aren't joined this channel yet.
      */
     private f00f.net.irc.martyr.clientstate.Channel getChannelInfo() {
         return endpoint.connection.getClientState().getChannel(name);
     }
 
+    /**
+     * Gets the channel topic.
+     *
+     * @return
+     *      never null.
+     */
     public String getTopic() {
         return getChannelInfo().getTopic();
     }

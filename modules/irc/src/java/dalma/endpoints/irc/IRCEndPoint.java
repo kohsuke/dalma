@@ -6,6 +6,7 @@ import f00f.net.irc.martyr.IRCConnection;
 import f00f.net.irc.martyr.commands.MessageCommand;
 import f00f.net.irc.martyr.commands.NickCommand;
 import f00f.net.irc.martyr.commands.RawCommand;
+import f00f.net.irc.martyr.commands.InviteCommand;
 import f00f.net.irc.martyr.services.AutoRegister;
 import f00f.net.irc.martyr.services.AutoResponder;
 
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
 
 /**
  * {@link EndPoint} that connects to the internet relay chat system.
- * 
+ *
  * @author Kohsuke Kawaguchi
  */
 public class IRCEndPoint extends EndPointImpl {
@@ -161,6 +162,30 @@ public class IRCEndPoint extends EndPointImpl {
     }
 
     /**
+     * Called when an INVITE command is received from the IRC.
+     */
+    /*package*/ void onInvite(InviteCommand cmd) {
+        // is this to us?
+        if(!cmd.getNick().equals(getNickName()))
+            return; // nope
+
+        Channel ch = getChannel(cmd.getChannel());
+        if(ch.isJoined())
+            return; // already a member
+
+        Buddy sender = getBuddy(cmd.getUser().getNick());
+
+        NewSessionListener sl = newSessionListener;
+        if(sl!=null) {
+            // start a new chat session and let the handler know
+            sl.onInvite(sender,ch);
+        } else {
+            // nobody seems to be interested in joining this channel.
+            // just ignore
+        }
+    }
+
+    /**
      * Gets the {@link Buddy} object that represents the given nick name.
      *
      * <p>
@@ -195,5 +220,20 @@ public class IRCEndPoint extends EndPointImpl {
             }
             return ch;
         }
+    }
+
+    /**
+     * Gets the IRC nickname that this endpoint uses.
+     *
+     * <p>
+     * Normally this is the same as the nick name specified through the constructor,
+     * but if the specified nick name is already taken, we may end up getting a
+     * different nick name.
+     *
+     * @return
+     *      never null.
+     */
+    public String getNickName() {
+        return connection.getClientState().getNick().getNick();
     }
 }

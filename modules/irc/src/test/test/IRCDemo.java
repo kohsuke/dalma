@@ -5,6 +5,7 @@ import dalma.endpoints.irc.IRCEndPoint;
 import dalma.endpoints.irc.Message;
 import dalma.endpoints.irc.NewSessionListener;
 import dalma.endpoints.irc.PrivateChat;
+import dalma.endpoints.irc.Buddy;
 import dalma.spi.ConversationSPI;
 import dalma.test.Launcher;
 
@@ -32,7 +33,12 @@ public class IRCDemo extends Launcher {
                 }
             }
 
-            public void onInvite(Channel channel) {
+            public void onInvite(Buddy sender, Channel channel) {
+                try {
+                    createConversation(ChannelConversationImpl.class,iep,channel);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
         engine.addEndPoint(iep);

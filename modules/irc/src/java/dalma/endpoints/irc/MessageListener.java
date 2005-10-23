@@ -2,6 +2,7 @@ package dalma.endpoints.irc;
 
 import f00f.net.irc.martyr.Command;
 import f00f.net.irc.martyr.commands.MessageCommand;
+import f00f.net.irc.martyr.commands.InviteCommand;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -26,6 +27,10 @@ final class MessageListener implements Observer {
         if (cmd instanceof MessageCommand) {
             MessageCommand msgcmd = (MessageCommand) cmd;
             endPoint.onMessageReceived(msgcmd);
+        }
+        if (cmd instanceof InviteCommand) {
+            InviteCommand invcmd = (InviteCommand)cmd;
+            endPoint.onInvite(invcmd);
         }
     }
 }
