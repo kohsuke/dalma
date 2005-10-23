@@ -1,0 +1,25 @@
+<document>
+  <properties>
+    <title>Endpoint URL</title>
+  </properties>
+  <body>
+    <section name="IRC Endpoint URL">
+      <p>
+        The IRC endpoint defines the <a href="../endpoint.html#Endpoint_URL">endpoint URL</a> as follows:
+      </p>
+<source><![CDATA[
+irc://<nickname>@<server>/
+irc://<nickname>@<server>:<TCP-port>/
+]]></source>
+      <p>
+        The mandatory <i>nickname</i> is the IRC nick name to be used (IRC identifies users by a nickname.) The mandatory <i>server</i> is a host name or an IP adderss of the IRC server. The optional <i>TCP-port</i> specifies the TCP port of the IRC daemon (if ommitted, 6667 is assumed as the default.)
+      </p><p>
+        The complete example of some e-mail endpoint URLs follow:
+      </p>
+<source><![CDATA[
+irc://mybot@irc.freenode.net/
+irc://mynick@irc.freenode.net:6670/
+]]></source>
+     </section>
+  </body>
+</document>

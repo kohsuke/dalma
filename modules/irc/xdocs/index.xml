@@ -1,0 +1,16 @@
+<document>
+  <properties>
+    <title>Introduction</title>
+  </properties>
+  <body>
+    <section name="Overview">
+      <p>
+        This IRC endpoint is an <a href="../endpoint.html">endpoint</a> for the Internet Relay Chat system, implemented on top of <a href="http://martyr.sourceforge.net/">the martyr IRC library</a>. This endpoint allows a workflow to send messages, block until a new message is received, handle IRC conversations/channels, as well as perform basic IRC operations.
+      </p><p>
+        Unlike traditional IRC bot frameworks, dalma allows your application to perform a long-running computation that involves IRC (for example, start a new business process triggered by IRC.) As usual, dalma workflow can survive VM shutdown, so your workflow can start today and report a result back two days later.
+      </p><p>
+        See <a href="apidocs/">javadoc</a> <!-- TODO: sample --> for more details.
+      </p>
+    </section>
+  </body>
+</document>
