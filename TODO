@@ -12,8 +12,9 @@ TODO
     - consider integrating with Exchange Server
     - consider sendmail integration
 
-    - put a picture in the 'bytecode instrumentation' section
     - 'redistribution' page
+
+    - plain TCP channel
 
 Notes
 =====
