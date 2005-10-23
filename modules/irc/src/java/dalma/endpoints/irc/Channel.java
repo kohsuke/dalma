@@ -7,6 +7,7 @@ import f00f.net.irc.martyr.commands.KickCommand;
 import f00f.net.irc.martyr.commands.PartCommand;
 import f00f.net.irc.martyr.commands.RawCommand;
 import f00f.net.irc.martyr.commands.MessageCommand;
+import f00f.net.irc.martyr.commands.TopicCommand;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -117,8 +118,7 @@ public final class Channel extends Session {
     }
 
     public void setTopic(String newTopic) {
-        // TODO: implement this method later
-        throw new UnsupportedOperationException();
+        endpoint.connection.sendCommand(new TopicCommand(name,newTopic));
     }
 
     public void setMode(Object... modes) {
