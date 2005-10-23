@@ -16,6 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * {@link EndPoint} that connects to the internet relay chat system.
+ * 
  * @author Kohsuke Kawaguchi
  */
 public class IRCEndPoint extends EndPointImpl {

@@ -8,6 +8,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
+ * {@link EndPointFactory} for creating "irc://" URL.
+ *
+ * See https://dalma.dev.java.net/nonav/maven/dalma-endpoint-irc/endpointURL.html
+ *
  * @author Kohsuke Kawaguchi
  */
 public class IRCEndPointFactory implements EndPointFactory {
