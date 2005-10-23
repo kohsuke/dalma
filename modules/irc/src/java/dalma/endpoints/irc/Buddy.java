@@ -1,6 +1,6 @@
 package dalma.endpoints.irc;
 
-import f00f.net.irc.martyr.commands.MessageCommand;
+import dalma.Dock;
 
 /**
  * An IRC user (and an implicit {@link Session} that represents
@@ -8,11 +8,19 @@ import f00f.net.irc.martyr.commands.MessageCommand;
  *
  * @author Kohsuke Kawaguchi
  */
-public class Buddy extends Session {
+public class Buddy {
     /*package*/ String name;
 
+    private final IRCEndPoint endpoint;
+
+    /**
+     * Non-null if there's an active {@link Session} between this buddy.
+     * Access needs to be synchronized.
+     */
+    private PrivateChat chat;
+
     public Buddy(IRCEndPoint endpoint, String name) {
-        super(endpoint);
+        this.endpoint = endpoint;
         this.name = name;
     }
 
@@ -30,17 +38,25 @@ public class Buddy extends Session {
         // TODO: use ISON command
     }
 
-    public void setMode(Object... modes) {
-        // TODO: implement this method later
-        throw new UnsupportedOperationException();
-    }
-    
-    public void send(String message) {
-        endpoint.connection.sendCommand(new MessageCommand(name,message));
+    /**
+     * Starts a new private {@link PrivateChat} with this buddy.
+     *
+     * @throws IllegalStateException
+     *      If a {@link PrivateChat} is already in progress.
+     */
+    public synchronized PrivateChat openChat() {
+        if(chat!=null)
+            throw new IllegalStateException("a chat is already in progress");
+        chat = new PrivateChat(endpoint,this);
+        return chat;
     }
 
-    public String waitForNextMessage() {
-        // TODO
-        return super.waitForNextMessage();
+    synchronized PrivateChat getChat() {
+        return chat;
     }
+
+    synchronized void onChatClosed() {
+        chat = null;
+    }
+
 }

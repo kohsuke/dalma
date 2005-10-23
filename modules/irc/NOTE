@@ -11,3 +11,10 @@ channel names are prefixed by '&', '#', '+' or '!' (RFC2811/2.1)
 channel mode list (RFC2811/4)
 512 chars per one command max (RFC2812/2.3)
 
+
+------
+
+When a message is received from a buddy, sometimes you just want to queue it,
+some other times you want to notify the new conversation handler. what to do?
+
+    create a separate "private chat" object from Buddy?

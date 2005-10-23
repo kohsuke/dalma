@@ -1,19 +1,16 @@
 package dalma.endpoints.irc;
 
-import f00f.net.irc.martyr.commands.JoinCommand;
-import f00f.net.irc.martyr.commands.PartCommand;
+import f00f.net.irc.martyr.clientstate.Member;
 import f00f.net.irc.martyr.commands.InviteCommand;
+import f00f.net.irc.martyr.commands.JoinCommand;
 import f00f.net.irc.martyr.commands.KickCommand;
+import f00f.net.irc.martyr.commands.PartCommand;
 import f00f.net.irc.martyr.commands.RawCommand;
-import f00f.net.irc.martyr.commands.MessageCommand;
-import f00f.net.irc.martyr.clientstate.*;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Enumeration;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Represents a channel in IRC.
@@ -23,10 +20,6 @@ import java.util.LinkedList;
 public final class Channel extends Session {
     private final String name;
 
-    /**
-     * Messages that are received.
-     */
-    private final List<Message> msgs = Collections.synchronizedList(new LinkedList<Message>());
 
     public Channel(IRCEndPoint endpoint,String name) {
         super(endpoint);
@@ -48,10 +41,6 @@ public final class Channel extends Session {
 
     public void join(String secret) {
         endpoint.connection.sendCommand(new JoinCommand(name,secret));
-    }
-
-    public void part() {
-        endpoint.connection.sendCommand(new PartCommand(name));
     }
 
     /**
@@ -109,10 +98,9 @@ public final class Channel extends Session {
     }
 
     /**
-     * Invoked when a new message is received from IRC.
+     * Sends the 'PART' message and leaves from this channel.
      */
-    protected void onMessageReceived(Message msg) {
-        msgs.add(msg);
-        // TODO: wake up the blocking conversation if any
+    public void close() {
+        endpoint.connection.sendCommand(new PartCommand(name));
     }
 }

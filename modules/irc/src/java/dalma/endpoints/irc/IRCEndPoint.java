@@ -5,7 +5,6 @@ import f00f.net.irc.martyr.IRCConnection;
 import f00f.net.irc.martyr.commands.MessageCommand;
 import f00f.net.irc.martyr.commands.NickCommand;
 import f00f.net.irc.martyr.commands.RawCommand;
-import f00f.net.irc.martyr.services.AutoReconnect;
 import f00f.net.irc.martyr.services.AutoRegister;
 import f00f.net.irc.martyr.services.AutoResponder;
 
@@ -28,37 +27,42 @@ public class IRCEndPoint extends EndPointImpl {
     /**
      * Active {@link Buddy} instances keyed by their names.
      */
-    // nicknames are case insensitive, so all lower in this map
     private final Map<String,Buddy> buddies = new Hashtable<String, Buddy>();
 
     private static final Logger logger = Logger.getLogger(IRCEndPoint.class.getName());
 
     /*package*/ final IRCConnection connection = new IRCConnection();
 
-    private final String ircServer;
-    private final int port;
+    private NewSessionListener newSessionListener;
 
-    public IRCEndPoint(String endpointName, String ircServer, int port) {
+    private final AutoReconnectEx autoReconnect;
+
+    public IRCEndPoint(String endpointName, String ircServer, int port, String nickname) {
         super(endpointName);
-
-        this.ircServer = ircServer;
-        this.port = port;
 
         // AutoRegister and AutoResponder both add themselves to the
         // appropriate observerables.  Both will remove themselves with the
         // disable() method.
-        new AutoRegister(connection, "repp", "bdamm", "Ben Damm");
+        new AutoRegister(connection, nickname, nickname, nickname);
         new AutoResponder(connection);
+        autoReconnect = new AutoReconnectEx(connection,ircServer,port);
         connection.addCommandObserver(new MessageListener(this));
     }
 
     protected void start() {
-        AutoReconnect autoRecon = new AutoReconnect(connection);
-        autoRecon.go(ircServer,port);
+        autoReconnect.go();
     }
 
     protected void stop() {
         connection.disconnect();
+    }
+
+    public NewSessionListener getNewSessionListener() {
+        return newSessionListener;
+    }
+
+    public void setNewSessionListener(NewSessionListener newSessionListener) {
+        this.newSessionListener = newSessionListener;
     }
 
     /**
@@ -96,9 +100,26 @@ public class IRCEndPoint extends EndPointImpl {
         if(cmd.isPrivateToUs(connection.getClientState())) {
             Message msg = new Message(sender, cmd.getMessage(), null);
 
-            // TODO: if someone is waiting for a message on a buddy
-            // wake him up. otherwise call the listener
-            throw new UnsupportedOperationException();
+            PrivateChat chat = sender.getChat();
+            if(chat!=null) {
+                // route the message
+                chat.onMessageReceived(msg);
+                return;
+            } else {
+                // no chat session is going on with this user.
+                NewSessionListener sl = newSessionListener;
+                if(sl!=null) {
+                    // start a new chat session and let the handler know
+                    chat = sender.openChat();
+                    chat.onMessageReceived(msg);
+                    sl.onNewPrivateChat(chat);
+                    return;
+                } else {
+                    // nobody seems to be interested in talking to you, sorry.
+                    // just ignore the message
+                    return;
+                }
+            }
         }
 
         // otherwise it must be to a channel

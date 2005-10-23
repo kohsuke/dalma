@@ -3,8 +3,8 @@ package dalma.endpoints.irc;
 import f00f.net.irc.martyr.Command;
 import f00f.net.irc.martyr.commands.MessageCommand;
 
-import java.util.Observer;
 import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Listens to the incoming {@link Command} objects.
