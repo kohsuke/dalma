@@ -59,5 +59,23 @@ public class Buddy implements Serializable {
         chat = null;
     }
 
-    private static final long serialVersionUID = 1L;
+    private Object writeReplace() {
+        return new Moniker(endpoint,getName());
+    }
+
+    private static final class Moniker implements Serializable {
+        private final IRCEndPoint endPoint;
+        private final String buddyName;
+
+        public Moniker(IRCEndPoint endPoint, String buddyName) {
+            this.endPoint = endPoint;
+            this.buddyName = buddyName;
+        }
+
+        private Object readResolve() {
+            return endPoint.getBuddy(buddyName);
+        }
+
+        private static final long serialVersionUID = 1L;
+    }
 }

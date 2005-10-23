@@ -68,6 +68,7 @@ public abstract class Session implements Serializable {
         msgs.add(msg);
         if(dock!=null) {
             dock.resume(msg);
+            dock = null;
         }
     }
 

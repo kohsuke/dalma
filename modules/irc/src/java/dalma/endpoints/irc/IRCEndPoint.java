@@ -1,6 +1,7 @@
 package dalma.endpoints.irc;
 
 import dalma.impl.EndPointImpl;
+import dalma.EndPoint;
 import f00f.net.irc.martyr.IRCConnection;
 import f00f.net.irc.martyr.commands.MessageCommand;
 import f00f.net.irc.martyr.commands.NickCommand;
@@ -37,6 +38,19 @@ public class IRCEndPoint extends EndPointImpl {
 
     private final AutoReconnectEx autoReconnect;
 
+    /**
+     * Creates a new {@link IRCEndPoint}.
+     *
+     * @param endpointName
+     *      A unique endpoint name. See {@link EndPoint#getName()}.
+     * @param ircServer
+     *      The IP address or the host name of the IRC server to connect to,
+     *      such as "irc.freenode.net"
+     * @param port
+     *      The TCP port number to connect to. Normally 6667.
+     * @param nickname
+     *      The nickname that this endpoint will register to the IRC server.
+     */
     public IRCEndPoint(String endpointName, String ircServer, int port, String nickname) {
         super(endpointName);
 
@@ -47,6 +61,17 @@ public class IRCEndPoint extends EndPointImpl {
         new AutoResponder(connection);
         autoReconnect = new AutoReconnectEx(connection,ircServer,port);
         connection.addCommandObserver(new MessageListener(this));
+
+        // TODO: the nickname we ask might be different from the nickname
+        // that we get approved!
+    }
+
+    /**
+     * The same as {@link #IRCEndPoint(String, String, int, String)} ,
+     * except that it uses the IRC's default port number 6667.
+     */
+    public IRCEndPoint(String endpointName, String ircServer, String nickname) {
+        this(endpointName,ircServer,6667,nickname);
     }
 
     protected void start() {
