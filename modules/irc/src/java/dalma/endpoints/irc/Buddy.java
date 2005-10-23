@@ -41,12 +41,15 @@ public class Buddy implements Serializable {
     /**
      * Starts a new private {@link PrivateChat} with this buddy.
      *
-     * @throws IllegalStateException
-     *      If a {@link PrivateChat} is already in progress.
+     * <p>
+     * If a {@link PrivateChat} session is already in progress with
+     * this buddy, it will be cut off and a new one is created.
+     * The old {@link PrivateChat} object will no longer return
+     * new messages.
      */
     public synchronized PrivateChat openChat() {
         if(chat!=null)
-            throw new IllegalStateException("a chat is already in progress");
+            chat.close();
         chat = new PrivateChat(endpoint,this);
         return chat;
     }
