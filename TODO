@@ -3,23 +3,19 @@ TODO
     - Use this to replace the build automation
         - write e-mail endPointoint (and qmail endPointoint)
 
-    - test automation
-
 	- users should be able to access their own state information easily
 	  from Conversation (like Thread)
 
     - Check out Windows Server 2003 POP3 mail service
     - consider integrating with Exchange Server
-    - consider sendmail integration
 
     - 'redistribution' page
+    
+    - JMS EndPointFactory implementaiton
+    - consolidate 3rd party license files into one per module
 
     - plain TCP channel
-
-Notes
-=====
-- MimeMessage is not serializable
-  this makes it ugly to work with e-mails.
+    - pick up JBI channel
 
 James integration
 =================
