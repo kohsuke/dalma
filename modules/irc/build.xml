@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="irc" default="sorry">
+  <target name="sorry">
+    <fail message="Please use maven to build this project" />
+  </target>
+  
+  <target name="instrument">
+    <taskdef resource="org/apache/commons/javaflow/ant/tasks.properties">
+      <classpath>
+        <fileset dir="../../lib/redist" includes="*.jar" />
+      </classpath>
+    </taskdef>
+
+    <javaflow destdir="target/classes" srcdir="target/classes">
+      <include name="dalma/endpoints/irc/Session.class" />
+    </javaflow>
+  </target>
+</project>
