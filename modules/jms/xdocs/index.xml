@@ -1,0 +1,14 @@
+<document>
+  <properties>
+    <title>Introduction</title>
+  </properties>
+  <body>
+    <section name="Overview">
+      <p>
+        This JMS endpoint is an <a href="../endpoint.html">endpoint</a> for the <a href="http://java.sun.com/products/jms/index.jsp">Java Messaging Service</a>. This endpoint allows a workflow to send messages and block until replies are received.
+      </p><p>
+        See <a href="apidocs/">javadoc</a> <!-- TODO: sample --> for more details.
+      </p>
+    </section>
+  </body>
+</document>
