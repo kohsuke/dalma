@@ -51,8 +51,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      */
     // when inc()==0, load state
     // when dec()==0, persist to disk
-    transient Counter runningCounts = new Counter();
-
+    transient /*final*/ Counter runningCounts;
 
     /**
      * The directory to save the state of this conversation.
@@ -87,7 +86,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     /**
      * Synchronization for handling multiple concurrent {@link #remove()} method invocation.
      */
-    private transient final Object removeLock = new Object();
+    private transient /*final*/ Object removeLock;
 
     /**
      * Every conversation gets unique ID (per engine).
@@ -118,6 +117,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         this.engine = engine;
         this.rootDir = rootDir;
         waitList = Collections.synchronizedSet(new HashSet<ConversationCondition>());
+        runningCounts = new Counter();
+        removeLock = new Object();
     }
 
     public void addGenerator(GeneratorImpl g) {
@@ -226,6 +227,13 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         if(runningCounts.dec()>0)
             return;
 
+
+        if(fibers.isEmpty()) {
+            // no fiber is there to run. conversation is complete
+            remove();
+            return;
+        }
+
         // create the object that represents the persisted state
         Map<Integer,Continuation> state = new HashMap<Integer, Continuation>();
         for (FiberImpl f : fibers) {
@@ -263,9 +271,6 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     synchronized void onFiberCompleted(FiberImpl fiber) {
         boolean modified = fibers.remove(fiber);
         assert modified;
-        if(fibers.isEmpty())
-            // conversation has finished execution.
-            remove();
     }
 
     public void remove() {

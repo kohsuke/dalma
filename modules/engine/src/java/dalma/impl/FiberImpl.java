@@ -81,6 +81,8 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         }
 
         assert cond!=null;
+        // assert c==cond;  this isn't correct, because cond is persisted as a part of conversation.xml
+        // while c is persisted in the continuation. they are different objects
         T r = (T)cond.getReturnValue();
         cond = null;
 
@@ -143,6 +145,7 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         if(continuation==null) {
             // conversation has finished execution.
             state = FiberState.ENDED;
+            // but defer the completion notification until the very end
             assert cond==null;
             owner.onFiberCompleted(this);
         } else {
