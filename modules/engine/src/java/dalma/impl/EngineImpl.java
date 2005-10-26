@@ -7,7 +7,6 @@ import dalma.ErrorHandler;
 import dalma.Executor;
 import dalma.spi.EndPointFactory;
 import dalma.spi.EngineSPI;
-import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.commons.io.IOUtils;
 
@@ -83,10 +82,6 @@ public final class EngineImpl implements EngineSPI, Serializable {
      */
     transient final Map<String,EndPointImpl> endPoints = new Hashtable<String,EndPointImpl>();
 
-    /**
-     * Records the currently running conversations.
-     */
-    static final ThreadLocal<ConversationImpl> currentConversations = new ThreadLocal<ConversationImpl>();
 
     /**
      * Signals when all the conversation completes.
@@ -185,36 +180,19 @@ public final class EngineImpl implements EngineSPI, Serializable {
     /**
      * Queues a conversation that became newly runnable.
      */
-    void queue(final ConversationImpl conv) {
+    void queue(final FiberImpl f) {
         executor.execute(new Runnable() {
             public void run() {
-                ConversationImpl old = currentConversations.get();
-                currentConversations.set(conv);
                 try {
-                    try {
-                        conv.run();
-                    } catch( Error t ) {
-                        // if the conversation stops unexpectedly, kill that conversation
-                        // because we won't be able to resume it.
-                        addToErrorQueue(t);
-                        conv.remove();
-                    } catch( RuntimeException e ) {
-                        // ditto
-                        addToErrorQueue(e);
-                        conv.remove();
-                    } finally {
-                        if(old==null)
-                            currentConversations.remove();
-                        else
-                            currentConversations.set(old);
-                    }
+                    f.run();
+                } catch(FiberDeath t) {
+                    // this fiber is dead!
                 } catch(Throwable t) {
                     // even if the error recovery process fails,
                     // don't let the worker thread die.
                     addToErrorQueue(t);
                 }
             }
-
         });
     }
 
@@ -231,16 +209,6 @@ public final class EngineImpl implements EngineSPI, Serializable {
 
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
-    }
-
-    /**
-     * Returns a {@link ConversationImpl} instance that the current thread is executing.
-     */
-    public static ConversationImpl getCurrentConversation() {
-        ConversationImpl conv = currentConversations.get();
-        if(conv==null)
-            throw new IllegalStateException("this thread isn't executing a conversation");
-        return conv;
     }
 
     public synchronized Collection<Conversation> getConversations() {
@@ -431,7 +399,6 @@ public final class EngineImpl implements EngineSPI, Serializable {
         makeSureStarted();
         ConversationImpl conv = new ConversationImpl(this,target);
         conversations.put(conv.id,conv);
-        queue(conv);
         return conv;
     }
 

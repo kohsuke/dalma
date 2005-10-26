@@ -1,10 +1,11 @@
 package dalma.endpoints.timer;
 
-import dalma.Dock;
+import dalma.Condition;
 import dalma.TimeUnit;
 import dalma.impl.EndPointImpl;
 import dalma.spi.ConversationSPI;
 import dalma.spi.EngineSPI;
+import dalma.spi.FiberSPI;
 
 import java.util.Date;
 import java.util.Timer;
@@ -14,9 +15,9 @@ import java.util.TimerTask;
  * EndPoint that waits for some time to pass.
  *
  * <p>
- * The {@link #createDock(Date)} method can return a {@link Dock} of an
+ * The {@link #createDock(Date)} method can return a {@link Condition} of an
  * arbitrary type, because it always return null. This works better when
- * timer is used with other {@link Dock}s.
+ * timer is used with other {@link Condition}s.
  *
  * @author Kohsuke Kawaguchi
  */
@@ -28,7 +29,7 @@ public class TimerEndPoint extends EndPointImpl {
         super(TimerEndPoint.class.getName());
     }
 
-    private final class TimerDock<T> extends Dock<T> {
+    private final class TimerCondition<T> extends Condition<T> {
         /**
          * The date when the conversation should be activated.
          */
@@ -40,20 +41,19 @@ public class TimerEndPoint extends EndPointImpl {
          */
         private transient TimerTaskImpl task;
 
-        public TimerDock(Date dt) {
-            super(TimerEndPoint.this);
+        public TimerCondition(Date dt) {
             assert dt!=null;
             this.dt = dt;
         }
 
-        public void park() {
+        public void onParked() {
             assert task==null;
             task = new TimerTaskImpl();
             timer.schedule(task,dt);
         }
 
         public void onLoad() {
-            park();
+            onParked();
         }
 
         public void interrupt() {
@@ -64,13 +64,13 @@ public class TimerEndPoint extends EndPointImpl {
 
         private final class TimerTaskImpl extends TimerTask {
             public void run() {
-                TimerDock.this.resume(null);
+                TimerCondition.this.activate(null);
             }
         }
     }
 
     protected void start() {
-        ; // nothing to do
+        // nothing to do
     }
 
     protected void stop() {
@@ -82,15 +82,15 @@ public class TimerEndPoint extends EndPointImpl {
      */
     // this method is invoked from conversations
     public static void waitFor(long delay,TimeUnit unit) {
-        ConversationSPI.getCurrentConversation().suspend(createDock(delay,unit));
+        FiberSPI.currentFiber().suspend(createDock(delay,unit));
     }
 
     public static void waitFor(Date dt) {
-        ConversationSPI.getCurrentConversation().suspend(createDock(dt));
+        FiberSPI.currentFiber().suspend(createDock(dt));
     }
 
-    public static <T> Dock<T> createDock(Date dt) {
-        EngineSPI engine = ConversationSPI.getCurrentConversation().getEngine();
+    public static <T> Condition<T> createDock(Date dt) {
+        EngineSPI engine = ConversationSPI.currentConversation().getEngine();
 
         synchronized(TimerEndPoint.class) {
             TimerEndPoint ep = (TimerEndPoint)engine.getEndPoint(TimerEndPoint.class.getName());
@@ -99,11 +99,11 @@ public class TimerEndPoint extends EndPointImpl {
                 ep = new TimerEndPoint();
                 engine.addEndPoint(ep);
             }
-            return ep.new TimerDock<T>(dt);
+            return ep.new TimerCondition<T>(dt);
         }
     }
 
-    public static <T> Dock<T> createDock(long delay,TimeUnit unit) {
+    public static <T> Condition<T> createDock(long delay,TimeUnit unit) {
         return createDock(unit.fromNow(delay));
     }
 }

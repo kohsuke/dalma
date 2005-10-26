@@ -1,24 +1,22 @@
 package dalma.impl;
 
 import dalma.Conversation;
-import dalma.Dock;
-import dalma.Dock;
+import dalma.Condition;
 
 /**
- * {@link Dock} that waits for the completion of a {@link Conversation}.
+ * {@link Condition} that waits for the completion of a {@link Conversation}.
  *
  * @author Kohsuke Kawaguchi
  */
-final class ConversationDock extends Dock<Conversation> {
+final class ConversationCondition extends Condition<Conversation> {
 
     private final ConversationImpl conv;
 
-    ConversationDock(ConversationImpl conv) {
-        super(null);
+    ConversationCondition(ConversationImpl conv) {
         this.conv = conv;
     }
 
-    public void park() {
+    public void onParked() {
         conv.waitList.add(this);
     }
 
@@ -27,7 +25,7 @@ final class ConversationDock extends Dock<Conversation> {
     }
 
     public void onLoad() {
-        park();
+        onParked();
     }
 
     private static final long serialVersionUID = 1L;

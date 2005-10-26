@@ -70,7 +70,7 @@ public class IRCDemo extends Launcher {
                 if(text.startsWith("join ")) {
                     text = text.substring(5);
                     try {
-                        ConversationSPI.getCurrentConversation().getEngine()
+                        ConversationSPI.currentConversation().getEngine()
                             .createConversation(new ChannelConversationImpl(iep,iep.getChannel(text)));
                     } catch (IOException e) {
                         e.printStackTrace();

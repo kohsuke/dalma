@@ -1,10 +1,10 @@
 package test.port.input;
 
 import dalma.Conversation;
-import dalma.Dock;
+import dalma.Condition;
 import dalma.Engine;
 import dalma.impl.EndPointImpl;
-import dalma.spi.ConversationSPI;
+import dalma.spi.FiberSPI;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public final class LineInputEndPoint extends EndPointImpl implements Runnable {
     /**
      * {@link Conversation}s waiting for input.
      */
-    private static final List<LineDock> queue = new ArrayList<LineDock>();
+    private static final List<LineCondition> queue = new ArrayList<LineCondition>();
 
     private final Thread thread = new Thread(this);
 
@@ -40,8 +40,8 @@ public final class LineInputEndPoint extends EndPointImpl implements Runnable {
                 synchronized(queue) {
                     if(!queue.isEmpty()) {
                         // pick the conversation to be activated
-                        LineDock dock = queue.remove(0);
-                        dock.resume(line);
+                        LineCondition cond = queue.remove(0);
+                        cond.activate(line);
                     }
                 }
             }
@@ -65,19 +65,18 @@ public final class LineInputEndPoint extends EndPointImpl implements Runnable {
     }
 
 
-    private final class LineDock extends Dock<String> {
-        public LineDock() {
-            super(LineInputEndPoint.this);
+    private final class LineCondition extends Condition<String> {
+        public LineCondition() {
         }
 
-        public void park() {
+        public void onParked() {
             synchronized(queue) {
                 queue.add(this);
             }
         }
 
         public void onLoad() {
-            park();
+            onParked();
         }
 
         public void interrupt() {
@@ -92,21 +91,21 @@ public final class LineInputEndPoint extends EndPointImpl implements Runnable {
      */
     // this method is invoked from conversations
     public static String waitForInput() {
-        ConversationSPI cnv = ConversationSPI.getCurrentConversation();
-        return cnv.suspend(createDock(cnv));
+        FiberSPI fiber = FiberSPI.currentFiber();
+        return fiber.suspend(createCondition(fiber));
     }
 
-    private static LineDock createDock(ConversationSPI cnv) {
-        LineDock dock;
+    private static LineCondition createCondition(FiberSPI fiber) {
+        LineCondition cond;
         synchronized(LineInputEndPoint.class) {
-            Engine engine = cnv.getEngine();
+            Engine engine = fiber.getOwner().getEngine();
             LineInputEndPoint endPoint = (LineInputEndPoint)engine.getEndPoint(LineInputEndPoint.class.getName());
             if(endPoint==null) {
                 endPoint = new LineInputEndPoint();
                 engine.addEndPoint(endPoint);
             }
-            dock = endPoint.new LineDock();
+            cond = endPoint.new LineCondition();
         }
-        return dock;
+        return cond;
     }
 }

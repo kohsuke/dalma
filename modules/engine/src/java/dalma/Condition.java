@@ -3,35 +3,31 @@ package dalma;
 import dalma.Conversation;
 import dalma.impl.ConversationImpl;
 import dalma.spi.ConversationSPI;
+import dalma.spi.ConditionListener;
 
 import java.io.Serializable;
 
 /**
  * TODO.
  *
- * Derived by endPointoint specific implementation to capture endPointoint-specific information.
+ * Derived by endpoint specific implementation to capture endpoint-specific information.
  * Intances created by a {@link EndPoint} in a endPoint specific way.
  *
  * <p>
- * Dock stays in a memory even when the continuation is persisted to a disk,
+ * Condition stays in memory even when the continuation is persisted to a disk,
  * to wait for the activation event.
  *
  * <p>
- * Dock is serialized as a part of the conversation, allowing conversation
+ * Condition is serialized as a part of the conversation, allowing conversation
  * to requeue when the engine is loaded from a file.
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class Dock<T> implements Serializable {
+public abstract class Condition<T> implements Serializable {
     /**
-     * Owner endPoint.
+     * Receives activation event.
      */
-    public final EndPoint endPoint;
-
-    /**
-     * {@link ConversationSPI} parking on this dock.
-     */
-    public ConversationSPI conv;
+    private ConditionListener owner;
 
     /**
      * Activation value from this dock.
@@ -40,20 +36,37 @@ public abstract class Dock<T> implements Serializable {
      */
     private transient T returnValue;
 
-    protected Dock(EndPoint endPoint) {
-        this.endPoint = endPoint;
+    /**
+     * Set to true once this {@link Condition} becomes active.
+     */
+    private boolean isActive = false;
+
+    protected Condition() {
+    }
+
+    public final ConditionListener getOwner() {
+        return owner;
+    }
+
+    public final boolean isActive() {
+        return isActive;
+    }
+
+    public final void park(ConditionListener owner) {
+        this.owner = owner;
+        onParked();
     }
 
     /**
      * Called after the conversation is parked on this dock.
      *
-     * {@link #conv}!=null guaranteed. Typically used to queue
+     * {@link #owner}!=null guaranteed. Typically used to queue
      * this dock.
      * TODO: should this be the same with onLoad?
      *
      * TODO: error handling semantics. what happens if the park fails?
      */
-    public abstract void park();
+    public abstract void onParked();
 
     /**
      * Called when a {@link Conversation} parking on this endPoint is
@@ -69,9 +82,16 @@ public abstract class Dock<T> implements Serializable {
     /**
      * Called after this dock is restored from disk.
      *
+     * <p>
      * Typically used to requeue this object.
      * This happens while the conversation is being restored from the disk.
+     *
+     * <p>
+     * Note that a {@link Condition} may be serialized even after
+     * it gets activated (for example, the conversation may be forced
+     * to persist before a fiber that owns it gets a chance to be executed.)
      */
+    // TODO: update to work with the new semantics
     public abstract void onLoad();
 
     /**
@@ -82,15 +102,21 @@ public abstract class Dock<T> implements Serializable {
      * Note that the resumed conversation may start executed even before this method
      * returns.
      */
-    public final void resume(T retVal) {
-        assert conv!=null;
+    public final void activate(T retVal) {
+        synchronized(this) {
+            if(isActive)
+                throw new IllegalStateException("condition is already active : "+toString());
+            isActive = true;
+        }
+        assert owner!=null;
         synchronized(this) {
             this.returnValue = retVal;
         }
-        ((ConversationImpl)conv).resume(this);
+        // ((ConversationImpl)conv).resume(this);
+        owner.onActivated(this);
     }
 
-    public synchronized T getReturnValue() {
+    public final synchronized T getReturnValue() {
         return returnValue;
     }
 

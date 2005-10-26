@@ -1,13 +1,11 @@
 package dalma.spi;
 
 import dalma.Conversation;
-import dalma.Dock;
+import dalma.Condition;
 import dalma.impl.EngineImpl;
 import dalma.impl.GeneratorImpl;
+import dalma.impl.ConversationImpl;
 import dalma.EndPoint;
-import dalma.Dock;
-import dalma.EndPoint;
-import dalma.Engine;
 
 import java.util.List;
 
@@ -17,29 +15,12 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  */
 public abstract class ConversationSPI implements Conversation {
-    /**
-     * Suspends the conversation.
-     *
-     * @param dock
-     *      The dock to which this conversation is parked.
-     *      Must not be null. This dock is resonpsible for
-     *      resuming this conversation.
-     * @return
-     *      This method returns when the conversation is resumed.
-     *      the parameter given to {@link Dock#resume(Object)} will be
-     *      returned.
-     */
-    public abstract <T> T suspend(Dock<T> dock);
-
-    public abstract <T> T suspend(List<? extends Dock<? extends T>> docks);
-
-    public abstract <T> T suspend(Dock<? extends T>... docks);
 
     /**
      * Returns the {@link Conversation} that the current thread is executing.
      */
-    public static ConversationSPI getCurrentConversation() {
-        return EngineImpl.getCurrentConversation();
+    public static ConversationSPI currentConversation() {
+        return ConversationImpl.currentConversation();
     }
 
     /**

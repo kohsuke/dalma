@@ -3,10 +3,10 @@ package dalma.impl;
 import dalma.Conversation;
 import dalma.ConversationDeath;
 import dalma.ConversationState;
-import dalma.Dock;
+import dalma.Fiber;
+import dalma.FiberState;
 import dalma.spi.ConversationSPI;
 import org.apache.commons.javaflow.Continuation;
-import org.apache.commons.javaflow.bytecode.StackRecorder;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -17,15 +17,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a running conversation.
@@ -42,36 +42,22 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     private transient /*final*/ EngineImpl engine;
 
     /**
-     * Snapshot of the execution state.
-     *
-     * <p>
-     * This field is null if:
-     * <ol>
-     *  <li>the state is {@link ConversationState#ENDED} or
-     *  <li>the state is {@link ConversationState#SUSPENDED}, in which case the continuation is
-     *      serialized.
+     * All the {@link FiberImpl}s that belong to this conversation.
      */
-    private transient Continuation continuation;
+    private Set<FiberImpl> fibers = Collections.synchronizedSet(new HashSet<FiberImpl>());
+
+    /**
+     * The number of {@link Continuation}s that are {@link FiberState.RUNNING running} right now.
+     */
+    // when inc()==0, load state
+    // when dec()==0, persist to disk
+    transient Counter runningCounts = new Counter();
+
 
     /**
      * The directory to save the state of this conversation.
      */
     private transient /*final*/ File rootDir;
-
-    /**
-     * Current state of the conversation.
-     *
-     * Transient because we only persist {@link ConversationState#SUSPENDED} conversations.
-     */
-    private transient ConversationState state = ConversationState.RUNNABLE;
-
-    /**
-     * If in the {@link ConversationState#SUSPENDED} state, this field
-     * points to the dock to which this conversation is docked.
-     *
-     * Can be empty but never null.
-     */
-    private List<? extends Dock<?>> docks = new ArrayList<Dock<?>>();
 
     /**
      * {@link GeneratorImpl}s that belong to this conversation.
@@ -81,10 +67,27 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     /**
      * Other conversations that are blocking for the completion of this conversation.
      *
-     * Transient, because {@link ConversationDock}s in this queue re-register themselves.
+     * Transient, because {@link ConversationCondition}s in this queue re-register themselves.
      * Always non-null.
      */
-    transient Set<ConversationDock> waitList;
+    transient Set<ConversationCondition> waitList;
+
+    /**
+     * Set to true until the first {@link FiberImpl} runs.
+     * This is necessary because the first fiber has in-memory {@link Continuation}.
+     */
+    private boolean justCreated;
+
+    /**
+     * Set to true if the {@link #remove()} operation is in progress.
+     * When true, {@link Fiber}s are prevented from being executed.
+     */
+    /*package*/ transient boolean isRemoving;
+
+    /**
+     * Synchronization for handling multiple concurrent {@link #remove()} method invocation.
+     */
+    private transient final Object removeLock = new Object();
 
     /**
      * Every conversation gets unique ID (per engine).
@@ -92,6 +95,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      * (as a part of the stack frame) can connect back to the running {@link Conversation} instance.
      */
     final int id;
+
+    private static final Logger logger = Logger.getLogger(ConversationImpl.class.getName());
 
     /**
      * Creates a new conversation that starts with the given target.
@@ -101,14 +106,20 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         init(engine,new File(engine.getConversationsDir(),String.valueOf(id)));
         if(!rootDir.mkdirs())
             throw new IOException("Unable to create "+rootDir);
-        continuation = Continuation.startSuspendedWith(target);
+
+        FiberImpl f = new FiberImpl(this,0,Continuation.startSuspendedWith(target));
+        fibers.add(f);
+        justCreated = true;
+
         save();
+
+        engine.queue(f);
     }
 
     private void init(EngineImpl engine,File rootDir) {
         this.engine = engine;
         this.rootDir = rootDir;
-        waitList = Collections.synchronizedSet(new HashSet<ConversationDock>());
+        waitList = Collections.synchronizedSet(new HashSet<ConversationCondition>());
     }
 
     public void addGenerator(GeneratorImpl g) {
@@ -133,11 +144,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             SerializationContext.remove();
         }
         conv.init(engine,dir);
-        conv.state = ConversationState.SUSPENDED;
         for (GeneratorImpl g : conv.generators.values())
             g.onLoad();
-        for( Dock d : conv.docks )
-            d.onLoad();
+        for (FiberImpl fiber : conv.fibers)
+            fiber.onLoad();
         return conv;
     }
 
@@ -156,234 +166,182 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      * @return always non-null.
      */
     public ConversationState getState() {
-        return state;
-    }
+        if(runningCounts.get()!=0)
+            return ConversationState.RUNNING;
 
-    // this method needs to be continuation aware.
-    public <T> T suspend(Dock<T> dock) {
-        return suspend(Collections.singletonList(dock));
-    }
+        if(fibers.isEmpty())
+            return ConversationState.ENDED;
 
-    public <T> T suspend(Dock<? extends T>... docks) {
-        return suspend(docks!=null ? Arrays.asList(docks) : Collections.<Dock<T>>emptyList() );
-    }
-
-    public <T> T suspend(List<? extends Dock<? extends T>> dock) {
-        if(!StackRecorder.get().isRestoring()) {
-            if(dock==null)
-                throw new IllegalArgumentException("dock cannot be null");
-            if(dock.isEmpty())
-                throw new IllegalArgumentException("dock cannot be null");
-            for( Dock d : dock ) {
-                if(d.conv!=null)
-                    throw new IllegalStateException("dock is already in use");
-                d.conv = this;
-            }
-            assert this.docks.isEmpty();
-            this.docks = new ArrayList<Dock<?>>(dock);
-        }
-
-        Continuation.suspend();
-        if(StackRecorder.get().isCapturing()) {
-            StackRecorder.get().pushReference(this);
-            return null;
-        }
-
-        Object r = null;
-
-        for(Dock d : docks) {
-            synchronized(d) {
-                // these two lines need to be done atomically
-                if(d.getReturnValue()==null)
-                    d.interrupt();
-                else
-                    // if more than one docks are activated around the same time, we don't care
-                    // which one we report
-                    r = d.getReturnValue();
-
-                assert d.conv==this;
-                d.conv = null;
+        synchronized(fibers) {
+            for (FiberImpl f : fibers) {
+                if(f.getState()== FiberState.RUNNABLE)
+                    return ConversationState.RUNNABLE;
             }
         }
-        this.docks.clear();
-
-        return (T)r;
+        return ConversationState.SUSPENDED;
     }
 
     public EngineImpl getEngine() {
         return engine;
     }
 
-    /**
-     * Called from the executor thread to run this conversation until
-     * it suspends.
-     *
-     * This method is synchronized to prevent a still-running conversation
-     * from being run again concurrently, which happens when:
-     *
-     * 1. a dock parks
-     * 2. a signal arrives and conversation resumes
-     * 3. the conversation gets queued and picked up
-     * 4. the conversation gets run
-     */
-    public synchronized void run() {
-        if(state==ConversationState.ENDED) {
-            return; // no-op
-        }
-        if(state!=ConversationState.RUNNABLE) {
-            throw new IllegalStateException();
+    synchronized void onFiberStartedRunning(FiberImpl fiber) {
+        if(isRemoving)
+            // this conversation is going to be removed now
+            // no further
+            throw new FiberDeath();
+
+        if(runningCounts.inc()>0)
+            return;
+
+        if(justCreated) {
+            // we are about to run the first fiber, and it has in-memory continuation.
+            assert fibers.size()==1;
+            justCreated = false;
+            return;
         }
 
-        // restore the state
-        if(continuation==null) {
-            File cont = new File(rootDir,"continuation");
-            try {
-                SerializationContext.set(engine,SerializationContext.Mode.CONTINUATION);
+        File cont = new File(rootDir,"continuation");
+        try {
+            SerializationContext.set(engine,SerializationContext.Mode.CONTINUATION);
 
-                ObjectInputStream ois = new ObjectInputStreamEx(
-                    new BufferedInputStream(new FileInputStream(cont)),engine.classLoader);
-                continuation = (Continuation)ois.readObject();
-                ois.close();
-                cont.delete();
-            } catch (IOException e) {
-                throw new ConversationDeath("failed to restore the state of the conversation "+cont,e);
-            } catch (ClassNotFoundException e) {
-                throw new ConversationDeath("failed to restore the state of the conversation "+cont,e);
-            } finally {
-                SerializationContext.remove();
+            ObjectInputStream ois = new ObjectInputStreamEx(
+                new BufferedInputStream(new FileInputStream(cont)),engine.classLoader);
+            Map<Integer,Continuation> list = (Map<Integer, Continuation>) ois.readObject();
+
+            ois.close();
+            cont.delete();
+
+            for (FiberImpl f : fibers) {
+                f.hydrate(list.get(f.id));
+            }
+        } catch (IOException e) {
+            throw new ConversationDeath("failed to restore the state of the conversation "+cont,e);
+        } catch (ClassNotFoundException e) {
+            throw new ConversationDeath("failed to restore the state of the conversation "+cont,e);
+        } finally {
+            SerializationContext.remove();
+        }
+    }
+
+    synchronized void onFiberEndedRunning(FiberImpl fiber) {
+        if(runningCounts.dec()>0)
+            return;
+
+        // create the object that represents the persisted state
+        Map<Integer,Continuation> state = new HashMap<Integer, Continuation>();
+        for (FiberImpl f : fibers) {
+            state.put(f.id,f.dehydrate());
+        }
+
+        // persist the state
+        File cont = new File(rootDir,"continuation");
+        ObjectOutputStream oos = null;
+        try {
+            SerializationContext.set(engine,SerializationContext.Mode.CONTINUATION);
+
+            oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(cont)));
+            oos.writeObject(state);
+        } catch (IOException e) {
+            throw new ConversationDeath("failed to persist the state of the conversation "+cont, e);
+        } finally {
+            SerializationContext.remove();
+            if(oos!=null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    // ignore
+                }
             }
         }
 
-        state = ConversationState.RUNNING;
+        try { // this needs to be done outside the EngineImpl.SERIALIZATION_CONTEXT
+            save();
+        } catch (IOException e) {
+            throw new ConversationDeath("failed to persist the state of the conversation "+cont, e);
+        }
+    }
 
-        // this runs the conversation until it blocks
-        continuation = Continuation.continueWith(continuation);
-        state = ConversationState.SUSPENDED;
-
-        if(continuation==null) {
+    synchronized void onFiberCompleted(FiberImpl fiber) {
+        boolean modified = fibers.remove(fiber);
+        assert modified;
+        if(fibers.isEmpty())
             // conversation has finished execution.
             remove();
-        } else {
-            // conversation has suspended
+    }
 
-            // let the dock know that we are parked
-            for( Dock d : docks )
-                d.park();
+    public void remove() {
+        // this lock is to allow multiple concurrent invocations of the remove method
+        synchronized(removeLock) {
+            if(getState()== ConversationState.ENDED)
+                return; // already removed.
 
-            // persist the state
-            File cont = new File(rootDir,"continuation");
-            ObjectOutputStream oos = null;
+            // the first thing we have to do is to wait for all the executing fibers
+            // to complete. when we are doing that, we don't want new fibers to
+            // start executing. We use isRemoving==true for this purpose.
+            isRemoving = true;
+
             try {
-                SerializationContext.set(engine,SerializationContext.Mode.CONTINUATION);
+                runningCounts.waitForZero();
+            } catch (InterruptedException e) {
+                // can't process it now. later.
+                Thread.currentThread().interrupt();
+            }
 
-                oos = new ObjectOutputStream(
-                    new BufferedOutputStream(new FileOutputStream(cont)));
-                oos.writeObject(continuation);
-                continuation = null;
-            } catch (IOException e) {
-                throw new ConversationDeath("failed to persist the state of the conversation "+cont, e);
-            } finally {
-                SerializationContext.remove();
-                if(oos!=null) {
-                    try {
-                        oos.close();
-                    } catch (IOException e) {
-                        // ignore
+            Map<Integer,ConversationImpl> convs = engine.conversations;
+            synchronized(convs) {
+                convs.remove(id);
+                if(convs.isEmpty()) {
+                    synchronized(engine.completionLock) {
+                        engine.completionLock.notifyAll();
                     }
                 }
             }
 
-            try { // this needs to be done outside the EngineImpl.SERIALIZATION_CONTEXT
-                save();
-            } catch (IOException e) {
-                throw new ConversationDeath("failed to persist the state of the conversation "+cont, e);
-            }
-        }
-    }
-
-    /**
-     * Resumes the suspended conversation.
-     *
-     * @param activated
-     *      {@link Dock} object that was activated. Used to determine
-     *      what caused the conversation to wake up.
-     */
-    public synchronized <T> void resume(Dock<T> activated) {
-        if(state==ConversationState.SUSPENDED) {
-            state = ConversationState.RUNNABLE;
-            engine.queue(this);
-            return;
-        }
-
-        if(state==ConversationState.RUNNABLE) {
-            // this happens if two docks try to awake a conversation around the same time
-            return;
-        }
-
-        throw new IllegalStateException();
-    }
-
-    /**
-     * Removes this conversation.
-     */
-    public synchronized void remove() {
-        if(!state.isRemovable)
-            throw new IllegalStateException("A conversation in "+state+" state can't be removed");
-
-        Map<Integer,ConversationImpl> convs = engine.conversations;
-        synchronized(convs) {
-            convs.remove(id);
-            if(convs.isEmpty()) {
-                synchronized(engine.completionLock) {
-                    engine.completionLock.notifyAll();
-                }
-            }
-        }
-
-        if(state==ConversationState.SUSPENDED) {
             try {
                 Util.deleteRecursive(rootDir);
             } catch (IOException e) {
                 // there's really nothing we nor appliation can do to recover from this.
-                // TODO: log
+                logger.log(Level.WARNING,"Unable to delete the conversation data directory",e);
             }
+
             // remove this conversation from the endPoint
-            for(Dock d : docks) {
-                assert d.conv==this;
-                d.interrupt();
-                d.conv = null;
+            synchronized(fibers) {
+                for (FiberImpl f : fibers)
+                    f.remove();
+                fibers.clear();
             }
-            docks.clear();
-        }
 
-        synchronized(generators) {
-            for (GeneratorImpl g : generators.values()) {
-                g.dispose();
+            synchronized(generators) {
+                for (GeneratorImpl g : generators.values()) {
+                    g.dispose();
+                }
+                generators.clear();
             }
-        }
 
-        state = ConversationState.ENDED;
+            // notify any threads that are blocked on this conversation.
+            notifyAll();
 
-        // notify any threads that are blocked on this conversation.
-        notifyAll();
-        // notify all conversations that are blocked on this
-        synchronized(waitList) {
-            for (ConversationDock cd : waitList)
-                cd.resume(this);
+            // notify all conversations that are blocked on this
+            synchronized(waitList) {
+                for (ConversationCondition cd : waitList)
+                    cd.activate(this);
+                waitList.clear();
+            }
         }
     }
 
     public synchronized void join() throws InterruptedException {
-        ConversationImpl cur = EngineImpl.currentConversations.get();
-        if(cur==null) {
+        FiberImpl fiber = FiberImpl.currentFiber();
+        if(fiber==null) {
             // called from outside conversations
-            if(state!=ConversationState.ENDED) {
+            if(getState()!=ConversationState.ENDED) {
                 wait();
             }
         } else {
-            if(this==cur)
-                throw new IllegalStateException();
-            cur.suspend(new ConversationDock(this));
+            if(this==fiber.owner)
+                throw new IllegalStateException("a conversation can't wait for its own completion");
+            fiber.suspend(new ConversationCondition(this));
         }
     }
 
@@ -410,6 +368,13 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         }
 
         private static final long serialVersionUID = 1L;
+    }
+
+    /**
+     * Returns a {@link ConversationImpl} instance that the current thread is executing.
+     */
+    public static ConversationImpl currentConversation() {
+        return FiberImpl.currentFiber().owner;
     }
 
     private static final long serialVersionUID = 1L;

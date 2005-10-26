@@ -1,11 +1,11 @@
 package dalma.spi.port;
 
-import dalma.Dock;
+import dalma.Condition;
 import dalma.ReplyIterator;
-import dalma.EndPoint;
 import dalma.endpoints.timer.TimerEndPoint;
 import dalma.impl.GeneratorImpl;
 import dalma.spi.ConversationSPI;
+import dalma.spi.FiberSPI;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -30,7 +30,7 @@ final class ReplyIteratorImpl<Key,Msg> extends GeneratorImpl implements ReplyIte
      * If the {@link #replies} become empty, the conversation
      * will wait until a new one arrives by using this lock.
      */
-    private transient DockImpl lock;
+    private transient ConditionImpl lock;
 
     private final Key key;
 
@@ -44,7 +44,7 @@ final class ReplyIteratorImpl<Key,Msg> extends GeneratorImpl implements ReplyIte
         this.expirationDate = expirationDate;
         synchronized(endPoint.queue) {
             this.key = endPoint.send(outgoing);
-            ConversationSPI.getCurrentConversation().addGenerator(this);
+            ConversationSPI.currentConversation().addGenerator(this);
         }
     }
 
@@ -76,11 +76,11 @@ final class ReplyIteratorImpl<Key,Msg> extends GeneratorImpl implements ReplyIte
             // no replies in the queue
             if(!isExpired()) {
                 // block until we receive another one
-                lock = new DockImpl(endPoint);
+                lock = new ConditionImpl();
                 if(expirationDate==null)
-                    ConversationSPI.getCurrentConversation().suspend(lock);
+                    FiberSPI.currentFiber().suspend(lock);
                 else
-                    ConversationSPI.getCurrentConversation().suspend(
+                    FiberSPI.currentFiber().suspend(
                         lock, TimerEndPoint.createDock(expirationDate));
             }
         }
@@ -100,7 +100,7 @@ final class ReplyIteratorImpl<Key,Msg> extends GeneratorImpl implements ReplyIte
             return; // we are no longer collecting replies. discard.
         replies.add(msg);
         if(lock!=null) {
-            lock.resume(null);
+            lock.activate(null);
             lock = null;
         }
     }
@@ -108,15 +108,14 @@ final class ReplyIteratorImpl<Key,Msg> extends GeneratorImpl implements ReplyIte
     /**
      * Blocks until a next message is received.
      */
-    private final class DockImpl extends Dock<Void> {
-        public DockImpl(EndPoint endPoint) {
-            super(endPoint);
+    private final class ConditionImpl extends Condition<Void> {
+        public ConditionImpl() {
         }
 
-        public void park() {
+        public void onParked() {
             synchronized(ReplyIteratorImpl.this) {
                 if(!replies.isEmpty()) {
-                    resume(null);
+                    activate(null);
                     return;
                 }
                 lock = this;
@@ -128,7 +127,7 @@ final class ReplyIteratorImpl<Key,Msg> extends GeneratorImpl implements ReplyIte
         }
 
         public void onLoad() {
-            park();
+            onParked();
         }
     }
 }

@@ -1,7 +1,8 @@
 package dalma.endpoints.irc;
 
-import dalma.Dock;
+import dalma.Condition;
 import dalma.spi.ConversationSPI;
+import dalma.spi.FiberSPI;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +25,7 @@ public abstract class Session implements Serializable {
     /**
      * If a conversation is blocking on the next message from this buddy.
      */
-    private Dock<Message> dock;
+    private Condition<Message> condition;
 
     /**
      * Messages that are received.
@@ -49,8 +50,7 @@ public abstract class Session implements Serializable {
     public synchronized Message waitForNextMessage() {
         while(msgs.isEmpty())
             // block until we get a new message
-            ConversationSPI.getCurrentConversation().suspend(
-                new MessageDock(endpoint) );
+            FiberSPI.currentFiber().suspend(new MessageCondition());
 
         return msgs.remove(0);
     }
@@ -66,9 +66,9 @@ public abstract class Session implements Serializable {
      */
     protected final synchronized void onMessageReceived(Message msg) {
         msgs.add(msg);
-        if(dock!=null) {
-            dock.resume(msg);
-            dock = null;
+        if(condition !=null) {
+            condition.activate(msg);
+            condition = null;
         }
     }
 
@@ -78,22 +78,21 @@ public abstract class Session implements Serializable {
      */
     protected abstract Object writeReplace();
 
-    private final class MessageDock extends Dock<Message> {
-        public MessageDock(IRCEndPoint endPoint) {
-            super(endPoint);
+    private final class MessageCondition extends Condition<Message> {
+        public MessageCondition() {
         }
 
-        public void park() {
-            dock = this;
+        public void onParked() {
+            condition = this;
         }
 
         public void interrupt() {
-            assert dock==this;
-            dock = null;
+            assert condition ==this;
+            condition = null;
         }
 
         public void onLoad() {
-            park();
+            onParked();
         }
     }
 }

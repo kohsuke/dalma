@@ -1,15 +1,14 @@
 package dalma.spi.port;
 
-import dalma.Dock;
+import dalma.Condition;
 import dalma.ReplyIterator;
 import dalma.endpoints.timer.TimerEndPoint;
 import dalma.impl.EndPointImpl;
-import dalma.spi.ConversationSPI;
+import dalma.spi.FiberSPI;
 
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 /**
@@ -39,7 +38,7 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
      * @return  always non-null.
      */
     protected Msg waitForReply(Msg msg) {
-        return ConversationSPI.getCurrentConversation().suspend(new OneTimeDock<Key,Msg>(this,msg));
+        return FiberSPI.currentFiber().suspend(new OneTimeCondition<Key,Msg>(this,msg));
     }
 
     /**
@@ -48,8 +47,8 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
      * TODO:javadoc
      */
     protected Msg waitForReply(Msg msg, Date timeout) {
-        return ConversationSPI.getCurrentConversation().suspend(
-            new OneTimeDock<Key,Msg>(this,msg), TimerEndPoint.<Msg>createDock(timeout) );
+        return FiberSPI.currentFiber().suspend(
+            new OneTimeCondition<Key,Msg>(this,msg), TimerEndPoint.<Msg>createDock(timeout) );
     }
 
     /**
@@ -118,9 +117,9 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
     }
 
     /**
-     * Dock used for waiting a single reply.
+     * Condition used for waiting a single reply.
      */
-    private static final class OneTimeDock<Key,Msg> extends Dock<Msg> implements Receiver<Key,Msg> {
+    private static final class OneTimeCondition<Key,Msg> extends Condition<Msg> implements Receiver<Key,Msg> {
         private Key key;
 
         /**
@@ -131,13 +130,15 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
          */
         private transient Msg outgoing;
 
-        public OneTimeDock(MultiplexedEndPoint<Key,Msg> endPoint, Msg outgoing) {
-            super(endPoint);
+        private final MultiplexedEndPoint<Key,Msg> endPoint;
+
+        public OneTimeCondition(MultiplexedEndPoint<Key,Msg> endPoint, Msg outgoing) {
             this.outgoing = outgoing;
+            this.endPoint = endPoint;
         }
 
         private MultiplexedEndPoint<Key,Msg> getEndPoint() {
-            return (MultiplexedEndPoint<Key,Msg>) endPoint;
+            return endPoint;
         }
 
         public Key getKey() {
@@ -146,10 +147,10 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
 
         public void handleMessage(Msg msg) {
             getEndPoint().unregister(this);
-            resume(msg);
+            activate(msg);
         }
 
-        public void park() {
+        public void onParked() {
             MultiplexedEndPoint<Key,Msg> endPoint = getEndPoint();
             try {
                 key = endPoint.send(outgoing);
