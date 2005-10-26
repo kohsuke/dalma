@@ -1,13 +1,14 @@
 package dalma.sample.hangman;
 
-import dalma.endpoints.email.EmailEndPoint;
 import dalma.EndPoint;
+import dalma.TimeUnit;
+import dalma.endpoints.email.EmailEndPoint;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.MessagingException;
-import java.io.Serializable;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * A hangman game.
@@ -53,7 +54,12 @@ public class HangmanWorkflow implements Runnable, Serializable {
                     "You Chose: "+maskWord("abcdefghijklmnopqrstuvwxyz",opened)+"\n\n"+
                     retry+" more guesses\n");
 
-                mail = ep.waitForReply(mail);
+                mail = ep.waitForReply(mail,7,TimeUnit.DAYS);
+                if(mail==null) {
+                    // it's been 1 week. sorry.
+                    System.out.println("timeout");
+                    return;
+                }
 
                 System.out.println("Received a reply from "+mail.getFrom()[0]);
 
