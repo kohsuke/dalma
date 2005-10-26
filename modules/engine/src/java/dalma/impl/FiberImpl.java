@@ -232,6 +232,29 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         return f;
     }
 
+    private Object writeReplace() {
+        if(SerializationContext.get().mode==SerializationContext.Mode.CONVERSATION)
+            return this;
+        else
+            return new FiberMoniker(owner,id);
+    }
+
+    private static final class FiberMoniker implements Serializable {
+        private final ConversationImpl conv;
+        private final int id;
+
+        public FiberMoniker(ConversationImpl conv,int id) {
+            this.conv = conv;
+            this.id = id;
+        }
+
+        private Object readResolve() {
+            return conv.getFiber(id);
+        }
+
+        private static final long serialVersionUID = 1L;
+    }
+
     private static final long serialVersionUID = 1L;
 
     /**

@@ -107,7 +107,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             throw new IOException("Unable to create "+rootDir);
 
         justCreated = true;
-        
+
         FiberImpl f = new FiberImpl(this,0,Continuation.startSuspendedWith(target));
         fibers.add(f);
 
@@ -277,12 +277,12 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     public void remove() {
         // this lock is to allow multiple concurrent invocations of the remove method
         synchronized(removeLock) {
-            if(getState()== ConversationState.ENDED)
-                return; // already removed.
-
             // the first thing we have to do is to wait for all the executing fibers
             // to complete. when we are doing that, we don't want new fibers to
             // start executing. We use isRemoving==true for this purpose.
+            if(isRemoving)
+                return; // already removed.
+
             isRemoving = true;
 
             try {
@@ -354,6 +354,16 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             return this;
         else
             return new ConversationMoniker(id);
+    }
+
+    public FiberImpl getFiber(int id) {
+        synchronized(fibers) {
+            for (FiberImpl f : fibers) {
+                if(f.id==id)
+                    return f;
+            }
+        }
+        throw new AssertionError();
     }
 
     private static final class ConversationMoniker implements Serializable {
