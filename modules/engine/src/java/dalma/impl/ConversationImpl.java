@@ -106,9 +106,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         if(!rootDir.mkdirs())
             throw new IOException("Unable to create "+rootDir);
 
+        justCreated = true;
+        
         FiberImpl f = new FiberImpl(this,0,Continuation.startSuspendedWith(target));
         fibers.add(f);
-        justCreated = true;
 
         save();
     }
