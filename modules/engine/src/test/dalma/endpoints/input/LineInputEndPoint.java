@@ -1,4 +1,4 @@
-package test.port.input;
+package dalma.endpoints.input;
 
 import dalma.Conversation;
 import dalma.Condition;
@@ -28,7 +28,7 @@ public final class LineInputEndPoint extends EndPointImpl implements Runnable {
 
     private final Thread thread = new Thread(this);
 
-    private LineInputEndPoint() {
+    public LineInputEndPoint() {
         super(LineInputEndPoint.class.getName());
     }
 
@@ -100,10 +100,6 @@ public final class LineInputEndPoint extends EndPointImpl implements Runnable {
         synchronized(LineInputEndPoint.class) {
             Engine engine = fiber.getOwner().getEngine();
             LineInputEndPoint endPoint = (LineInputEndPoint)engine.getEndPoint(LineInputEndPoint.class.getName());
-            if(endPoint==null) {
-                endPoint = new LineInputEndPoint();
-                engine.addEndPoint(endPoint);
-            }
             cond = endPoint.new LineCondition();
         }
         return cond;

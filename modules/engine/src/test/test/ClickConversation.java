@@ -1,6 +1,6 @@
 package test;
 
-import test.port.input.LineInputEndPoint;
+import dalma.endpoints.input.LineInputEndPoint;
 
 import java.io.Serializable;
 

@@ -1,19 +1,8 @@
 package test;
 
-import dalma.Conversation;
-import dalma.Engine;
-import dalma.test.Launcher;
-import dalma.helpers.ThreadPoolExecutor;
-import dalma.impl.EngineImpl;
-import dalma.impl.Util;
-import org.apache.commons.javaflow.ContinuationClassLoader;
-import dalma.test.MaskingClassLoader;
 import dalma.test.Launcher;
 
-import java.io.File;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
+import dalma.endpoints.input.LineInputEndPoint;
 
 /**
  * Run conversations that wait for a keyboard input.
@@ -27,6 +16,10 @@ public class ClickTest extends Launcher {
 
     public static void main(String[] args) throws Exception {
         new ClickTest(args);
+    }
+
+    protected void setUpEndPoints() throws Exception {
+        engine.addEndPoint(new LineInputEndPoint());
     }
 
     protected void init() throws Exception {

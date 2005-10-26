@@ -112,8 +112,6 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         justCreated = true;
 
         save();
-
-        engine.queue(f);
     }
 
     private void init(EngineImpl engine,File rootDir) {
