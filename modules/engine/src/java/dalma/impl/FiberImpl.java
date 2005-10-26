@@ -81,8 +81,7 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         }
 
         assert cond!=null;
-        assert c==cond;
-        T r = c.getReturnValue();
+        T r = (T)cond.getReturnValue();
         cond = null;
 
         assert state== FiberState.RUNNING;
@@ -152,7 +151,7 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
             assert cond!=null;
 
             // let the condition know that we are parked
-            cond.onParked();
+            cond.park(this);
         }
     }
 
