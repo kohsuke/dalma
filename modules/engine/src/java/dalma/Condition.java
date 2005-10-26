@@ -1,8 +1,5 @@
 package dalma;
 
-import dalma.Conversation;
-import dalma.impl.ConversationImpl;
-import dalma.spi.ConversationSPI;
 import dalma.spi.ConditionListener;
 
 import java.io.Serializable;
@@ -117,6 +114,7 @@ public abstract class Condition<T> implements Serializable {
     }
 
     public final synchronized T getReturnValue() {
+        assert isActive;
         return returnValue;
     }
 
