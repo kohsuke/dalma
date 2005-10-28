@@ -11,11 +11,11 @@
       </classpath>
     </taskdef>
 
-    <javaflow destdir="target/classes" srcdir="target/classes">
+    <javaflow dstdir="target/classes" srcdir="target/classes">
       <include name="dalma/spi/port/*.class" />
     </javaflow>
 
-    <javaflow destdir="target/test-classes" srcdir="target/test-classes">
+    <javaflow dstdir="target/test-classes" srcdir="target/test-classes">
       <include name="dalma/endpoints/input/LineInputEndPoint.class" />
     </javaflow>
   </target>

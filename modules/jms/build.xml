@@ -11,7 +11,7 @@
       </classpath>
     </taskdef>
 
-    <javaflow destdir="target/classes" srcdir="target/classes">
+    <javaflow dstdir="target/classes" srcdir="target/classes">
       <include name="dalma/endpoints/jms/JMSEndPoint.class" />
     </javaflow>
   </target>

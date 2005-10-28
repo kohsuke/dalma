@@ -168,15 +168,9 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         try {
             continuation = Continuation.continueWith(continuation);
         } catch(Error e) {
-            // handle unexpected error in the user code
-            onDied();
-            owner.getEngine().addToErrorQueue(e);
-            throw new FiberDeath();
+            die(e);
         } catch(RuntimeException e) {
-            // handle unexpected error in the user code
-            onDied();
-            owner.getEngine().addToErrorQueue(e);
-            throw new FiberDeath();
+            die(e);
         }
 
         assert state == FiberState.RUNNING;
@@ -212,23 +206,26 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         }
     }
 
-    protected synchronized Set<FiberCompletionCondition> getWaitList() {
-        if(waitList==null)
-            waitList = Collections.synchronizedSet(new HashSet<FiberCompletionCondition>());
-        return waitList;
-    }
-
     /**
-     * Called when a fiber's execution died unexpectedly.
+     * Called when a fiber dies unexpectedly in the user code.
      */
-    private void onDied() {
+    private void die(Throwable t) {
         // this method is supposed to handle an error in the user code,
         // not an unexpected termination inside the engine
         assert state == FiberState.RUNNING;
+        state = FiberState.ENDED;
 
         // clean up if we own a condition
         remove();
         owner.onFiberCompleted(this);
+        owner.getEngine().addToErrorQueue(t);
+        throw new FiberDeath();
+    }
+
+    protected synchronized Set<FiberCompletionCondition> getWaitList() {
+        if(waitList==null)
+            waitList = Collections.synchronizedSet(new HashSet<FiberCompletionCondition>());
+        return waitList;
     }
 
     /**

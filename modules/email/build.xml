@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="email" default="sorry" basedir="../..">
+<project name="email" default="sorry" basedir=".">
 
   <property file="${basedir}/ant.properties" />
 
@@ -14,7 +14,7 @@
       </classpath>
     </taskdef>
 
-    <javaflow destdir="target/classes" srcdir="target/classes">
+    <javaflow dstdir="target/classes" srcdir="target/classes">
       <include name="dalma/ports/email/EmailEndPoint.class" />
     </javaflow>
   </target>

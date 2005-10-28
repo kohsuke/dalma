@@ -17,6 +17,8 @@ TODO
     - plain TCP channel
     - pick up JBI channel
 
+    - write a document about error handling. error in the user code, persistence, etc.
+
 James integration
 =================
 - Wraps a Dalma to as a phoenix component
