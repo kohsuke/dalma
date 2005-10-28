@@ -1,11 +1,13 @@
 package dalma.impl;
 
+import java.io.Serializable;
+
 /**
  * Thread-safe counter.
  *
  * @author Kohsuke Kawaguchi
  */
-final class Counter {
+final class Counter implements Serializable {
     private int value;
 
     public synchronized int inc() {
@@ -24,4 +26,6 @@ final class Counter {
         while(value!=0)
             wait();
     }
+
+    private static final long serialVersionUID = 1L;
 }
