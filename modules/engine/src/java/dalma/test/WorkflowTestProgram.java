@@ -2,6 +2,7 @@ package dalma.test;
 
 import dalma.Conversation;
 import dalma.Engine;
+import dalma.ErrorHandler;
 import dalma.helpers.ThreadPoolExecutor;
 import dalma.impl.EngineImpl;
 import dalma.impl.Util;
@@ -12,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Properties;
+import java.util.List;
 
 /**
  * Base class for workflow-based tests.
@@ -46,6 +48,16 @@ public abstract class WorkflowTestProgram extends TestCase {
         });
 
         engine = new EngineImpl(root,classLoader,new ThreadPoolExecutor(3,true));
+
+        engine.setErrorHandler(new ErrorHandler() {
+            final Thread mainThread = Thread.currentThread();
+            public void onError(Throwable t) {
+                // log the message
+                ErrorHandler.DEFAULT.onError(t);
+                // then interrupt the main thread to cause a test failure
+                mainThread.interrupt();
+            }
+        });
 
         setupEndPoints();
 

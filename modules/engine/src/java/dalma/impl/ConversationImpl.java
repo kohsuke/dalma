@@ -317,28 +317,32 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
                 logger.log(Level.WARNING,"Unable to delete the conversation data directory",e);
             }
 
-            // remove this conversation from the endPoint
-            synchronized(fibers) {
-                for (FiberImpl f : fibers)
-                    f.remove();
-                fibers.clear();
-            }
-
-            synchronized(generators) {
-                for (GeneratorImpl g : generators.values()) {
-                    g.dispose();
+            synchronized(this) {
+                // remove this conversation from the endPoint
+                synchronized(fibers) {
+                    for (FiberImpl f : fibers)
+                        f.remove();
+                    fibers.clear();
                 }
-                generators.clear();
-            }
 
-            // notify any threads that are blocked on this conversation.
-            notifyAll();
+                synchronized(generators) {
+                    for (GeneratorImpl g : generators.values()) {
+                        g.dispose();
+                    }
+                    generators.clear();
+                }
 
-            // notify all conversations that are blocked on this
-            synchronized(waitList) {
-                for (ConversationCondition cd : waitList)
-                    cd.activate(this);
-                waitList.clear();
+                // notify any threads that are blocked on this conversation.
+                // the lock needs to be held before removing all fibers, as
+                // that changes the getState() value
+                notifyAll();
+
+                // notify all conversations that are blocked on this
+                synchronized(waitList) {
+                    for (ConversationCondition cd : waitList)
+                        cd.activate(this);
+                    waitList.clear();
+                }
             }
         }
     }

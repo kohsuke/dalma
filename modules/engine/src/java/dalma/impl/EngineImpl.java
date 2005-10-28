@@ -5,6 +5,7 @@ import dalma.EndPoint;
 import dalma.Engine;
 import dalma.ErrorHandler;
 import dalma.Executor;
+import dalma.ConversationDeath;
 import dalma.spi.EndPointFactory;
 import dalma.spi.EngineSPI;
 import org.apache.bsf.BSFManager;
@@ -187,10 +188,15 @@ public final class EngineImpl implements EngineSPI, Serializable {
                     f.run();
                 } catch(FiberDeath t) {
                     // this fiber is dead!
+                } catch(ConversationDeath t) {
+                    // some fatal error caused the conversation to die.
+                    // report the error first before removing the conversation,
+                    // which might cause the engine to signal "we are done!" event.
+                    addToErrorQueue(t);
+                    f.owner.remove();
                 } catch(Throwable t) {
                     // even if the error recovery process fails,
                     // don't let the worker thread die.
-                    addToErrorQueue(t);
                 }
             }
         });

@@ -5,6 +5,7 @@ import dalma.Conversation;
 import dalma.FiberState;
 import dalma.Fiber;
 import dalma.ConversationState;
+import dalma.ConversationDeath;
 import dalma.spi.ConditionListener;
 import dalma.spi.FiberSPI;
 
