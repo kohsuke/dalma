@@ -92,15 +92,11 @@ public class TimerEndPoint extends EndPointImpl {
     public static <T> Condition<T> createDock(Date dt) {
         EngineSPI engine = ConversationSPI.currentConversation().getEngine();
 
-        synchronized(TimerEndPoint.class) {
-            TimerEndPoint ep = (TimerEndPoint)engine.getEndPoint(TimerEndPoint.class.getName());
-            if(ep==null) {
-                // make sure no two threads try to create a new endpoint at the same time.
-                ep = new TimerEndPoint();
-                engine.addEndPoint(ep);
-            }
-            return ep.new TimerCondition<T>(dt);
+        TimerEndPoint ep = (TimerEndPoint)engine.getEndPoint(TimerEndPoint.class.getName());
+        if(ep==null) {
+            throw new IllegalStateException("TimerEndPoint was not added to the engine");
         }
+        return ep.new TimerCondition<T>(dt);
     }
 
     public static <T> Condition<T> createDock(long delay,TimeUnit unit) {
