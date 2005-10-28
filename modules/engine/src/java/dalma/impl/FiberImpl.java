@@ -72,16 +72,19 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
 
     public synchronized void join() throws InterruptedException {
         FiberImpl fiber = FiberImpl.currentFiber();
-        if(fiber==null) {
-            // called from outside conversations
-            if(getState()!= FiberState.ENDED) {
-                wait();
+        
+        if(!StackRecorder.get().isRestoring()) {
+            if(fiber==null) {
+                // called from outside conversations
+                if(getState()!= FiberState.ENDED) {
+                    wait();
+                }
+                return;
             }
-            return;
-        }
 
-        if(fiber==this)
-            throw new IllegalStateException("a fiber can't wait for its own completion");
+            if(fiber==this)
+                throw new IllegalStateException("a fiber can't wait for its own completion");
+        }
 
         fiber.suspend(new FiberCompletionCondition(this));
     }
