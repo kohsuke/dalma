@@ -6,6 +6,7 @@ import dalma.Engine;
 import dalma.ErrorHandler;
 import dalma.Executor;
 import dalma.ConversationDeath;
+import dalma.endpoints.timer.TimerEndPoint;
 import dalma.spi.EndPointFactory;
 import dalma.spi.EngineSPI;
 import org.apache.bsf.BSFManager;
@@ -105,6 +106,8 @@ public final class EngineImpl implements EngineSPI, Serializable {
         this.classLoader = classLoader;
         setLogger(Logger.getLogger(getClass().getName()));
         load();
+
+        addEndPoint(new TimerEndPoint());
     }
 
     /**
@@ -192,7 +195,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
                     // some fatal error caused the conversation to die.
                     // report the error first before removing the conversation,
                     // which might cause the engine to signal "we are done!" event.
-                    addToErrorQueue(t);
+                    addToErrorQueue(t.getCause());
                     f.owner.remove();
                 } catch(Throwable t) {
                     // even if the error recovery process fails,
