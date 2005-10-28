@@ -34,6 +34,14 @@ public class ThreadPoolExecutor implements Executor {
     private final boolean daemon;
 
     /**
+     * Set to true if we start stopping.
+     *
+     * All the worker threads are interrupted, but applications
+     * often eat interruption, so it's better to have this too, to be safe.
+     */
+    private boolean isStopping;
+
+    /**
      * Creates a new thread pool executor.
      *
      * @param nThreads
@@ -62,8 +70,13 @@ public class ThreadPoolExecutor implements Executor {
 
     protected void finalize() throws Throwable {
         super.finalize();
+        sendKillSignal();
+        // let them die, but don't wait
+    }
+
+    private void sendKillSignal() {
         synchronized(threads) {
-            // let them die, but don't wait
+            isStopping = true;
             for( WorkerThread t : threads )
                 t.interrupt();
         }
@@ -78,10 +91,7 @@ public class ThreadPoolExecutor implements Executor {
 
     public void stop(long timeout) throws InterruptedException {
         synchronized(terminationSignal) {
-            synchronized(threads) {
-                for( Thread t : threads )
-                    t.interrupt();
-            }
+            sendKillSignal();
             if(timeout==-1)
                 terminationSignal.wait();
             else
@@ -97,7 +107,7 @@ public class ThreadPoolExecutor implements Executor {
 
         public void run() {
             try {
-                while(true) {
+                while(!isStopping) {
                     Runnable job;
                     synchronized(jobQueue) {
                         while(jobQueue.isEmpty())
@@ -107,8 +117,9 @@ public class ThreadPoolExecutor implements Executor {
 
                     job.run();
                 }
-            } catch (InterruptedException e) {
+            } catch(InterruptedException e) {
                 // treat this as a signal to die
+            } finally {
                 synchronized(threads) {
                     threads.remove(this);
                     if(threads.isEmpty()) {

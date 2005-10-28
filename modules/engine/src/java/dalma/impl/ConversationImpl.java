@@ -44,7 +44,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     /**
      * All the {@link FiberImpl}s that belong to this conversation.
      */
-    private Set<FiberImpl> fibers = Collections.synchronizedSet(new HashSet<FiberImpl>());
+    protected final Set<FiberImpl> fibers = Collections.synchronizedSet(new HashSet<FiberImpl>());
 
     /**
      * Generates fiber id.
@@ -114,7 +114,6 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         justCreated = true;
 
         FiberImpl f = new FiberImpl(this,target);
-        fibers.add(f);
         f.start();
 
         save();
@@ -300,11 +299,11 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
                 Thread.currentThread().interrupt();
             }
 
-            Map<Integer,ConversationImpl> convs = engine.conversations;
-            synchronized(convs) {
-                convs.remove(id);
-                if(convs.isEmpty()) {
-                    synchronized(engine.completionLock) {
+            synchronized(engine.completionLock) {
+                Map<Integer,ConversationImpl> convs = engine.conversations;
+                synchronized(convs) {
+                    convs.remove(id);
+                    if(convs.isEmpty()) {
                         engine.completionLock.notifyAll();
                     }
                 }

@@ -2,20 +2,17 @@ package dalma.impl;
 
 import dalma.Condition;
 import dalma.Conversation;
-import dalma.FiberState;
 import dalma.Fiber;
-import dalma.ConversationState;
-import dalma.ConversationDeath;
+import dalma.FiberState;
 import dalma.spi.ConditionListener;
 import dalma.spi.FiberSPI;
-
-import java.io.Serializable;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
-
 import org.apache.commons.javaflow.Continuation;
 import org.apache.commons.javaflow.bytecode.StackRecorder;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -64,6 +61,7 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         this.id = owner.fiberId.inc();
         this.continuation = Continuation.startSuspendedWith(init);
         state = FiberState.CREATED;
+        owner.fibers.add(this);
     }
 
     public void start() {
@@ -170,12 +168,15 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         try {
             continuation = Continuation.continueWith(continuation);
         } catch(Error e) {
-            // handle unexpected death
+            // handle unexpected error in the user code
             onDied();
-            throw e;
+            owner.getEngine().addToErrorQueue(e);
+            throw new FiberDeath();
         } catch(RuntimeException e) {
+            // handle unexpected error in the user code
             onDied();
-            throw e;
+            owner.getEngine().addToErrorQueue(e);
+            throw new FiberDeath();
         }
 
         assert state == FiberState.RUNNING;

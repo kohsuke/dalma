@@ -197,12 +197,13 @@ public final class EngineImpl implements EngineSPI, Serializable {
                 } catch(Throwable t) {
                     // even if the error recovery process fails,
                     // don't let the worker thread die.
+                    addToErrorQueue(t);
                 }
             }
         });
     }
 
-    private void addToErrorQueue(Throwable t) {
+    protected void addToErrorQueue(Throwable t) {
         if(errorHandler==null)
             ErrorHandler.DEFAULT.onError(t);
         else
@@ -390,8 +391,8 @@ public final class EngineImpl implements EngineSPI, Serializable {
 
     public void waitForCompletion() throws InterruptedException {
         makeSureStarted();
-        while(!conversations.isEmpty())
-            synchronized(completionLock) {
+        synchronized(completionLock) {
+            while(!conversations.isEmpty())
                 completionLock.wait();
             }
     }
