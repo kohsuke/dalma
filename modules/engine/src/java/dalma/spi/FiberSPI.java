@@ -1,19 +1,17 @@
 package dalma.spi;
 
 import dalma.Condition;
-import dalma.Conversation;
 import dalma.Fiber;
-import dalma.impl.OrCondition;
-import dalma.impl.ConversationImpl;
 import dalma.impl.FiberImpl;
+import dalma.impl.OrCondition;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kohsuke Kawaguchi
  */
-public abstract class FiberSPI implements Fiber {
+public abstract class FiberSPI extends Fiber {
     /**
      * Suspends the conversation.
      *

@@ -59,7 +59,9 @@ public abstract class WorkflowTestProgram extends TestCase {
      */
     protected final Conversation createConversation(Class<? extends Runnable> c, Object... args ) throws Exception {
         Class clazz = classLoader.loadClass(c.getName());
-        Runnable r = (Runnable)findConstructor(clazz,args.length).newInstance(args);
+        Constructor constructor = findConstructor(clazz, args.length);
+        constructor.setAccessible(true);
+        Runnable r = (Runnable)constructor.newInstance(args);
 
         return engine.createConversation(r);
     }

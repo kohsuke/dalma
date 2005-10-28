@@ -47,6 +47,11 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     private Set<FiberImpl> fibers = Collections.synchronizedSet(new HashSet<FiberImpl>());
 
     /**
+     * Generates fiber id.
+     */
+    /*package*/ final Counter fiberId = new Counter();
+
+    /**
      * The number of {@link Continuation}s that are {@link FiberState.RUNNING running} right now.
      */
     // when inc()==0, load state
@@ -108,8 +113,9 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
         justCreated = true;
 
-        FiberImpl f = new FiberImpl(this,0,Continuation.startSuspendedWith(target));
+        FiberImpl f = new FiberImpl(this,target);
         fibers.add(f);
+        f.start();
 
         save();
     }
@@ -188,10 +194,12 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     synchronized void onFiberStartedRunning(FiberImpl fiber) {
         if(isRemoving)
             // this conversation is going to be removed now
-            // no further
+            // no further execution is allowed
             throw new FiberDeath();
 
         if(runningCounts.inc()>0)
+            // another fiber is already running, and therefore
+            // all the fibers are already hydrated. just go ahead and run
             return;
 
         if(justCreated) {

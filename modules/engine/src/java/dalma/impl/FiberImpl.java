@@ -3,10 +3,15 @@ package dalma.impl;
 import dalma.Condition;
 import dalma.Conversation;
 import dalma.FiberState;
+import dalma.Fiber;
+import dalma.ConversationState;
 import dalma.spi.ConditionListener;
 import dalma.spi.FiberSPI;
 
 import java.io.Serializable;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
 
 import org.apache.commons.javaflow.Continuation;
 import org.apache.commons.javaflow.bytecode.StackRecorder;
@@ -18,6 +23,7 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
 
     /**
      * Uniquely identifies {@link FiberImpl} among other fibers that belong to the same owner.
+     * Necessary for serialization of the continuation to work correctly.
      */
     final int id;
 
@@ -43,11 +49,42 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
      */
     private FiberState state;
 
-    public FiberImpl(ConversationImpl owner, int id, Continuation init) {
+    /**
+     * Other fibers that are blocking for the completion of this fiber.
+     *
+     * Transient, because {@link FiberCompletionCondition}s in this queue re-register themselves.
+     * Always non-null.
+     */
+    private transient Set<FiberCompletionCondition> waitList;
+
+
+    /*package*/ FiberImpl(ConversationImpl owner, Runnable init) {
         this.owner = owner;
-        this.id = id;
-        this.continuation = init;
+        this.id = owner.fiberId.inc();
+        this.continuation = Continuation.startSuspendedWith(init);
+        state = FiberState.CREATED;
+    }
+
+    public void start() {
+        if(state!= FiberState.CREATED)
+            throw new IllegalStateException("fiber is already started");
         queue();
+    }
+
+    public synchronized void join() throws InterruptedException {
+        FiberImpl fiber = FiberImpl.currentFiber();
+        if(fiber==null) {
+            // called from outside conversations
+            if(getState()!= FiberState.ENDED) {
+                wait();
+            }
+            return;
+        }
+
+        if(fiber==this)
+            throw new IllegalStateException("a fiber can't wait for its own completion");
+
+        fiber.suspend(new FiberCompletionCondition(this));
     }
 
     public FiberState getState() {
@@ -143,11 +180,26 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         assert state == FiberState.RUNNING;
 
         if(continuation==null) {
-            // conversation has finished execution.
-            state = FiberState.ENDED;
-            // but defer the completion notification until the very end
+            synchronized(this) {
+                // conversation has finished execution.
+                state = FiberState.ENDED;
+
+                // notify any threads that are blocked on this conversation.
+                notifyAll();
+
+                // notify all conversations that are blocked on this
+                if(waitList!=null) {
+                    synchronized(waitList) {
+                        for (FiberCompletionCondition cd : waitList)
+                            cd.activate(this);
+                        waitList.clear();
+                    }
+                }
+            }
+
             assert cond==null;
             owner.onFiberCompleted(this);
+
         } else {
             // conversation has suspended
             state = FiberState.WAITING;
@@ -156,6 +208,12 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
             // let the condition know that we are parked
             cond.park(this);
         }
+    }
+
+    protected synchronized Set<FiberCompletionCondition> getWaitList() {
+        if(waitList==null)
+            waitList = Collections.synchronizedSet(new HashSet<FiberCompletionCondition>());
+        return waitList;
     }
 
     /**
@@ -230,6 +288,13 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         if(f==null)
             throw new IllegalStateException("this thread isn't executing a conversation");
         return f;
+    }
+
+    /**
+     * @see Fiber#create(Runnable)
+     */
+    public static FiberImpl create(Runnable entryPoint) {
+        return new FiberImpl(currentFiber().owner,entryPoint);
     }
 
     private Object writeReplace() {
