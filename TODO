@@ -1,8 +1,5 @@
 TODO
 ====
-    - Use this to replace the build automation
-        - write e-mail endPointoint (and qmail endPointoint)
-
 	- users should be able to access their own state information easily
 	  from Conversation (like Thread)
 
