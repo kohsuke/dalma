@@ -98,28 +98,25 @@ public class FiberTest extends WorkflowTestProgram {
 
         public void run() {
             try {
-                List<Fiber> fibers = new ArrayList<Fiber>();
-                List<ReqRsp> reqrsp = new ArrayList<ReqRsp>();
+                List<Fiber<ReqRsp>> fibers = new ArrayList<Fiber<ReqRsp>>();
 
                 System.out.println("A: initiating fibers");
                 for (int i = 0; i < 10; i++) {
-                    ReqRsp rr = new ReqRsp("Alice" + i);
-                    reqrsp.add(rr);
-                    Fiber f = Fiber.create(rr);
+                    Fiber<ReqRsp> f = Fiber.create(new ReqRsp("Alice" + i));
                     fibers.add(f);
                     f.start();
                 }
 
                 System.out.println("A: waiting for fibers to complete");
 
-                for (Fiber fiber : fibers.toArray(new Fiber[0])) {
+                for (Fiber<ReqRsp> fiber : fibers.toArray(new Fiber[0])) {
                     fiber.join();
                 }
 
                 int value = 0;
 
-                for (ReqRsp rr : reqrsp) {
-                    value += rr.value;
+                for (Fiber<ReqRsp> fiber : fibers) {
+                    value += fiber.getRunnable().value;
                 }
 
                 Assert.assertEquals(45 /* 1/2*N*(N-1) with N=10 */, value);
