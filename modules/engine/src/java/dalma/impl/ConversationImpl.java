@@ -24,6 +24,9 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.List;
+import java.util.Vector;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,8 +46,9 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
     /**
      * All the {@link FiberImpl}s that belong to this conversation.
+     * Indexed by their id.
      */
-    protected final Set<FiberImpl> fibers = Collections.synchronizedSet(new HashSet<FiberImpl>());
+    protected final List<FiberImpl> fibers = new Vector<FiberImpl>();
 
     /**
      * Generates fiber id.
@@ -174,16 +178,20 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         if(runningCounts.get()!=0)
             return ConversationState.RUNNING;
 
-        if(fibers.isEmpty())
-            return ConversationState.ENDED;
+        ConversationState r = ConversationState.ENDED;
 
         synchronized(fibers) {
             for (FiberImpl f : fibers) {
-                if(f.getState()== FiberState.RUNNABLE)
+                switch(f.getState()) {
+                case RUNNABLE:
                     return ConversationState.RUNNABLE;
+                case WAITING:
+                    r = ConversationState.SUSPENDED;
+                    break;
+                }
             }
         }
-        return ConversationState.SUSPENDED;
+        return r;
     }
 
     public EngineImpl getEngine() {
@@ -214,11 +222,13 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
             ObjectInputStream ois = new ObjectInputStreamEx(
                 new BufferedInputStream(new FileInputStream(cont)),engine.classLoader);
-            Map<Integer,Continuation> list = (Map<Integer, Continuation>) ois.readObject();
+            List<Continuation> list = (List<Continuation>) ois.readObject();
 
             ois.close();
             cont.delete();
 
+            if(fibers.size()!=list.size())
+                throw new ConversationDeath(list.size()+" fibers are found in the disk but the memory says "+fibers.size()+" fibers",null);
             for (FiberImpl f : fibers) {
                 f.hydrate(list.get(f.id));
             }
@@ -236,17 +246,17 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             return;
 
 
-        if(fibers.isEmpty()) {
+        if(getState()== ConversationState.ENDED) {
             // no fiber is there to run. conversation is complete
             remove();
             return;
         }
 
         // create the object that represents the persisted state
-        Map<Integer,Continuation> state = new HashMap<Integer, Continuation>();
-        for (FiberImpl f : fibers) {
-            state.put(f.id,f.dehydrate());
-        }
+        List<Continuation> state = new ArrayList<Continuation>(fibers.size());
+
+        for (FiberImpl f : fibers)
+            state.add(f.dehydrate());
 
         // persist the state
         File cont = new File(rootDir,"continuation");
@@ -274,11 +284,6 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         } catch (IOException e) {
             throw new ConversationDeath("failed to persist the state of the conversation "+cont, e);
         }
-    }
-
-    synchronized void onFiberCompleted(FiberImpl fiber) {
-        boolean modified = fibers.remove(fiber);
-        assert modified;
     }
 
     public void remove() {
@@ -367,14 +372,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             return new ConversationMoniker(id);
     }
 
-    public FiberImpl getFiber(int id) {
-        synchronized(fibers) {
-            for (FiberImpl f : fibers) {
-                if(f.id==id)
-                    return f;
-            }
-        }
-        throw new AssertionError();
+    protected FiberImpl getFiber(int id) {
+        return fibers.get(id);
     }
 
     private static final class ConversationMoniker implements Serializable {

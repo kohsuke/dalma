@@ -61,6 +61,7 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         this.id = owner.fiberId.inc();
         this.continuation = Continuation.startSuspendedWith(init);
         state = FiberState.CREATED;
+        assert owner.fibers.size()==id;
         owner.fibers.add(this);
     }
 
@@ -197,7 +198,6 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
             }
 
             assert cond==null;
-            owner.onFiberCompleted(this);
 
         } else {
             // conversation has suspended
@@ -220,7 +220,6 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
 
         // clean up if we own a condition
         remove();
-        owner.onFiberCompleted(this);
         owner.getEngine().addToErrorQueue(t);
         throw new FiberDeath();
     }
@@ -279,10 +278,10 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
      * Called when the conversation is restored from the disk.
      */
     /*package*/ void onLoad() {
-        // 'cond' is null only when the fiber is RUNNING
-        cond.onLoad();
+        if(cond!=null)
+            cond.onLoad();
         assert continuation==null;
-        assert state==FiberState.WAITING || state==FiberState.RUNNABLE;
+        assert state==FiberState.WAITING || state==FiberState.RUNNABLE || state== FiberState.ENDED;
     }
 
     public static FiberImpl currentFiber() {
