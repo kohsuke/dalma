@@ -93,7 +93,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
             throw new IllegalStateException("Cannot be invoked from a fiber that belongs to another conversation");
 
         assert execution!=null;
-        
+
         return execution.runnable;
     }
 
@@ -104,7 +104,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     }
 
     public synchronized void join() throws InterruptedException {
-        FiberImpl fiber = FiberImpl.currentFiber();
+        FiberImpl<?> fiber = FiberImpl.currentFiber();
         
         if(!StackRecorder.get().isRestoring()) {
             if(getState()==FiberState.ENDED)
