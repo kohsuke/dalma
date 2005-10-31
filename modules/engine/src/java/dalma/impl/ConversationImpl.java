@@ -221,7 +221,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
             ObjectInputStream ois = new ObjectInputStreamEx(
                 new BufferedInputStream(new FileInputStream(cont)),engine.classLoader);
-            List<Continuation> list = (List<Continuation>) ois.readObject();
+            List<FiberImpl.PersistedData> list = (List<FiberImpl.PersistedData>) ois.readObject();
 
             ois.close();
             cont.delete();
@@ -252,7 +252,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         }
 
         // create the object that represents the persisted state
-        List<Continuation> state = new ArrayList<Continuation>(fibers.size());
+        List<FiberImpl.PersistedData> state = new ArrayList<FiberImpl.PersistedData>(fibers.size());
 
         for (FiberImpl f : fibers)
             state.add(f.dehydrate());

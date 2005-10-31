@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * @author Kohsuke Kawaguchi
  */
-public final class FiberImpl extends FiberSPI implements Serializable, ConditionListener {
+public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements Serializable, ConditionListener {
 
     /**
      * Uniquely identifies {@link FiberImpl} among other fibers that belong to the same owner.
@@ -37,10 +37,30 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
      */
     private Condition cond;
 
+    static class PersistedData<T extends Runnable> implements Serializable {
+        private Continuation continuation;
+        public final T runnable;
+
+        public PersistedData(T runnable) {
+            this.runnable = runnable;
+            this.continuation = Continuation.startSuspendedWith(runnable);
+        }
+
+        public void execute() {
+            continuation = Continuation.continueWith(continuation);
+        }
+
+        public boolean isCompleted() {
+            return continuation==null;
+        }
+
+        private static final long serialVersionUID = 1L;
+    }
+
     /**
-     * The {@link Continuation} to be executed.
+     * The {@link PersistedData} that includes continuation to be executed.
      */
-    private Continuation continuation;
+    private PersistedData<T> execution;
 
     /**
      * The current state of the {@link FiberImpl}.
@@ -56,13 +76,17 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
     private transient Set<FiberCompletionCondition> waitList;
 
 
-    /*package*/ FiberImpl(ConversationImpl owner, Runnable init) {
+    /*package*/ FiberImpl(ConversationImpl owner, T init) {
         this.owner = owner;
         this.id = owner.fiberId.inc();
-        this.continuation = Continuation.startSuspendedWith(init);
+        this.execution = new PersistedData<T>(init);
         state = FiberState.CREATED;
         assert owner.fibers.size()==id;
         owner.fibers.add(this);
+    }
+
+    public T getRunnable() {
+        return execution.runnable;
     }
 
     public void start() {
@@ -171,7 +195,7 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
 
         // this runs the conversation until it blocks
         try {
-            continuation = Continuation.continueWith(continuation);
+            execution.execute();
         } catch(Error e) {
             die(e);
         } catch(RuntimeException e) {
@@ -180,7 +204,7 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
 
         assert state == FiberState.RUNNING;
 
-        if(continuation==null) {
+        if(execution.isCompleted()) {
             synchronized(this) {
                 // conversation has finished execution.
                 state = FiberState.ENDED;
@@ -257,21 +281,21 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
     /**
      * Called when the state of the {@link FiberImpl} is being moved to the disk.
      */
-    /*package*/ void hydrate(Continuation c) {
+    /*package*/ void hydrate(PersistedData<T> c) {
         assert state!= FiberState.RUNNING;
-        assert continuation==null;
+        assert execution==null;
         assert c!=null;
-        continuation = c;
+        execution = c;
     }
 
     /**
      * Called when the state of the {@link FiberImpl} is being moved to the disk.
      */
-    /*package*/ Continuation dehydrate() {
-        assert state== FiberState.RUNNABLE || state== FiberState.WAITING;
-        assert continuation!=null;
-        Continuation r = continuation;
-        continuation = null;
+    /*package*/ PersistedData<T> dehydrate() {
+        assert state==FiberState.RUNNABLE || state==FiberState.WAITING || state==FiberState.ENDED;
+        assert execution!=null;
+        PersistedData<T> r = execution;
+        execution = null;
         return r;
     }
 
@@ -281,11 +305,11 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
     /*package*/ void onLoad() {
         if(cond!=null)
             cond.onLoad();
-        assert continuation==null;
+        assert execution==null;
         assert state==FiberState.WAITING || state==FiberState.RUNNABLE || state== FiberState.ENDED;
     }
 
-    public static FiberImpl currentFiber() {
+    public static FiberImpl<?> currentFiber() {
         FiberImpl f = currentFiber.get();
         if(f==null)
             throw new IllegalStateException("this thread isn't executing a conversation");
@@ -295,8 +319,8 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
     /**
      * @see Fiber#create(Runnable)
      */
-    public static FiberImpl create(Runnable entryPoint) {
-        return new FiberImpl(currentFiber().owner,entryPoint);
+    public static <T extends Runnable> FiberImpl<T> create(T entryPoint) {
+        return new FiberImpl<T>(currentFiber().owner,entryPoint);
     }
 
     private Object writeReplace() {

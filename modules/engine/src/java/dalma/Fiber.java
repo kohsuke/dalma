@@ -5,15 +5,15 @@ import dalma.impl.FiberImpl;
 /**
  * @author Kohsuke Kawaguchi
  */
-public abstract class Fiber {
-    ///**
-    // * Gets the {@link Runnable} object that represents the entry point of this fiber.
-    // *
-    // * @return
-    // *      never null. Always return the same {@link Runnable} object
-    // *      given to create a new {@link Fiber}.
-    // */
-    //T getRunnable();
+public abstract class Fiber<T extends Runnable> {
+    /**
+     * Gets the {@link Runnable} object that represents the entry point of this fiber.
+     *
+     * @return
+     *      never null. Always return the same {@link Runnable} object
+     *      given to create a new {@link Fiber}.
+     */
+    public abstract T getRunnable();
 
     /**
      * Starts executing this {@link Fiber}.
@@ -64,7 +64,7 @@ public abstract class Fiber {
     /**
      * Creates a new {@link Fiber} within the current conversation.
      */
-    public static Fiber create(Runnable entryPoint) {
+    public static <T extends Runnable> Fiber<T> create(T entryPoint) {
         return FiberImpl.create(entryPoint);
     }
 }

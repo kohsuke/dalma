@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Kohsuke Kawaguchi
  */
-public abstract class FiberSPI extends Fiber {
+public abstract class FiberSPI<T extends Runnable> extends Fiber<T> {
     /**
      * Suspends the conversation.
      *
@@ -41,7 +41,7 @@ public abstract class FiberSPI extends Fiber {
     /**
      * Returns the {@link FiberSPI} that the current thread is executing.
      */
-    public static FiberSPI currentFiber() {
+    public static FiberSPI<?> currentFiber() {
         return FiberImpl.currentFiber();
     }
 }
