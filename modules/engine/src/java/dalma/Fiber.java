@@ -9,9 +9,19 @@ public abstract class Fiber<T extends Runnable> {
     /**
      * Gets the {@link Runnable} object that represents the entry point of this fiber.
      *
+     * <p>
+     * The state of {@link Fiber} is not always kept in memory. For example,
+     * if a conversation is blocking on an event, its state is purged to the disk.
+     * Because of this, this method can be only invoked from other {@link Fiber}s
+     * in the same {@link Conversation}.
+     *
      * @return
      *      never null. Always return the same {@link Runnable} object
      *      given to create a new {@link Fiber}.
+     *
+     * @throws IllegalStateException
+     *      if this method is not invoked from a {@link Fiber} that belongs
+     *      to the same {@link Conversation}.
      */
     public abstract T getRunnable();
 

@@ -86,6 +86,14 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     }
 
     public T getRunnable() {
+        FiberImpl<?> f = currentFiber();
+        if(f==null)
+            throw new IllegalStateException("Cannot be invoked from outside a conversation");
+        if(f.owner!=owner)
+            throw new IllegalStateException("Cannot be invoked from a fiber that belongs to another conversation");
+
+        assert execution!=null;
+        
         return execution.runnable;
     }
 
