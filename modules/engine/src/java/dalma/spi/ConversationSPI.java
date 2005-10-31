@@ -1,13 +1,9 @@
 package dalma.spi;
 
 import dalma.Conversation;
-import dalma.Condition;
-import dalma.impl.EngineImpl;
-import dalma.impl.GeneratorImpl;
-import dalma.impl.ConversationImpl;
 import dalma.EndPoint;
-
-import java.util.List;
+import dalma.impl.ConversationImpl;
+import dalma.impl.GeneratorImpl;
 
 /**
  * Additional methods of {@link Conversation} available for {@link EndPoint}s.

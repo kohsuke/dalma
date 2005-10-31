@@ -1,8 +1,8 @@
 package dalma.impl;
 
+import dalma.Conversation;
 import dalma.EndPoint;
 import dalma.Engine;
-import dalma.Conversation;
 
 import java.io.Serializable;
 

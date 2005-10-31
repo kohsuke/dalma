@@ -1,6 +1,5 @@
 package dalma;
 
-import dalma.spi.ConversationSPI;
 import dalma.impl.FiberImpl;
 
 /**

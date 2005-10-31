@@ -1,12 +1,12 @@
 package dalma;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.io.IOException;
-import java.io.File;
-import java.text.ParseException;
 
 
 /**

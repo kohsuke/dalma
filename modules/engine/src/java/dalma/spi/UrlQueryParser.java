@@ -1,11 +1,10 @@
 package dalma.spi;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
-import java.net.URLDecoder;
-import java.net.URI;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Parses the query part of the URL.

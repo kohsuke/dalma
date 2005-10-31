@@ -1,11 +1,11 @@
 package dalma.helpers;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.javaflow.bytecode.transformation.ResourceTransformer;
 import org.apache.commons.javaflow.bytecode.transformation.bcel.BcelClassTransformer;
-import org.apache.commons.io.IOUtils;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * {@link ClassLoader} that loads the same classes as its parent

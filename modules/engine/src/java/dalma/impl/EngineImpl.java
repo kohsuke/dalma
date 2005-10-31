@@ -1,11 +1,11 @@
 package dalma.impl;
 
 import dalma.Conversation;
+import dalma.ConversationDeath;
 import dalma.EndPoint;
 import dalma.Engine;
 import dalma.ErrorHandler;
 import dalma.Executor;
-import dalma.ConversationDeath;
 import dalma.endpoints.timer.TimerEndPoint;
 import dalma.spi.EndPointFactory;
 import dalma.spi.EngineSPI;

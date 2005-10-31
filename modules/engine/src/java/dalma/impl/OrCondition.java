@@ -1,11 +1,10 @@
 package dalma.impl;
 
 import dalma.Condition;
-import dalma.EndPoint;
 import dalma.spi.ConditionListener;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Kohsuke Kawaguchi

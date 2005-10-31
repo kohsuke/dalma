@@ -1,13 +1,5 @@
 package dalma.impl.port.filemonitor;
 
-import dalma.spi.ConversationSPI;
-import dalma.EndPoint;
-
-import java.io.File;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Monitors a directory and checks for new files.
  *

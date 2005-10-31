@@ -1,7 +1,7 @@
 package dalma.impl;
 
-import dalma.Conversation;
 import dalma.Condition;
+import dalma.Conversation;
 
 /**
  * {@link Condition} that waits for the completion of a {@link Conversation}.

@@ -1,15 +1,15 @@
 package dalma;
 
-import dalma.impl.EngineImpl;
-import dalma.helpers.ThreadPoolExecutor;
 import dalma.helpers.Java5Executor;
 import dalma.helpers.ParallelInstrumentingClassLoader;
+import dalma.helpers.ThreadPoolExecutor;
+import dalma.impl.EngineImpl;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 /**

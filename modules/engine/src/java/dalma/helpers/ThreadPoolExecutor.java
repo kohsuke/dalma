@@ -1,7 +1,7 @@
 package dalma.helpers;
 
-import dalma.Executor;
 import dalma.Engine;
+import dalma.Executor;
 
 import java.util.ArrayList;
 import java.util.Collection;

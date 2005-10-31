@@ -13,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Properties;
-import java.util.List;
 
 /**
  * Base class for workflow-based tests.

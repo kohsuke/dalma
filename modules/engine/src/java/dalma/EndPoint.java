@@ -1,7 +1,5 @@
 package dalma;
 
-import dalma.impl.EngineImpl;
-
 import java.io.Serializable;
 
 /**
