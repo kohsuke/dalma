@@ -75,11 +75,12 @@ public final class FiberImpl extends FiberSPI implements Serializable, Condition
         FiberImpl fiber = FiberImpl.currentFiber();
         
         if(!StackRecorder.get().isRestoring()) {
+            if(getState()==FiberState.ENDED)
+                return;
+
             if(fiber==null) {
                 // called from outside conversations
-                if(getState()!= FiberState.ENDED) {
-                    wait();
-                }
+                wait();
                 return;
             }
 
