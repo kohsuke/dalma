@@ -52,11 +52,11 @@ public final class WorkflowApplication {
      */
     private final Redeployer redeployer;
 
-    public WorkflowApplication(Container owner,String name) {
+    public WorkflowApplication(Container owner,File appDir) {
         this.owner = owner;
-        this.name = name;
+        this.name = appDir.getName();
         this.workDir = new File(new File(owner.rootDir, "work"), name);
-        this.appDir  = new File(new File(owner.rootDir, "apps"), name);
+        this.appDir  = appDir;
 
         redeployer = Redeployer.create(this);
     }

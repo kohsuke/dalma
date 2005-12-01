@@ -1,23 +1,61 @@
 package dalma.container;
 
-import java.util.concurrent.Executor;
+import dalma.helpers.Java5Executor;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.FileInputStream;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.logging.Logger;
+import java.util.logging.LogManager;
+import java.util.logging.Level;
 
 /**
+ * Entry point to the dalma container.
+ *
  * @author Kohsuke Kawaguchi
  */
 public class Main {
-    public static void main(String[] args) {
-        // we'll create an Engine instance for each application
-        // but share the executor for better scheduling
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
 
-        Executor exec = Executors.newFixedThreadPool(5,new ThreadFactory() {
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                t.setDaemon(true);
-                return t;
+    public static void main(String[] args) {
+        File home = getHome();
+
+        logger.info("Starting dalma container at "+home);
+
+        new Container(home,new Java5Executor(Executors.newFixedThreadPool(5)));
+
+        Thread.currentThread().suspend();
+    }
+
+    /**
+     * Gets the dalma container home directory.
+     */
+    public static File getHome() {
+        String home = System.getProperty("DALMA_HOME");
+        if(home!=null)
+            return new File(home);
+
+        return new File(".");
+    }
+
+    static {
+        // configure the logger
+        configureLogger();
+    }
+
+    private static void configureLogger() {
+        // this is the default
+        Logger.getLogger("dalma").setLevel(Level.ALL);
+
+        // if the property file exists, load that configuration
+        File logProperties = new File(getHome(),"logging.properties");
+        if(logProperties.exists()) {
+            try {
+                LogManager.getLogManager().readConfiguration(new FileInputStream(logProperties));
+            } catch (IOException e) {
+                logger.log(Level.SEVERE,"Failed to read "+logProperties,e);
             }
-        });
+        }
     }
 }
