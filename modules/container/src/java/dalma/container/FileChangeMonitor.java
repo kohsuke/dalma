@@ -1,14 +1,16 @@
 package dalma.container;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-import java.io.File;
 
 /**
- * Periodically checks for an update to a file and invokes a callback.
+ * Periodically checks for an update to a file in a specific directory and invokes a callback.
  *
  * @author Kohsuke Kawaguchi
  */
@@ -17,6 +19,9 @@ abstract class FileChangeMonitor {
 
     private static final Set<WeakReference<FileChangeMonitor>> monitors = new HashSet<WeakReference<FileChangeMonitor>>();
 
+    /**
+     * The singleton thread that does all the monitoring.
+     */
     private static final Thread monitorThread;
 
     public static void add(FileChangeMonitor job) {
@@ -27,18 +32,34 @@ abstract class FileChangeMonitor {
     }
 
     /**
-     * File to monitor the timestamp.
+     * Directory to monitor.
      */
-    private final File file;
+    private final File dir;
 
     /**
-     * The timestamp of the file checked last time.
+     * Files in the {@link #dir} known currently, keyed by their names.
      */
-    private long timestamp;
+    private Map<String,Entry> files;
 
-    public FileChangeMonitor(File file, long timestamp) {
-        this.file = file;
-        this.timestamp = timestamp;
+    private class Entry {
+        /**
+         * The {@link File} instance that this object represents.
+         */
+        private final File file;
+
+        /**
+         * The last-modified timestamp known to us.
+         */
+        private long timestamp;
+
+        public Entry(File file) {
+            this.file = file;
+            timestamp = file.lastModified();
+        }
+    }
+
+    public FileChangeMonitor(File dir) {
+        this.dir = dir;
 
         synchronized(monitors) {
             monitors.add(new WeakReference<FileChangeMonitor>(this));
@@ -66,20 +87,57 @@ abstract class FileChangeMonitor {
     }
 
     /**
-     * Invoked when a file is changed.
+     * Invoked when a file/directory is changed.
      */
-    protected abstract void onUpdated();
+    protected abstract void onUpdated(File file);
 
     /**
-     * Checks if there's an update, and invokes {@link #onUpdated()}
-     * if there is.
+     * Invoked when a new file/directory is added.
      */
-    private void check() {
-        long lm = file.lastModified();
-        if(timestamp<lm) {
-            timestamp = lm;
-            onUpdated();
+    protected abstract void onAdded(File file);
+
+    /**
+     * Invoked when a file/directory is removed.
+     */
+    protected abstract void onDeleted(File file);
+
+    /**
+     * Checks if there's an update, and invokes callbacks if there is.
+     *
+     * @return false
+     *      if the monitoring should terminate.
+     */
+    private boolean check() {
+        Map<String,Entry> newMap = new HashMap<String, Entry>();
+
+        if(!dir.isDirectory())
+            return false;   // directory itself no longer exists
+
+        for( File f : dir.listFiles() ) {
+            String name = f.getName();
+            Entry entry = files.get(name);
+            if(entry==null) {
+                // new file
+                newMap.put(name,new Entry(f));
+                onAdded(f);
+            } else {
+                long t = f.lastModified();
+                if(entry.timestamp<t) {
+                    onUpdated(f);
+                    entry.timestamp=t;
+                }
+                newMap.put(name,entry);
+                files.remove(name);
+            }
         }
+
+        // anything left in 'files' are deleted files
+        for (Entry e : files.values()) {
+            onDeleted(e.file);
+        }
+        files = newMap;
+
+        return true;
     }
 
 
@@ -102,7 +160,13 @@ abstract class FileChangeMonitor {
                                     continue;
                                 }
 
-                                job.check();
+                                try {
+                                    if(!job.check())
+                                        itr.remove();
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                    itr.remove();
+                                }
                             }
 
                             while(monitors.isEmpty()) {

@@ -45,20 +45,11 @@ public final class WorkflowApplication {
      */
     private final File appDir;
 
-    /**
-     * If there's a dar file, monitor it. Otherwise null.
-     * This field is only so that we keep {@link Redeployer} alive while
-     * {@link WorkflowApplication} is present.
-     */
-    private final Redeployer redeployer;
-
     public WorkflowApplication(Container owner,File appDir) {
         this.owner = owner;
         this.name = appDir.getName();
         this.workDir = new File(new File(owner.rootDir, "work"), name);
         this.appDir  = appDir;
-
-        redeployer = Redeployer.create(this);
     }
 
     public void start() throws IOException {
