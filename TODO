@@ -3,6 +3,9 @@ TODO
 	- users should be able to access their own state information easily
 	  from Conversation (like Thread)
 
+	  Turns out this is difficult, as state are often dehydrated.
+	  Needs some design thinking.
+
     - Check out Windows Server 2003 POP3 mail service
     - consider integrating with Exchange Server
 
@@ -23,4 +26,27 @@ James integration
   (From AvalonListservManager:)
   ComponentManager compMgr = (ComponentManager)getMailetContext().getAttribute(Constants.AVALON_COMPONENT_MANAGER);
   UsersStore usersStore = (UsersStore) compMgr.lookup("org.apache.james.services.UsersStore");
+
+Container Version
+==============
+- where to store the configuration information?
+- we need a dummy application to test the container
+- support for adding new applications on the fly
+- support the archive format (*.dar?)
+- JMX based management features
+- directory structures, auto-deploy
+
+    dalma
+        bin         : shell scripts, jar file that consistutes the container
+        lib         : jar files made available to all the workflow applications
+        apps
+            *.dar
+            <name>  : exploded application directories
+                *.jar
+                <folder>s
+
+        work
+            <name>
+                data   : store information about on-going conversations
+
 
