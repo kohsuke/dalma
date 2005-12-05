@@ -3,72 +3,108 @@ package dalma.container.model;
 import dalma.EndPoint;
 
 import java.text.ParseException;
+import java.io.File;
 
 /**
  * Converts a persisted configuration value into an object of the appropriate type.
  *
+ * TODO: consider adding pluggability.
+ *
  * @author Kohsuke Kawaguchi
  */
-interface Converter<T> {
+abstract class Converter<T> {
 
-    Class<T> getType();
+    abstract Class<T> getType();
 
-    T load(String propertyName, String value) throws ParseException;
+    abstract T load(String propertyName, String value) throws ParseException;
     //String save(T value);
 
-    public static final Converter<String> STRING = new Converter<String>() {
-        public Class<String> getType() {
-            return String.class;
+    /**
+     * Finds a converter that handles the given type.
+     *
+     * @return
+     *      null if no suitable converter was found.
+     */
+    public static <V> Converter<? super V> get(Class<V> type) {
+        for (Converter conv : ALL) {
+            if(conv.getType().isAssignableFrom(type))
+                return conv;
         }
+        return null;
+    }
 
-        public String load(String propertyName, String value) {
-            return value;
-        }
+    /**
+     * All converters.
+     */
+    public static final Converter[] ALL = {
+        new Converter<String>() {
+            public Class<String> getType() {
+                return String.class;
+            }
 
-        public String save(String value) {
-            return value;
-        }
-    };
+            public String load(String propertyName, String value) {
+                return value;
+            }
 
-    public static final Converter<Boolean> BOOLEAN = new Converter<Boolean>() {
-        public Class<Boolean> getType() {
-            return Boolean.class;
-        }
+            public String save(String value) {
+                return value;
+            }
+        },
 
-        public Boolean load(String propertyName, String value) {
-            return Boolean.valueOf(value);
-        }
+        new Converter<File>() {
+            public Class<File> getType() {
+                return File.class;
+            }
 
-        public String save(Boolean value) {
-            if(value==null)
-                value = false;
-            return Boolean.toString(value);
-        }
-    };
+            public File load(String propertyName, String value) {
+                return new File(value);
+            }
 
-    public static final Converter<Integer> INTEGER = new Converter<Integer>() {
-        public Class<Integer> getType() {
-            return Integer.class;
-        }
+            public String save(String value) {
+                return value;
+            }
+        },
 
-        public Integer load(String propertyName, String value) {
-            if(value==null) return 0;
-            return Integer.valueOf(value);
-        }
+        new Converter<Boolean>() {
+            public Class<Boolean> getType() {
+                return Boolean.class;
+            }
 
-        public String save(Integer value) {
-            if(value==null) return null;
-            return Integer.toString(value);
-        }
-    };
+            public Boolean load(String propertyName, String value) {
+                return Boolean.valueOf(value);
+            }
 
-    public static final Converter<EndPoint> ENDPOINT = new Converter<EndPoint>() {
-        public Class<EndPoint> getType() {
-            return EndPoint.class;
-        }
+            public String save(Boolean value) {
+                if (value == null)
+                    value = false;
+                return Boolean.toString(value);
+            }
+        },
 
-        public EndPoint load(String propertyName, String value) throws ParseException {
-            return EndPoint.create(propertyName,value);
+        new Converter<Integer>() {
+            public Class<Integer> getType() {
+                return Integer.class;
+            }
+
+            public Integer load(String propertyName, String value) {
+                if (value == null) return 0;
+                return Integer.valueOf(value);
+            }
+
+            public String save(Integer value) {
+                if (value == null) return null;
+                return Integer.toString(value);
+            }
+        },
+
+        new Converter<EndPoint>() {
+            public Class<EndPoint> getType() {
+                return EndPoint.class;
+            }
+
+            public EndPoint load(String propertyName, String value) throws ParseException {
+                return EndPoint.create(propertyName, value);
+            }
         }
     };
 }

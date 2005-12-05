@@ -17,6 +17,10 @@ final class FieldInjector<T,V> implements Injector<T,V> {
         return f.getName();
     }
 
+    public Class<V> getType() {
+        return (Class<V>)f.getType();
+    }
+
     public void set(T target, V value) throws InjectionException {
         try {
             f.set(target,value);

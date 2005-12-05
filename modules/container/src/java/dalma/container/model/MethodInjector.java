@@ -9,8 +9,12 @@ import java.lang.reflect.InvocationTargetException;
 final class MethodInjector<T,V> implements Injector<T,V> {
     private final Method m;
 
-    public MethodInjector(Method m) {
+    public MethodInjector(Method m) throws IllegalResourceException {
         this.m = m;
+        if(m.getParameterTypes().length==0)
+            throw new IllegalResourceException(m.getName()+" has @Resource but takes no parameter");
+        if(m.getParameterTypes().length>1)
+            throw new IllegalResourceException(m.getName()+" has @Resource but takes more than one parameters");
     }
 
     public String getName() {
@@ -21,6 +25,10 @@ final class MethodInjector<T,V> implements Injector<T,V> {
         } else {
             return name;
         }
+    }
+
+    public Class<V> getType() {
+        return (Class<V>) m.getParameterTypes()[0];
     }
 
     public void set(T target, V value) throws InjectionException {
