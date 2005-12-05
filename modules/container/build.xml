@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="dalma" default="sorry">
+  <target name="sorry">
+    <fail message="Please use maven to build this project" />
+  </target>
+
+  <target name="instrument">
+    <taskdef resource="org/apache/commons/javaflow/ant/tasks.properties">
+      <classpath>
+        <fileset dir="../../lib/redist" includes="*.jar" />
+      </classpath>
+    </taskdef>
+
+    <javaflow dstdir="target/test-classes" srcdir="target/test-classes">
+      <include name="*.class" />
+    </javaflow>
+  </target>
+</project>

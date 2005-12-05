@@ -1,16 +1,19 @@
 package dalma.container;
 
 import dalma.Engine;
+import dalma.Program;
 import dalma.impl.EngineImpl;
+import org.apache.commons.javaflow.ContinuationClassLoader;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.net.URLClassLoader;
-import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.List;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Wrapper around each workflow application.
@@ -21,6 +24,7 @@ import java.util.ArrayList;
  * @author Kohsuke Kawaguchi
  */
 public final class WorkflowApplication {
+    private static final Logger logger = Logger.getLogger(WorkflowApplication.class.getName());
 
     /**
      * The name of the workflow application
@@ -45,6 +49,8 @@ public final class WorkflowApplication {
      */
     private final File appDir;
 
+    private Program program;
+
     public WorkflowApplication(Container owner,File appDir) {
         this.owner = owner;
         this.name = appDir.getName();
@@ -56,14 +62,59 @@ public final class WorkflowApplication {
         if(engine!=null)
             return; // already started
 
+        logger.info("Starting "+name);
+
+        ClassLoader classLoader = createClassLoader();
         engine = new EngineImpl(
             new File(workDir,"data"),
-            createClassLoader(),
+            classLoader,
             owner.executor);
+
+        Class<?> mainClass;
+        try {
+            mainClass = classLoader.loadClass("Main");
+            Object main = mainClass.newInstance();
+            if(!(main instanceof Program)) {
+                logger.severe(mainClass.getName()+" doesn't extend the Program class");
+                return;
+            }
+            program = (Program)main;
+        } catch (ClassNotFoundException e) {
+            log("Failed to load the main class from application",e);
+            return;
+        } catch (InstantiationException e) {
+            log("Failed to load the main class from application",e);
+            return;
+        } catch (IllegalAccessException e) {
+            log("Failed to load the main class from application",e);
+            return;
+        }
 
         // TODO: set up endpoints
 
+        try {
+            program.init(engine);
+        } catch (Exception e) {
+            // faled
+            log(mainClass.getName()+".init() method reported an exception",e);
+            return;
+        }
+
         engine.start();
+
+        try {
+            program.main(engine);
+        } catch (Exception e) {
+            // faled
+            log(mainClass.getName()+".main() method reported an exception",e);
+            return;
+        }
+
+        logger.info("Started "+name);
+    }
+
+    private static void log(String msg, Throwable t) {
+        logger.log(Level.SEVERE, msg, t );
     }
 
     /**
@@ -85,7 +136,7 @@ public final class WorkflowApplication {
         // and add the workflow application folder itself
         urls.add(appDir.toURI().toURL());
 
-        return new URLClassLoader(
+        return new ContinuationClassLoader(
             urls.toArray(new URL[urls.size()]),
             getClass().getClassLoader());
     }
@@ -94,6 +145,17 @@ public final class WorkflowApplication {
         if(engine==null)
             return; // already stopped
 
+        logger.info("Stopping "+name);
+
+        if(program!=null) {
+            try {
+                program.cleanup(engine);
+            } catch (Exception e) {
+                log(program.getClass().getName()+".cleanup() method reported an exception",e);
+            }
+            program = null;
+        }
+
         try {
             engine.stop();
         } catch (InterruptedException e) {
@@ -101,5 +163,7 @@ public final class WorkflowApplication {
             Thread.currentThread().interrupt();
         }
         engine = null;
+
+        logger.info("Stopped "+name);
     }
 }

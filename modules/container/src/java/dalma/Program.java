@@ -59,8 +59,12 @@ public abstract class Program {
      * Note that if kinds and endpoints are known statically,
      * then the {@link Program}-derived class can use a resource injection
      * to get access to those endpoints.
+     *
+     * @throws Exception
+     *      Any exception thrown by this method is considered to indicate
+     *      an error, and prevents the {@link Program} from running.
      */
-    public void init(Engine engine) {
+    public void init(Engine engine) throws Exception {
         // noop
     }
 
@@ -70,8 +74,24 @@ public abstract class Program {
      * <p>
      * In rare case, when a {@link Program} wants to start a new
      * {@link Conversation} proactively, it can use this callback to do so.
+     *
+     * @throws Exception
+     *      Any exception thrown by this method is considered to indicate
+     *      an error, and prevents the {@link Program} from running.
      */
-    public void main() {
+    public void main(Engine engine) throws Exception {
         // noop
+    }
+
+    /**
+     * Called right before the application is shut down,
+     * to perform any optional clean up.
+     *
+     * @throws Exception
+     *      Any exception thrown by this method is recorded
+     *      but otherwise the shut down operation continues regardless. 
+     */
+    public void cleanup(Engine engine) throws Exception {
+
     }
 }

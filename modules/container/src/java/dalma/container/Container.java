@@ -39,7 +39,6 @@ public final class Container {
         // TODO: monitor the file system and find added applications on the fly
 
         for (WorkflowApplication app : applications) {
-            logger.info("Starting "+app.name);
             try {
                 app.start();
             } catch (IOException e) {
