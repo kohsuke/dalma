@@ -6,6 +6,8 @@ import dalma.endpoints.invm.Channel;
 
 import java.io.IOException;
 
+import junit.framework.Assert;
+
 /**
  * @author Kohsuke Kawaguchi
  */
@@ -21,11 +23,14 @@ public class Main extends Program {
     @Resource
     public void setFoo(String value) {
         System.out.println("Resource injected: "+value);
+        Assert.assertEquals("str",value);
     }
 
     @Override
     public void main(Engine engine) throws IOException, InterruptedException {
         System.out.println("main");
+
+        Assert.assertEquals(n,10);
 
         Channel[] channels = new Channel[10];
         for( int i=0; i<channels.length; i++ )
