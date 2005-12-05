@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * @author Kohsuke Kawaguchi
  */
-final class MethodInjector<T,V> implements Injector<T,V> {
+final class MethodInjector<T,V> extends Injector<T,V> {
     private final Method m;
 
     public MethodInjector(Method m) throws IllegalResourceException {
@@ -27,7 +27,7 @@ final class MethodInjector<T,V> implements Injector<T,V> {
         }
     }
 
-    public Class<V> getType() {
+    public Class<V> _getType() {
         return (Class<V>) m.getParameterTypes()[0];
     }
 

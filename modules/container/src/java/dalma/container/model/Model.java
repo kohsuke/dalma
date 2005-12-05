@@ -7,21 +7,37 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Collections;
 import java.text.ParseException;
 
 /**
+ * Represents a resource injection model of a class.
+ *
+ * <p>
+ * A {@link Model} consists of zero or more {@link Part}s,
+ * which each represents one resource in a model.
+ *
  * @author Kohsuke Kawaguchi
  */
-public class Model<T> {
-    private final List<Part> parts = new ArrayList<Part>();
+public final class Model<T> {
 
-    class Part<V> {
-        final String name;
-        final Class<V> type;
-        final Injector<T,V> injector;
-        final Converter<? super V> converter;
+    /**
+     * This object represents the resource injection model for this class.
+     */
+    public final Class<T> clazz;
 
-        public Part(Injector<T,V> injector) throws IllegalResourceException {
+    public final List<Part> parts;
+
+    /**
+     * Represents one resource.
+     */
+    public final class Part<V> {
+        public final String name;
+        public final Class<V> type;
+        public final Injector<T,V> injector;
+        public final Converter<? super V> converter;
+
+        private Part(Injector<T,V> injector) throws IllegalResourceException {
             this.injector = injector;
             this.name = injector.getName();
             this.type = injector.getType();
@@ -31,7 +47,7 @@ public class Model<T> {
                 throw new IllegalResourceException(type+" is not supported as a resource type");
         }
 
-        void inject(T target, Properties prop) throws ParseException, InjectionException {
+        private void inject(T target, Properties prop) throws ParseException, InjectionException {
             String token = prop.getProperty(name);
             Object value = converter.load(name, token);
             if(!type.isInstance(value))
@@ -46,26 +62,27 @@ public class Model<T> {
      * @throws IllegalResourceException
      *      if there's incorrect use of {@link Resource}.
      */
-    Model( Class<T> clazz ) throws IllegalResourceException {
+    public Model( Class<T> clazz ) throws IllegalResourceException {
+        this.clazz = clazz;
+
+        List<Part> parts = new ArrayList<Part>();
+
         for( Field f : clazz.getFields() ) {
             if(f.getAnnotation(Resource.class)!=null) {
-                addPart(new FieldInjector(f));
+                parts.add(new Part(new FieldInjector(f)));
             }
         }
         for( Method m : clazz.getMethods() ) {
             if(m.getAnnotation(Resource.class)!=null) {
-                addPart(new MethodInjector(m));
+                parts.add(new Part(new MethodInjector(m)));
             }
         }
         // TODO: check for non-public methods that have @Resource and report an error
+
+        this.parts = Collections.unmodifiableList(parts);
     }
 
-    private <V> void addPart(Injector<T,V> injector) throws IllegalResourceException {
-        Part<V> part = new Part<V>(injector);
-        parts.add(part);
-    }
-
-    void inject(T target, Properties prop ) throws InjectionException, ParseException {
+    public void inject(T target, Properties prop ) throws InjectionException, ParseException {
         for (Part<?> res : parts)
             res.inject(target,prop);
     }

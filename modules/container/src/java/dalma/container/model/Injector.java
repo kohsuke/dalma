@@ -5,19 +5,26 @@ package dalma.container.model;
  *
  * @author Kohsuke Kawaguchi
  */
-interface Injector<T,V> {
+abstract class Injector<T,V> {
     /**
      * Name of the property that this {@link Injector} represents.
      */
-    String getName();
+    public abstract String getName();
 
     /**
      * Gets the type of the property.
      */
-    Class<V> getType();
+    public final Class<V> getType() {
+        Class t = _getType();
+        if(t==int.class)
+            t = Integer.class;
+        return t;
+    }
+
+    protected abstract Class<V> _getType();
 
     /**
      * Injects a value.
      */
-    void set(T target, V value) throws InjectionException;
+    public abstract void set(T target, V value) throws InjectionException;
 }

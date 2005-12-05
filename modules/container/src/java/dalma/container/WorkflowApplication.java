@@ -2,18 +2,24 @@ package dalma.container;
 
 import dalma.Engine;
 import dalma.Program;
+import dalma.container.model.Model;
+import dalma.container.model.InjectionException;
+import dalma.container.model.IllegalResourceException;
 import dalma.impl.EngineImpl;
 import org.apache.commons.javaflow.ContinuationClassLoader;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.FileInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.text.ParseException;
 
 /**
  * Wrapper around each workflow application.
@@ -49,12 +55,18 @@ public final class WorkflowApplication {
      */
     private final File appDir;
 
+    /**
+     * Configuration property file.
+     */
+    private final File confFile;
+
     private Program program;
 
     public WorkflowApplication(Container owner,File appDir) {
         this.owner = owner;
         this.name = appDir.getName();
         this.workDir = new File(new File(owner.rootDir, "work"), name);
+        this.confFile = new File(new File(owner.rootDir, "conf"), name+".properties");
         this.appDir  = appDir;
     }
 
@@ -90,7 +102,19 @@ public final class WorkflowApplication {
             return;
         }
 
-        // TODO: set up endpoints
+        // perform resource injection
+        try {
+            new Model(mainClass).inject(program,loadConfigProperties());
+        } catch (InjectionException e) {
+            log("Failed to configure program",e);
+            return;
+        } catch (ParseException e) {
+            log("Failed to configure program",e);
+            return;
+        } catch (IllegalResourceException e) {
+            log("Failed to configure program",e);
+            return;
+        }
 
         try {
             program.init(engine);
@@ -111,6 +135,18 @@ public final class WorkflowApplication {
         }
 
         logger.info("Started "+name);
+    }
+
+    /**
+     * Loads {@link #confFile} into a {@link Properties}.
+     *
+     * @return always non-null.
+     */
+    private Properties loadConfigProperties() throws IOException {
+        Properties props = new Properties();
+        if(confFile.exists())
+            props.load(new FileInputStream(confFile));
+        return props;
     }
 
     private static void log(String msg, Throwable t) {

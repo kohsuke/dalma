@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
  * {@link Injector} that sets a field.
  * @author Kohsuke Kawaguchi
  */
-final class FieldInjector<T,V> implements Injector<T,V> {
+final class FieldInjector<T,V> extends Injector<T,V> {
     private final Field f;
 
     public FieldInjector(Field f) {
@@ -17,7 +17,7 @@ final class FieldInjector<T,V> implements Injector<T,V> {
         return f.getName();
     }
 
-    public Class<V> getType() {
+    public Class<V> _getType() {
         return (Class<V>)f.getType();
     }
 

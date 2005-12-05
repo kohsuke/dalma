@@ -1,6 +1,7 @@
 import dalma.Program;
 import dalma.Engine;
 import dalma.Conversation;
+import dalma.Resource;
 import dalma.endpoints.invm.Channel;
 
 import java.io.IOException;
@@ -12,6 +13,14 @@ public class Main extends Program {
     @Override
     public void init(Engine engine) {
         System.out.println("init");
+    }
+
+    @Resource
+    public int n;
+
+    @Resource
+    public void setFoo(String value) {
+        System.out.println("Resource injected: "+value);
     }
 
     @Override
