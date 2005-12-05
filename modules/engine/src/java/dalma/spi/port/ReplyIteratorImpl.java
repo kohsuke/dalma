@@ -78,9 +78,9 @@ final class ReplyIteratorImpl<Key,Msg> extends GeneratorImpl implements ReplyIte
                 // block until we receive another one
                 lock = new ConditionImpl();
                 if(expirationDate==null)
-                    FiberSPI.currentFiber().suspend(lock);
+                    FiberSPI.currentFiber(true).suspend(lock);
                 else
-                    FiberSPI.currentFiber().suspend(
+                    FiberSPI.currentFiber(true).suspend(
                         lock, TimerEndPoint.createDock(expirationDate));
             }
         }

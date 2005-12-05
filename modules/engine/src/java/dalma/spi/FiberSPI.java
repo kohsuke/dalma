@@ -41,7 +41,7 @@ public abstract class FiberSPI<T extends Runnable> extends Fiber<T> {
     /**
      * Returns the {@link FiberSPI} that the current thread is executing.
      */
-    public static FiberSPI<?> currentFiber() {
-        return FiberImpl.currentFiber();
+    public static FiberSPI<?> currentFiber(boolean mustReturnNonNull) {
+        return FiberImpl.currentFiber(mustReturnNonNull);
     }
 }

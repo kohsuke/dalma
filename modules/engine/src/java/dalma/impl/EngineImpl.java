@@ -7,7 +7,6 @@ import dalma.Engine;
 import dalma.ErrorHandler;
 import dalma.Executor;
 import dalma.endpoints.timer.TimerEndPoint;
-import dalma.spi.EndPointFactory;
 import dalma.spi.EngineSPI;
 import org.apache.bsf.BSFManager;
 import org.apache.commons.io.IOUtils;
@@ -18,17 +17,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -40,11 +36,6 @@ public final class EngineImpl implements EngineSPI, Serializable {
      * Logger that logs events.
      */
     private transient Logger logger;
-
-    /**
-     * Cache of protocol -> endpoint factory class.
-     */
-    private transient Properties endPointFactories;
 
     /**
      * Executes conversations that can be run.
@@ -250,41 +241,7 @@ public final class EngineImpl implements EngineSPI, Serializable {
     }
 
     public synchronized EndPoint addEndPoint(String name, String endpointURL) throws ParseException {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        if(cl==null)        cl = getClass().getClassLoader();
-        if(cl==null)        cl = ClassLoader.getSystemClassLoader();
-
-        Properties properties = loadEndPointFactories(cl);
-        int idx = endpointURL.indexOf(':');
-        if(idx<0)
-            throw new ParseException("no scheme in "+endpointURL,-1);
-        String scheme = endpointURL.substring(0,idx);
-
-        EndPointFactory epf;
-        Object value = properties.get(scheme);
-        if(value==null)
-            throw new ParseException("unrecognized scheme "+scheme,0);
-        if(value instanceof String) {
-            try {
-                Class clazz = cl.loadClass((String)value);
-                Object o = clazz.newInstance();
-                if(!(o instanceof EndPointFactory)) {
-                    logger.warning(clazz+" is not an EndPointFactory");
-                }
-                epf = (EndPointFactory)o;
-                properties.put(scheme,epf);
-            } catch (ClassNotFoundException e) {
-                throw new NoClassDefFoundError(e.getMessage());
-            } catch (IllegalAccessException e) {
-                throw new IllegalAccessError(e.getMessage());
-            } catch (InstantiationException e) {
-                throw new InstantiationError(e.getMessage());
-            }
-        } else {
-            epf = (EndPointFactory)value;
-        }
-
-        EndPoint ep = epf.create(name, endpointURL);
+        EndPoint ep = EndPoint.create(name, endpointURL);
         addEndPoint(ep);
         return ep;
     }
@@ -340,32 +297,6 @@ public final class EngineImpl implements EngineSPI, Serializable {
     private void makeSureNotStarted() {
         if(started)
             throw new IllegalStateException("engine is already started");
-    }
-
-    /**
-     * Loads the list of {@link EndPointFactory} classes from the manifest.
-     */
-    private synchronized Properties loadEndPointFactories(ClassLoader cl) {
-        if(endPointFactories!=null)
-            return endPointFactories;
-
-        endPointFactories = new Properties();
-
-        try {
-            Enumeration<URL> resources = cl.getResources("META-INF/services/dalma.spi.EndPointFactory");
-            while(resources.hasMoreElements()) {
-                URL url = resources.nextElement();
-                try {
-                    endPointFactories.load(url.openStream());
-                } catch (IOException e) {
-                    logger.log(Level.WARNING,"Unable to access "+url,e);
-                }
-            }
-        } catch (IOException e) {
-            logger.log(Level.WARNING,"failed to load endpoint factory list",e);
-        }
-
-        return endPointFactories;
     }
 
     public void stop() throws InterruptedException {

@@ -82,11 +82,11 @@ public class TimerEndPoint extends EndPointImpl {
      */
     // this method is invoked from conversations
     public static void waitFor(long delay,TimeUnit unit) {
-        FiberSPI.currentFiber().suspend(createDock(delay,unit));
+        FiberSPI.currentFiber(true).suspend(createDock(delay,unit));
     }
 
     public static void waitFor(Date dt) {
-        FiberSPI.currentFiber().suspend(createDock(dt));
+        FiberSPI.currentFiber(true).suspend(createDock(dt));
     }
 
     public static <T> Condition<T> createDock(Date dt) {

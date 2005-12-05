@@ -38,7 +38,7 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
      * @return  always non-null.
      */
     protected Msg waitForReply(Msg msg) {
-        return FiberSPI.currentFiber().suspend(new OneTimeCondition<Key,Msg>(this,msg));
+        return FiberSPI.currentFiber(true).suspend(new OneTimeCondition<Key,Msg>(this,msg));
     }
 
     /**
@@ -47,7 +47,7 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
      * TODO:javadoc
      */
     protected Msg waitForReply(Msg msg, Date timeout) {
-        return FiberSPI.currentFiber().suspend(
+        return FiberSPI.currentFiber(true).suspend(
             new OneTimeCondition<Key,Msg>(this,msg), TimerEndPoint.<Msg>createDock(timeout) );
     }
 

@@ -159,7 +159,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         return conv;
     }
 
-    private void save() throws IOException {
+    private synchronized void save() throws IOException {
         try {
             SerializationContext.set(engine,SerializationContext.Mode.CONVERSATION);
             new XmlFile(new File(rootDir,"conversation.xml")).write(this);
@@ -351,7 +351,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     }
 
     public synchronized void join() throws InterruptedException {
-        FiberImpl fiber = FiberImpl.currentFiber();
+        FiberImpl fiber = FiberImpl.currentFiber(false);
         if(fiber==null) {
             // called from outside conversations
             if(getState()!=ConversationState.ENDED) {
@@ -397,7 +397,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      * Returns a {@link ConversationImpl} instance that the current thread is executing.
      */
     public static ConversationImpl currentConversation() {
-        return FiberImpl.currentFiber().owner;
+        return FiberImpl.currentFiber(true).owner;
     }
 
     private static final long serialVersionUID = 1L;

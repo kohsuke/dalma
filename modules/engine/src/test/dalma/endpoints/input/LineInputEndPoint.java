@@ -91,7 +91,7 @@ public final class LineInputEndPoint extends EndPointImpl implements Runnable {
      */
     // this method is invoked from conversations
     public static String waitForInput() {
-        FiberSPI<?> fiber = FiberSPI.currentFiber();
+        FiberSPI<?> fiber = FiberSPI.currentFiber(true);
         return fiber.suspend(createCondition(fiber));
     }
 

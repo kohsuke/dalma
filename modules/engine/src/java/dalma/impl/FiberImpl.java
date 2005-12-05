@@ -86,7 +86,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     }
 
     public T getRunnable() {
-        FiberImpl<?> f = currentFiber();
+        FiberImpl<?> f = currentFiber(false);
         if(f==null)
             throw new IllegalStateException("Cannot be invoked from outside a conversation");
         if(f.owner!=owner)
@@ -104,7 +104,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     }
 
     public synchronized void join() throws InterruptedException {
-        FiberImpl<?> fiber = FiberImpl.currentFiber();
+        FiberImpl<?> fiber = FiberImpl.currentFiber(false);
         
         if(!StackRecorder.get().isRestoring()) {
             if(getState()==FiberState.ENDED)
@@ -317,9 +317,16 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
         assert state==FiberState.WAITING || state==FiberState.RUNNABLE || state== FiberState.ENDED;
     }
 
-    public static FiberImpl<?> currentFiber() {
+    /**
+     * Gets the {@link Fiber} that the current thread is executing.
+     *
+     * @param mustReturnNonNull
+     *      if true and the current thread isn't executing any fiber, this method
+     *      throws an exception.
+     */
+    public static FiberImpl<?> currentFiber(boolean mustReturnNonNull) {
         FiberImpl f = currentFiber.get();
-        if(f==null)
+        if(f==null && mustReturnNonNull)
             throw new IllegalStateException("this thread isn't executing a conversation");
         return f;
     }
@@ -328,7 +335,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
      * @see Fiber#create(Runnable)
      */
     public static <T extends Runnable> FiberImpl<T> create(T entryPoint) {
-        return new FiberImpl<T>(currentFiber().owner,entryPoint);
+        return new FiberImpl<T>(currentFiber(true).owner,entryPoint);
     }
 
     private Object writeReplace() {
