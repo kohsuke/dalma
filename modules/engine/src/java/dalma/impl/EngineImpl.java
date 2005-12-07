@@ -310,8 +310,6 @@ public final class EngineImpl implements EngineSPI, Serializable {
 
         for( EndPointImpl ep : eps )
             ep.stop();
-
-        executor.stop(0);
     }
 
     public void setLogger(Logger logger) {
