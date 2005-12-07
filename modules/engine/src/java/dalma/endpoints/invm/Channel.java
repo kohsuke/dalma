@@ -52,6 +52,7 @@ public class Channel extends Observable implements Serializable {
             to.queue.add(msg);
             to.setChanged();
             to.notifyObservers();
+            to.notify();
         }
     }
 
@@ -60,7 +61,15 @@ public class Channel extends Observable implements Serializable {
      */
     public synchronized <T> Message<T> receive() {
         while(queue.isEmpty()) {
-            FiberSPI.currentFiber(true).suspend(new ConditionImpl());
+            FiberSPI<?> fiber = FiberSPI.currentFiber(false);
+            if(fiber!=null)
+                fiber.suspend(new ConditionImpl());
+            else
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // process it later
+                }
         }
 
         return queue.remove(0);
