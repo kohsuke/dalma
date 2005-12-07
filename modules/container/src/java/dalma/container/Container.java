@@ -47,6 +47,11 @@ public final class Container {
         }
     }
 
+    public void stop() {
+        for (WorkflowApplication app : applications)
+            app.stop();
+    }
+
     /**
      * Returns the read-only list of all {@link WorkflowApplication}s
      * in this container.
