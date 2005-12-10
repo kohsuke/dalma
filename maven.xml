@@ -27,6 +27,48 @@
         </j:if>
       </j:forEach>
     </define:tag>
+    
+    <define:tag name="copy-engine">
+	    <dalma:copy-deps kind="engine" />
+
+	    <!-- copy the engine jar itself -->
+	    <a:copy todir="${out}">
+	      <a:fileset dir="." includes="modules/engine/target/*.jar" />
+	      <a:mapper type="flatten" />
+	    </a:copy>
+    </define:tag>
+    
+    <!--
+       copy module files into ${out}/modules
+    -->
+    <define:tag name="deploy-modules">
+	    <!-- this parses module POMs into 'multiprojects'. Somehow I need to do this twice -->
+	    <attainGoal name="multiproject:projects-init" />
+	    <m:reactor
+	      basedir="${maven.multiproject.basedir}"
+	      banner="Gathering project list"
+	      includes="${maven.multiproject.includes}"
+	      excludes="${maven.multiproject.excludes}"
+	      postProcessing="true"
+	      collectOnly="true"
+	      collectionVar="multiprojects"
+	      ignoreFailures="${maven.multiproject.ignoreFailures}"
+	    />
+
+	    <j:forEach var="p" items="${multiprojects}">
+	      <a:echo>Processing ${p.artifactId}</a:echo>
+	      <j:set var="moduleDir" value="${p.file.parentFile}" />
+	      <j:set var="moduleOut" value="${out}/${moduleDir.name}" />
+
+	      <a:mkdir dir="${moduleOut}" />
+	      <a:copy todir="${moduleOut}">
+	        <a:fileset dir="${moduleDir}/target" includes="*.jar" />
+	      </a:copy>
+	      <dalma:copy-deps pom="${p}" out="${moduleOut}" kind="endpoint" />
+	    </j:forEach>
+
+	    <a:delete dir="${out}/engine" />
+    </define:tag>
   </define:taglib>
 
 
@@ -40,13 +82,8 @@
 
     <a:mkdir dir="${out}" />
 
-    <dalma:copy-deps pom="${pom}" out="${out}" kind="engine" />
-
     <!-- copy the engine jar -->
-    <a:copy todir="${out}">
-      <a:fileset dir="." includes="modules/engine/target/*.jar" />
-      <a:mapper type="flatten" />
-    </a:copy>
+    <dalma:copy-engine />
 
     <!-- copy docs -->
     <a:copy todir="${out}" file="${basedir}/LICENSE.txt" />
@@ -54,36 +91,8 @@
       <a:fileset dir="${basedir}/docs" includes="**/*" />
     </a:copy>
 
-
-    <!-- this parses module POMs into 'multiprojects'. Somehow I need to do this twice -->
-    <attainGoal name="multiproject:projects-init" />
-    <m:reactor
-      basedir="${maven.multiproject.basedir}"
-      banner="Gathering project list"
-      includes="${maven.multiproject.includes}"
-      excludes="${maven.multiproject.excludes}"
-      postProcessing="true"
-      collectOnly="true"
-      collectionVar="multiprojects"
-      ignoreFailures="${maven.multiproject.ignoreFailures}"
-    />
-
     <!-- deploy each module into the distribution image -->
-    <j:forEach var="p" items="${multiprojects}">
-      <a:echo>Processing ${p.artifactId}</a:echo>
-      <j:set var="moduleDir" value="${p.file.parentFile}" />
-      <j:set var="moduleOut" value="${out}/${moduleDir.name}" />
-
-      <j:if test="${moduleDir.name}=='engine'">
-        <j:continue />  <!-- skip engine. it's not a module -->
-      </j:if>
-
-      <a:mkdir dir="${moduleOut}" />
-      <a:copy todir="${moduleOut}">
-        <a:fileset dir="${moduleDir}/target" includes="*.jar" />
-      </a:copy>
-      <dalma:copy-deps pom="${p}" out="${moduleOut}" kind="endpoint" />
-    </j:forEach>
+    <dalma:deploy-modules />
 
     <!-- copy sample applications -->
     <a:copy todir="${out}">
@@ -145,6 +154,45 @@
       excludes="${maven.multiproject.excludes}"
       goals="clean"
     />
+  </goal>
+
+  <goal name="dist:container"
+        description="creates container distribution image">
+    <!-- build all modules -->
+    <!--attainGoal name="multiproject:install"/> until I debug this build -->
+    <!--m:reactor basedir="${basedir}"
+               includes="modules/container/project.xml"
+               goals="jar"
+               postProcessing="false"
+               ignoreFailures="false"/> ditto -->
+  
+    <j:set var="out" value="target/dist-container" />
+    <j:set var="prefix" value="dalmacon-${pom.currentVersion}" />
+    
+    <a:mkdir dir="${out}" />
+    
+    <a:copy todir="${out}/bin">
+      <a:fileset dir="modules/container/src/script" includes="*.sh, *.bat" />
+    </a:copy>
+    <dalma:copy-engine out="${out}/bin" />
+    
+    <a:mkdir dir="${out}/lib"/>
+    <a:echo file="${out}/lib/readme.txt">Jar files in this directory will be made available to all workflow applications</a:echo>
+    
+    <a:mkdir dir="${out}/apps"/>
+    <a:echo file="${out}/lib/readme.txt">Each directory or .dar file in this directory will become a workflow application</a:echo>
+    
+    <a:mkdir dir="${out}/modules" />
+    <dalma:deploy-modules out="${out}/modules" />
+    <a:echo file="${out}/modules/readme.txt">jar files in module directories (modules/*/*.jar) are made available to all workflow applications</a:echo>
+    
+    <j:set var="maven.dist.dir" value="${maven.build.dir}/distributions" />
+    <a:zip zipfile="${maven.dist.dir}/${prefix}.zip">
+      <a:zipfileset prefix="${prefix}" dir="target/dist-container" />
+    </a:zip>
+    <a:tar tarfile="${maven.dist.dir}/${prefix}.tar.gz" compression="gzip" longfile="gnu">
+      <a:tarfileset prefix="${prefix}" dir="target/dist-container" />
+    </a:tar>
   </goal>
 
 </project>

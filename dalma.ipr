@@ -8,6 +8,7 @@
       <customJdkName value="" />
       <maximumHeapSize value="128" />
       <properties />
+      <executeOn event="afterCompilation" target="instrument" />
     </buildFile>
   </component>
   <component name="BSFConsole">
@@ -236,6 +237,7 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/modules/container/container.iml" filepath="$PROJECT_DIR$/modules/container/container.iml" />
       <module fileurl="file://$PROJECT_DIR$/dalma.iml" filepath="$PROJECT_DIR$/dalma.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/email/email.iml" filepath="$PROJECT_DIR$/modules/email/email.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/engine/engine.iml" filepath="$PROJECT_DIR$/modules/engine/engine.iml" />
