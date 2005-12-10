@@ -2,6 +2,13 @@ package dalma.container;
 
 import dalma.Executor;
 
+import javax.management.MBeanServerFactory;
+import javax.management.ObjectName;
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.MalformedObjectNameException;
+import javax.management.JMException;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -10,17 +17,20 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.lang.management.ManagementFactory;
 
 /**
  * Roof ot the dalma container.
  *
  * @author Kohsuke Kawaguchi
  */
-public final class Container {
+public final class Container implements ContainerMBean {
     private static final Logger logger = Logger.getLogger(Container.class.getName());
 
     /**
      * Root directory of the dalma installation. The value of DALMA_HOME.
+     *
+     * We want the absolute version since we send this across JMX.
      */
     public final File rootDir;
 
@@ -32,7 +42,7 @@ public final class Container {
     private Set<WorkflowApplication> applications;
 
     public Container(File root, Executor executor) {
-        this.rootDir = root;
+        this.rootDir = root.getAbsoluteFile();
         this.executor = executor;
         this.applications = findApps();
 
@@ -42,14 +52,25 @@ public final class Container {
             try {
                 app.start();
             } catch (IOException e) {
-                logger.log(Level.WARNING,"Failed to start "+app.name,e);
+                logger.log(Level.WARNING,"Failed to start "+app.getName(),e);
             }
+        }
+
+        try {
+            ManagementFactory.getPlatformMBeanServer().registerMBean(this,new ObjectName("dalma:dir="+root));
+        } catch (JMException e) {
+            logger.log(Level.WARNING,"Failed to register to JMX",e);
         }
     }
 
     public void stop() {
         for (WorkflowApplication app : applications)
             app.stop();
+    }
+
+    public void deploy(String name, byte[] data) {
+        // TODO: implement this method later
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -86,5 +107,9 @@ public final class Container {
         }
 
         return apps;
+    }
+
+    public File getRootDir() {
+        return rootDir;
     }
 }

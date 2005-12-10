@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 public class Main {
     private static final Logger logger = Logger.getLogger(Main.class.getName());
 
+    // run it with -Dcom.sun.management.jmxremote=true to enable JMX monitoring
     public static void main(String[] args) throws Exception {
         File home = getHome();
 

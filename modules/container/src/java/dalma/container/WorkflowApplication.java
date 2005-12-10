@@ -8,6 +8,8 @@ import dalma.container.model.IllegalResourceException;
 import dalma.impl.EngineImpl;
 import org.apache.commons.javaflow.ContinuationClassLoader;
 
+import javax.management.ObjectName;
+import javax.management.JMException;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.text.ParseException;
+import java.lang.management.ManagementFactory;
 
 /**
  * Wrapper around each workflow application.
@@ -29,14 +32,10 @@ import java.text.ParseException;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class WorkflowApplication {
+public final class WorkflowApplication implements WorkflowApplicationMBean {
     private static final Logger logger = Logger.getLogger(WorkflowApplication.class.getName());
 
-    /**
-     * The name of the workflow application
-     * that uniquely identifies a {@link WorkflowApplication}.
-     */
-    public final String name;
+    private final String name;
 
     private Engine engine;
 
@@ -68,6 +67,12 @@ public final class WorkflowApplication {
         this.workDir = new File(new File(owner.rootDir, "work"), name);
         this.confFile = new File(new File(owner.rootDir, "conf"), name+".properties");
         this.appDir  = appDir;
+
+        try {
+            ManagementFactory.getPlatformMBeanServer().registerMBean(this,new ObjectName("dalma:container="+owner.rootDir+",name="+name));
+        } catch (JMException e) {
+            logger.log(Level.WARNING,"Failed to register to JMX",e);
+        }
     }
 
     public void start() throws IOException {
@@ -201,5 +206,27 @@ public final class WorkflowApplication {
         engine = null;
 
         logger.info("Stopped "+name);
+    }
+
+    /**
+     * The name of the workflow application
+     * that uniquely identifies a {@link WorkflowApplication}.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns true if this application is currently running.
+     */
+    public boolean isRunning() {
+        return engine!=null;
+    }
+
+    /**
+     * Gets the location of resource configuration file.
+     */
+    public File getConfigFile() {
+        return confFile;
     }
 }
