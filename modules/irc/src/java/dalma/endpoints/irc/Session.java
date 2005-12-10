@@ -1,12 +1,11 @@
 package dalma.endpoints.irc;
 
 import dalma.Condition;
-import dalma.spi.ConversationSPI;
 import dalma.spi.FiberSPI;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import java.io.Serializable;
 
 /**
  * Represents a "place" where the communication happens in IRC.
@@ -50,7 +49,7 @@ public abstract class Session implements Serializable {
     public synchronized Message waitForNextMessage() {
         while(msgs.isEmpty())
             // block until we get a new message
-            FiberSPI.currentFiber().suspend(new MessageCondition());
+            FiberSPI.currentFiber(true).suspend(new MessageCondition());
 
         return msgs.remove(0);
     }
