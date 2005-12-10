@@ -1,0 +1,67 @@
+<document>
+<properties>
+  <title>DalmaCon Directory Structure</title>
+</properties>
+<body>
+<section name="Directory Structure">
+  <p>
+    Dalma container has the following directory structure
+  </p>
+<source><![CDATA[
+dalmacon/ (directory pointed by $DALMA_HOME)
+ +- bin/
+ +- lib/
+ +- apps/
+ |   +- *.dar
+ |   +- <app>/
+ |       +- *.jar
+ |       +- <class files>
+ +- modules/
+ |   +- <module>/
+ |       +- *.jar
+ +- conf/
+ |   +- <app>.properties
+ +- work/
+     +- <app>/
+         +- data
+]]></source>
+  <subsection name="bin/">
+    <p>
+      This directory has the shell script / batch file to launch dalma container, as well as jar files that constitute core container code.
+      These jar files are loaded through the Class-Path entry in <tt>META-INF/MANIFEST.MF</tt>, so you can't place additional jars in this directory.
+    </p>
+  </subsection>
+  <subsection name="lib/">
+    <p>
+      Any jar file placed in this directory are made visible to the applications that run in the container.
+      This directory can be used to place common jar files that can be shared among applications.
+    </p>
+  </subsection>
+  <subsection name="apps/">
+    <p>
+      This directory hosts workflow applications. Applications can be placed as individual directories that contain jar files or class files directly (that is, you can have jar files like <tt>apps/myapp/abc.jar</tt>, and/or class files like <tt>apps/myapp/org/acme/Foo.class</tt>). The directory name becomes the workflow application name. Each application is loaded by a separate class loader for isolation.
+    </p><p>
+      Alternatively, a workflow application can be packaged into a <a href="dar.html">dalma archive (*.dar)</a> and placed directly in the <tt>apps/</tt> directory.
+    </p>
+  </subsection>
+  <subsection name="modules/">
+    <p>
+      This directory hosts additional endpoint implementations. Each module is placed in their own individual directory, but note that all the jar files and class files are loaded by the same classloader. Individual directories are only to make module development/deployment easier.
+    </p>
+  </subsection>
+  <subsection name="conf/">
+    <p>
+      This directory hosts configuration files for each workflow application (in &lt;appname>.properties) as well as a configuration file for the container itself (dalma.properties).
+    </p>
+  </subsection>
+  <subsection name="work/">
+    <p>
+      The container uses this directory to store various information about the running applications. In particular, it included the persisted conversation state.
+    </p>
+  </subsection>
+<!--
+  <subsection name="bin/">
+  </subsection>
+-->
+</section>
+</body></document>
