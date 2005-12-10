@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <pomVersion>3</pomVersion>
+  <extend>../../project.xml</extend>
+  <name>Dalma container</name>
+  <id>dalma-container</id>
+  <description>Dalma engine as a standalone container program (like Tomcat)</description>
+  <shortDescription>Dalma workflow container</shortDescription>
+
+  <dependencies>
+    <dependency>
+      <id>dalma</id>
+      <version>${pom.currentVersion}</version>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+      </properties>
+    </dependency>
+    <!-- test dependency -->
+  </dependencies>
+</project>
