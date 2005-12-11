@@ -33,24 +33,34 @@ class Redeployer extends FileChangeMonitor {
     protected void onAdded(File file) {
         if(isDar(file))
             explode(file);
-        if(file.isDirectory())
-            // TODO: deploy
-            ;
+        if(file.isDirectory()) {
+            logger.info("New application '"+file.getName()+"' detected. Deploying.");
+            container.deploy(file);
+        }
     }
 
     @Override
     protected void onUpdated(File file) {
         if(isDar(file))
             explode(file);
-        if(file.isDirectory())
-            // TODO : redeploy
-            ;
+        if(file.isDirectory()) {
+            logger.info("Changed detected in application '"+file.getName()+"'. Re-deploying.");
+            try {
+                WorkflowApplication wa = container.getApplication(file.getName());
+                wa.stop();
+                wa.start();
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Unable to redeploy", e );
+            }
+        }
     }
 
     protected void onDeleted(File file) {
-        if(file.isDirectory())
-            // TODO: stop
-            ;
+        if(file.isDirectory()) {
+            logger.info("Application '"+file.getName()+"' is removed. Undeploying.");
+            WorkflowApplication wa = container.getApplication(file.getName());
+            wa.remove();
+        }
     }
 
     private static boolean isDar(File f) {

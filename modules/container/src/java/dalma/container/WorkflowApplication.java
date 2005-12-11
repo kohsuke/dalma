@@ -69,13 +69,14 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         this.appDir  = appDir;
 
         try {
-            ManagementFactory.getPlatformMBeanServer().registerMBean(this,new ObjectName("dalma:container="+owner.rootDir+",name="+name));
+            ManagementFactory.getPlatformMBeanServer().registerMBean(this,
+                new ObjectName("dalma:container="+ObjectName.quote(owner.rootDir.toString())+",name="+name));
         } catch (JMException e) {
             logger.log(Level.WARNING,"Failed to register to JMX",e);
         }
     }
 
-    public void start() throws IOException {
+    public synchronized void start() throws IOException {
         if(engine!=null)
             return; // already started
 
@@ -182,7 +183,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
             getClass().getClassLoader());
     }
 
-    public void stop() {
+    public synchronized void stop() {
         if(engine==null)
             return; // already stopped
 
@@ -219,7 +220,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
     /**
      * Returns true if this application is currently running.
      */
-    public boolean isRunning() {
+    public synchronized boolean isRunning() {
         return engine!=null;
     }
 
@@ -228,5 +229,14 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      */
     public File getConfigFile() {
         return confFile;
+    }
+
+    /**
+     * Called when the directory is removed from the apps folder to remove
+     * this application from the container.
+     */
+    protected synchronized void remove() {
+        owner.applications.remove(getName());
+        stop();
     }
 }

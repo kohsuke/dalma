@@ -26,4 +26,23 @@ public interface ContainerMBean {
      *      name of the new application. The directory of
      */
     void deploy(String name,byte[] data);
+
+    /**
+     * Enables the auto-redeployment feature.
+     *
+     * <p>
+     * With this switch on, the container checks for addition/deletion/update
+     * in the apps folder, and deploy/undeploy/redeploy applications accordingly.
+     *
+     * <p>
+     * This feature is off by default.
+     */
+    void enableAutoRedeploy();
+
+    /**
+     * Disables the auto-redeployment feature.
+     *
+     * @see #enableAutoRedeploy()
+     */
+    void disableAutoRedeploy();
 }

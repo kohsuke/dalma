@@ -2,22 +2,18 @@ package dalma.container;
 
 import dalma.Executor;
 
-import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.MalformedObjectNameException;
 import javax.management.JMException;
+import javax.management.ObjectName;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.lang.management.ManagementFactory;
 
 /**
  * Roof ot the dalma container.
@@ -39,7 +35,9 @@ public final class Container implements ContainerMBean {
      */
     protected final Executor executor;
 
-    private Set<WorkflowApplication> applications;
+    final Map<String,WorkflowApplication> applications;
+
+    private Redeployer redeployer;
 
     public Container(File root, Executor executor) {
         this.rootDir = root.getAbsoluteFile();
@@ -48,7 +46,7 @@ public final class Container implements ContainerMBean {
 
         // TODO: monitor the file system and find added applications on the fly
 
-        for (WorkflowApplication app : applications) {
+        for (WorkflowApplication app : applications.values()) {
             try {
                 app.start();
             } catch (IOException e) {
@@ -63,8 +61,23 @@ public final class Container implements ContainerMBean {
         }
     }
 
+    public void enableAutoRedeploy() {
+        if(redeployer==null) {
+            logger.info("Auto-redeployment activated");
+            redeployer = new Redeployer(this);
+        }
+    }
+
+    public void disableAutoRedeploy() {
+        if(redeployer!=null) {
+            redeployer.cancel();
+            redeployer = null;
+            logger.info("Auto-redeployment deactivated");
+        }
+    }
+
     public void stop() {
-        for (WorkflowApplication app : applications)
+        for (WorkflowApplication app : applications.values())
             app.stop();
     }
 
@@ -74,21 +87,36 @@ public final class Container implements ContainerMBean {
     }
 
     /**
+     * Called when a new directory is created in the 'apps' folder,
+     * to create a {@link WorkflowApplication} over it.
+     */
+    protected WorkflowApplication deploy(File appsubdir) {
+        WorkflowApplication wa = new WorkflowApplication(this, appsubdir);
+        applications.put(wa.getName(),wa);
+        return wa;
+    }
+
+    /**
      * Returns the read-only list of all {@link WorkflowApplication}s
      * in this container.
      */
-    public Set<WorkflowApplication> getApplications() {
-        return Collections.unmodifiableSet(applications);
+    public Collection<WorkflowApplication> getApplications() {
+        return Collections.unmodifiableCollection(applications.values());
+    }
+
+    public WorkflowApplication getApplication(String name) {
+        // TODO
+        return null;
     }
 
     /**
      * Finds all the workflow applications.
      */
-    private Set<WorkflowApplication> findApps() {
+    private Map<String,WorkflowApplication> findApps() {
         File appdir = new File(rootDir, "apps");
         if(!appdir.exists()) {
             logger.severe("Workflow application directory doesn't exist: "+appdir);
-            return Collections.emptySet(); // no apps
+            return Collections.emptyMap(); // no apps
         }
 
         File[] subdirs = appdir.listFiles(new FileFilter() {
@@ -96,15 +124,11 @@ public final class Container implements ContainerMBean {
                 return pathname.isDirectory();
             }
         });
-        if(subdirs==null) {
-            assert false; // shall never happen, given that we check for appdir.exists()
-            return Collections.emptySet();
-        }
 
-        Set<WorkflowApplication> apps = new HashSet<WorkflowApplication>();
-        for (File subdir : subdirs) {
-            apps.add(new WorkflowApplication(this,subdir));
-        }
+        Map<String,WorkflowApplication> apps = new Hashtable<String,WorkflowApplication>();
+
+        for (File subdir : subdirs)
+            apps.put(subdir.getName(), new WorkflowApplication(this, subdir));
 
         return apps;
     }

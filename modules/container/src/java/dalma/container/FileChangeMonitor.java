@@ -61,6 +61,15 @@ abstract class FileChangeMonitor {
     public FileChangeMonitor(File dir) {
         this.dir = dir;
 
+        if(!dir.exists())
+            throw new IllegalArgumentException("No such directory "+dir);
+
+        // fill in the initial values
+        files = new HashMap<String, Entry>();
+        for( File f : dir.listFiles() ) {
+            files.put( f.getName(), new Entry(f));
+        }
+
         synchronized(monitors) {
             monitors.add(new WeakReference<FileChangeMonitor>(this));
         }
