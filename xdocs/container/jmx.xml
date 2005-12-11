@@ -1,0 +1,30 @@
+<document>
+<properties>
+  <title>DalmaCon - dalma container</title>
+</properties>
+<body>
+<section name="JMX support">
+  <!-- add a picture -->
+  <p>
+    Dalma container supports management/monitoring through <a href="http://java.sun.com/products/JavaManagement/">JMX</a>. This allows you to use JMX-based applications to monitor dalma container, or even write your own program to do so.
+  </p>
+  
+  <subsection name="Connecting to the management interface (MBean server)">
+    <p>
+      Dalma container registers its MBeans to the platform default MBean server. Therefore, you can connect to it by using one of the following ways:
+    </p>
+    <ol>
+      <li>
+        If you are using JavaSE 6 or later, you can use <tt>jconsole</tt> to connect, provided that you connect on the same machine and use the same user account.
+      </li>
+      <li>
+        Dalma container can also open a TCP port for the remote management based on the JMXMP protocol. This allows remote management, but this feature is off by default. See <tt>$DALMA_HOME/conf/dalma.properties</tt> for more details.
+      </li>
+    </ol>
+    <p>
+      Note that in my environment, <tt>jconsole</tt> that came with JavaSE 5 didn't support JMXMP out of the box, and therefore I need to run it as:
+    </p>
+    <source>java -cp path/to/jmxremote_optional.jar:$JAVA_HOME/lib/jconsole.jar sun.tools.jconsole.JConsole</source>
+  </subsection>
+</section>
+</body></document>
