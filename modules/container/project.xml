@@ -15,6 +15,12 @@
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
     </dependency>
+    <dependency>
+      <id>jmxremote_optional</id>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+      </properties>
+    </dependency>
     <!-- test dependency -->
   </dependencies>
 </project>

@@ -13,7 +13,7 @@ public interface ContainerMBean {
      * Gets the root directory of the dalma container.
      * @return never null
      */
-    File getRootDir();
+    File getHomeDir();
 
     /**
      * Stops all the applications in the container.

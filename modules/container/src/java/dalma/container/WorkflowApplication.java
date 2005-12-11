@@ -66,13 +66,13 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
     public WorkflowApplication(Container owner,File appDir) {
         this.owner = owner;
         this.name = appDir.getName();
-        this.workDir = new File(new File(owner.rootDir, "work"), name);
-        this.confFile = new File(new File(owner.rootDir, "conf"), name+".properties");
+        this.workDir = new File(new File(owner.getHomeDir(), "work"), name);
+        this.confFile = new File(new File(new File(owner.getHomeDir(), "conf"), "apps"), name+".properties");
         this.appDir  = appDir;
 
         try {
             ManagementFactory.getPlatformMBeanServer().registerMBean(this,
-                new ObjectName("dalma:container="+ObjectName.quote(owner.rootDir.toString())+",name="+name));
+                new ObjectName("dalma:container="+ObjectName.quote(owner.getHomeDir().toString())+",name="+name));
         } catch (JMException e) {
             logger.log(Level.WARNING,"Failed to register to JMX",e);
         }

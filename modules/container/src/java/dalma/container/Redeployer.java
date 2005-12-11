@@ -25,7 +25,7 @@ class Redeployer extends FileChangeMonitor {
     private final Container container;
 
     public Redeployer(Container container) {
-        super(new File(container.rootDir, "apps"));
+        super(new File(container.getHomeDir(), "apps"));
         this.container = container;
     }
 

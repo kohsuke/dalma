@@ -26,11 +26,10 @@ public final class Container implements ContainerMBean {
     private static final Logger logger = Logger.getLogger(Container.class.getName());
 
     /**
-     * Root directory of the dalma installation. The value of DALMA_HOME.
-     *
+     * The root directory of the dalma installation. The value of DALMA_HOME.
      * We want the absolute version since we send this across JMX.
      */
-    public final File rootDir;
+    private final File homeDir;
 
     /**
      * {@link Executor} that is shared by all {@link WorkflowApplication}s.
@@ -42,7 +41,7 @@ public final class Container implements ContainerMBean {
     private Redeployer redeployer;
 
     public Container(File root, Executor executor) {
-        this.rootDir = root.getAbsoluteFile();
+        this.homeDir = root.getAbsoluteFile();
         this.executor = executor;
         this.applications = findApps();
 
@@ -57,7 +56,8 @@ public final class Container implements ContainerMBean {
         }
 
         try {
-            ManagementFactory.getPlatformMBeanServer().registerMBean(this,new ObjectName("dalma:dir="+root));
+            ManagementFactory.getPlatformMBeanServer().registerMBean(this,
+                new ObjectName("dalma:dir="+ObjectName.quote(homeDir.toString())));
         } catch (JMException e) {
             logger.log(Level.WARNING,"Failed to register to JMX",e);
         }
@@ -145,11 +145,24 @@ public final class Container implements ContainerMBean {
         return apps;
     }
 
+    /**
+     * Gets the 'apps' directory in which the application class files / dar files are stored.
+     */
     public File getAppDir() {
-        return new File(rootDir, "apps");
+        return new File(homeDir, "apps");
     }
 
-    public File getRootDir() {
-        return rootDir;
+    /**
+     * Gets the name of the DALMA_HOME directory.
+     */
+    public File getHomeDir() {
+        return homeDir;
+    }
+
+    /**
+     * Gets the name of the container configuration file.
+     */
+    public File getConfigFile() {
+        return new File(new File(homeDir,"conf"),"dalma.properties");
     }
 }
