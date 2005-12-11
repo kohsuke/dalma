@@ -62,9 +62,9 @@ class Redeployer extends FileChangeMonitor {
     }
 
     protected void onDeleted(File file) {
-        if(file.isDirectory()) {
+        WorkflowApplication wa = container.getApplication(file.getName());
+        if(wa!=null) {
             logger.info("Application '"+file.getName()+"' is removed. Undeploying.");
-            WorkflowApplication wa = container.getApplication(file.getName());
             wa.remove();
         }
     }
