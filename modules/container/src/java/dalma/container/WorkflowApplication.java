@@ -2,27 +2,26 @@ package dalma.container;
 
 import dalma.Engine;
 import dalma.Program;
-import dalma.container.model.Model;
-import dalma.container.model.InjectionException;
 import dalma.container.model.IllegalResourceException;
+import dalma.container.model.InjectionException;
+import dalma.container.model.Model;
 import dalma.impl.EngineImpl;
 import org.apache.commons.javaflow.ContinuationClassLoader;
 
-import javax.management.ObjectName;
 import javax.management.JMException;
+import javax.management.ObjectName;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.FileInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.text.ParseException;
-import java.lang.management.ManagementFactory;
 
 /**
  * Wrapper around each workflow application.
@@ -63,6 +62,8 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
     private Model<?> model;
 
+    private ObjectName objectName;
+
     public WorkflowApplication(Container owner,File appDir) {
         this.owner = owner;
         this.name = appDir.getName();
@@ -71,8 +72,8 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         this.appDir  = appDir;
 
         try {
-            ManagementFactory.getPlatformMBeanServer().registerMBean(this,
-                new ObjectName("dalma:container="+ObjectName.quote(owner.getHomeDir().toString())+",name="+name));
+            objectName = new ObjectName("dalma:container=" + ObjectName.quote(owner.getHomeDir().toString()) + ",name=" + name);
+            owner.mbeanServer.registerMBean(this,objectName);
         } catch (JMException e) {
             logger.log(Level.WARNING,"Failed to register to JMX",e);
         }
@@ -247,6 +248,15 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      */
     protected synchronized void remove() {
         owner.applications.remove(getName());
+        if(objectName!=null) {
+            try {
+                owner.mbeanServer.unregisterMBean(objectName);
+            } catch(JMException e) {
+                logger.log(Level.WARNING,"Failed to unregister "+objectName);
+            } finally {
+                objectName = null;
+            }
+        }
         stop();
     }
 }

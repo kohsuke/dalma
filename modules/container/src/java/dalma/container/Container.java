@@ -46,6 +46,7 @@ public final class Container implements ContainerMBean {
     public Container(File root, Executor executor) {
         this.homeDir = root.getAbsoluteFile();
         this.executor = executor;
+        this.mbeanServer = ManagementFactory.getPlatformMBeanServer();
         this.applications = findApps();
 
         // TODO: monitor the file system and find added applications on the fly
@@ -58,7 +59,6 @@ public final class Container implements ContainerMBean {
             }
         }
 
-        mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
         try {
             mbeanServer.registerMBean(this,
