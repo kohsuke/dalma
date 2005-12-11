@@ -7,6 +7,8 @@ import javax.management.ObjectName;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.Collections;
@@ -59,16 +61,18 @@ public final class Container implements ContainerMBean {
         } catch (JMException e) {
             logger.log(Level.WARNING,"Failed to register to JMX",e);
         }
+        
+        enableAutoRedeploy();
     }
 
-    public void enableAutoRedeploy() {
+    private void enableAutoRedeploy() {
         if(redeployer==null) {
             logger.info("Auto-redeployment activated");
             redeployer = new Redeployer(this);
         }
     }
 
-    public void disableAutoRedeploy() {
+    private void disableAutoRedeploy() {
         if(redeployer!=null) {
             redeployer.cancel();
             redeployer = null;
@@ -81,9 +85,16 @@ public final class Container implements ContainerMBean {
             app.stop();
     }
 
-    public void deploy(String name, byte[] data) {
-        // TODO: implement this method later
-        throw new UnsupportedOperationException();
+    public synchronized void deploy(String name, byte[] data) throws IOException {
+        logger.info("Accepting application '"+name+"' from JMX");
+        File tmpFile = new File(getAppDir(),name+".tmp");
+        OutputStream os = new FileOutputStream(tmpFile);
+        os.write(data);
+        os.close();
+        File darFile = new File(getAppDir(),name+".dar");
+        if(darFile.exists())
+            darFile.delete();
+        tmpFile.renameTo(darFile);
     }
 
     /**
@@ -113,7 +124,7 @@ public final class Container implements ContainerMBean {
      * Finds all the workflow applications.
      */
     private Map<String,WorkflowApplication> findApps() {
-        File appdir = new File(rootDir, "apps");
+        File appdir = getAppDir();
         if(!appdir.exists()) {
             logger.severe("Workflow application directory doesn't exist: "+appdir);
             return Collections.emptyMap(); // no apps
@@ -131,6 +142,10 @@ public final class Container implements ContainerMBean {
             apps.put(subdir.getName(), new WorkflowApplication(this, subdir));
 
         return apps;
+    }
+
+    public File getAppDir() {
+        return new File(rootDir, "apps");
     }
 
     public File getRootDir() {
