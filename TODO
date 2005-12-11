@@ -29,6 +29,10 @@ James integration
 
 Container Version
 ==============
+- fix JMX lifetime bug
+- then expose enough information from JMX so that the web interface can be run on a separate JVM
+- build the web interface on top of JMX
+
 - support for adding new applications on the fly
 - support the archive format (*.dar?)
 - JMX based management features (TBD later)
