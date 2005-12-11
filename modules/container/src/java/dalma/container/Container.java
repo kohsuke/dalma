@@ -4,6 +4,7 @@ import dalma.Executor;
 
 import javax.management.JMException;
 import javax.management.ObjectName;
+import javax.management.MBeanServer;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -40,6 +41,8 @@ public final class Container implements ContainerMBean {
 
     private Redeployer redeployer;
 
+    protected final MBeanServer mbeanServer;
+
     public Container(File root, Executor executor) {
         this.homeDir = root.getAbsoluteFile();
         this.executor = executor;
@@ -55,8 +58,10 @@ public final class Container implements ContainerMBean {
             }
         }
 
+        mbeanServer = ManagementFactory.getPlatformMBeanServer();
+
         try {
-            ManagementFactory.getPlatformMBeanServer().registerMBean(this,
+            mbeanServer.registerMBean(this,
                 new ObjectName("dalma:dir="+ObjectName.quote(homeDir.toString())));
         } catch (JMException e) {
             logger.log(Level.WARNING,"Failed to register to JMX",e);
