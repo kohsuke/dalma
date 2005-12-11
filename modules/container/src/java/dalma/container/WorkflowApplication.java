@@ -61,6 +61,8 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
     private Program program;
 
+    private Model<?> model;
+
     public WorkflowApplication(Container owner,File appDir) {
         this.owner = owner;
         this.name = appDir.getName();
@@ -110,7 +112,8 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
         // perform resource injection
         try {
-            new Model(mainClass).inject(program,loadConfigProperties());
+            model = new Model(mainClass);
+            ((Model)model).inject(program,loadConfigProperties());
         } catch (InjectionException e) {
             log("Failed to configure program",e);
             return;
@@ -229,6 +232,13 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      */
     public File getConfigFile() {
         return confFile;
+    }
+
+    /**
+     * Gets the model object that describes resources needed by this application.
+     */
+    public Model<?> getModel() {
+        return model;
     }
 
     /**

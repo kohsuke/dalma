@@ -26,6 +26,9 @@ public final class Model<T> {
      */
     public final Class<T> clazz;
 
+    /**
+     * List of resoures that constitute a model.
+     */
     public final List<Part> parts;
 
     /**
