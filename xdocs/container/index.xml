@@ -5,7 +5,24 @@
 <body>
 <section name="Dalma Container">
   <p>
-    TBD
+    Dalma workflow engine can be used as a 'container', a stand-alone program that can host multiple independent workflow applications. The way it works is very similar to web containers like Tomcat; you can deploy/undeploy applications into it, and the container provides monitoring, logging, configuration control, etc, etc.
   </p>
+  <subsection name="Benefits">
+    <ul>
+      <li>
+        Starting/stopping a workflow engine is easier.
+      </li>
+      <li>
+        Maintaining/managing/monitoring running workflow applications are easier.
+      </li>
+      <li>
+        Workflow application development is easier, as there's no need to worry about bytecode instrumentation
+        (the container handles that automatically for you.)
+      </li>
+    </ul>
+    <p>
+      For most of the workflow application development (such as when you are automating some aspects of your work), using the container is probably easier. However, using the engine directly in your application can sometimes offer additional flexibility (e.g., users of your application may never notice that you are using dalma internally.)
+    </p>
+  </subsection>
 </section>
 </body></document>
