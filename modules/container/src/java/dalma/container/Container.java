@@ -90,9 +90,10 @@ public final class Container implements ContainerMBean {
      * Called when a new directory is created in the 'apps' folder,
      * to create a {@link WorkflowApplication} over it.
      */
-    protected WorkflowApplication deploy(File appsubdir) {
+    protected WorkflowApplication deploy(File appsubdir) throws IOException {
         WorkflowApplication wa = new WorkflowApplication(this, appsubdir);
         applications.put(wa.getName(),wa);
+        wa.start();
         return wa;
     }
 
@@ -105,8 +106,7 @@ public final class Container implements ContainerMBean {
     }
 
     public WorkflowApplication getApplication(String name) {
-        // TODO
-        return null;
+        return applications.get(name);
     }
 
     /**

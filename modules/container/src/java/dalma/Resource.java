@@ -46,4 +46,15 @@ public @interface Resource {
      * or maybe "the greeting message" (for a string resource.)
      */
     String description() default "";
+
+    /**
+     * Flag that indicates if this resource can be absent.
+     *
+     * <p>
+     * If true, the user may choose not to set the value (in which case
+     * the VM-default value or null will be injected.) If false, which
+     * is the default, the resource must be configured by the user to
+     * a non-null value.
+     */
+    boolean optional() default false;
 }

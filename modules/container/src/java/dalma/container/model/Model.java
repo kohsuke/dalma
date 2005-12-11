@@ -37,10 +37,16 @@ public final class Model<T> {
         public final Injector<T,V> injector;
         public final Converter<? super V> converter;
 
-        private Part(Injector<T,V> injector) throws IllegalResourceException {
+        public final String description;
+        public final boolean optional;
+
+        private Part(Injector<T,V> injector, Resource a) throws IllegalResourceException {
             this.injector = injector;
             this.name = injector.getName();
             this.type = injector.getType();
+
+            this.description = a.description();
+            this.optional = a.optional();
 
             converter = Converter.get(type);
             if(converter==null)
@@ -49,6 +55,8 @@ public final class Model<T> {
 
         private void inject(T target, Properties prop) throws ParseException, InjectionException {
             String token = prop.getProperty(name);
+            if(token==null && !optional)
+                throw new InjectionException("resource \""+name+"\" must be configured");
             Object value = converter.load(name, token);
             if(!type.isInstance(value))
                 throw new InjectionException("resource \""+name+"\" wants "+type.getName()+" but found "+value.getClass().getName()+" in configuration");
@@ -68,13 +76,15 @@ public final class Model<T> {
         List<Part> parts = new ArrayList<Part>();
 
         for( Field f : clazz.getFields() ) {
-            if(f.getAnnotation(Resource.class)!=null) {
-                parts.add(new Part(new FieldInjector(f)));
+            Resource a = f.getAnnotation(Resource.class);
+            if(a !=null) {
+                parts.add(new Part(new FieldInjector(f),a));
             }
         }
         for( Method m : clazz.getMethods() ) {
-            if(m.getAnnotation(Resource.class)!=null) {
-                parts.add(new Part(new MethodInjector(m)));
+            Resource a = m.getAnnotation(Resource.class);
+            if(a !=null) {
+                parts.add(new Part(new MethodInjector(m),a));
             }
         }
         // TODO: check for non-public methods that have @Resource and report an error
