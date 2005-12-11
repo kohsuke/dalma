@@ -45,7 +45,7 @@ public class Main extends Program {
         System.out.println("Pingpong test");
         Conversation conv1 = engine.createConversation(new Alice(channels[0],channels[3]));
         Conversation conv2 = engine.createConversation(new Alice(channels[1],channels[3]));
-        Conversation convB = engine.createConversation(new Bob(channels[3]));
+        new Thread(new Bob(channels[3])).start();
         conv1.join();
         conv2.join();
         System.out.println("done");
