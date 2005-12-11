@@ -25,7 +25,6 @@ public class Main {
         logger.info("Starting dalma container with DALMA_HOME="+home);
 
         Container container = new Container(home, new Java5Executor(Executors.newFixedThreadPool(5)));
-        container.enableAutoRedeploy();
 
         Thread.currentThread().suspend();
 

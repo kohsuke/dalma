@@ -61,7 +61,7 @@ public final class Container implements ContainerMBean {
         } catch (JMException e) {
             logger.log(Level.WARNING,"Failed to register to JMX",e);
         }
-        
+
         enableAutoRedeploy();
     }
 
@@ -95,6 +95,7 @@ public final class Container implements ContainerMBean {
         if(darFile.exists())
             darFile.delete();
         tmpFile.renameTo(darFile);
+        // the rest is up to redeployer to pick up
     }
 
     /**
