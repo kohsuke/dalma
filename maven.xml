@@ -29,45 +29,45 @@
     </define:tag>
     
     <define:tag name="copy-engine">
-	    <dalma:copy-deps kind="engine" />
+      <dalma:copy-deps kind="engine" />
 
-	    <!-- copy the engine jar itself -->
-	    <a:copy todir="${out}">
-	      <a:fileset dir="." includes="modules/engine/target/*.jar" />
-	      <a:mapper type="flatten" />
-	    </a:copy>
+      <!-- copy the engine jar itself -->
+      <a:copy todir="${out}">
+        <a:fileset dir="." includes="modules/engine/target/*.jar" />
+        <a:mapper type="flatten" />
+      </a:copy>
     </define:tag>
     
     <!--
        copy module files into ${out}/modules
     -->
     <define:tag name="deploy-modules">
-	    <!-- this parses module POMs into 'multiprojects'. Somehow I need to do this twice -->
-	    <attainGoal name="multiproject:projects-init" />
-	    <m:reactor
-	      basedir="${maven.multiproject.basedir}"
-	      banner="Gathering project list"
-	      includes="${maven.multiproject.includes}"
-	      excludes="${maven.multiproject.excludes}"
-	      postProcessing="true"
-	      collectOnly="true"
-	      collectionVar="multiprojects"
-	      ignoreFailures="${maven.multiproject.ignoreFailures}"
-	    />
+      <!-- this parses module POMs into 'multiprojects'. Somehow I need to do this twice -->
+      <attainGoal name="multiproject:projects-init" />
+      <m:reactor
+        basedir="${maven.multiproject.basedir}"
+        banner="Gathering project list"
+        includes="${maven.multiproject.includes}"
+        excludes="${maven.multiproject.excludes}"
+        postProcessing="true"
+        collectOnly="true"
+        collectionVar="multiprojects"
+        ignoreFailures="${maven.multiproject.ignoreFailures}"
+      />
 
-	    <j:forEach var="p" items="${multiprojects}">
-	      <a:echo>Processing ${p.artifactId}</a:echo>
-	      <j:set var="moduleDir" value="${p.file.parentFile}" />
-	      <j:set var="moduleOut" value="${out}/${moduleDir.name}" />
+      <j:forEach var="p" items="${multiprojects}">
+        <a:echo>Processing ${p.artifactId}</a:echo>
+        <j:set var="moduleDir" value="${p.file.parentFile}" />
+        <j:set var="moduleOut" value="${out}/${moduleDir.name}" />
 
-	      <a:mkdir dir="${moduleOut}" />
-	      <a:copy todir="${moduleOut}">
-	        <a:fileset dir="${moduleDir}/target" includes="*.jar" />
-	      </a:copy>
-	      <dalma:copy-deps pom="${p}" out="${moduleOut}" kind="endpoint" />
-	    </j:forEach>
+        <a:mkdir dir="${moduleOut}" />
+        <a:copy todir="${moduleOut}">
+          <a:fileset dir="${moduleDir}/target" includes="*.jar" />
+        </a:copy>
+        <dalma:copy-deps pom="${p}" out="${moduleOut}" kind="endpoint" />
+      </j:forEach>
 
-	    <a:delete dir="${out}/engine" />
+      <a:delete dir="${out}/engine" />
     </define:tag>
   </define:taglib>
 
