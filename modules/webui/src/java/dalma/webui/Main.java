@@ -9,6 +9,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * Entry point.
@@ -30,6 +32,19 @@ public class Main implements ServletContextListener {
         } catch (IOException e) {
             throw new Error(e);
         }
+
+        // set the version
+        Properties props = new Properties();
+        try {
+            InputStream is = getClass().getResourceAsStream("version.properties");
+            if(is!=null)
+                props.load(is);
+        } catch (IOException e) {
+            e.printStackTrace(); // if the version properties is missing, that's OK.
+        }
+        Object ver = props.get("version");
+        if(ver==null)   ver="?";
+        event.getServletContext().setAttribute("version",ver);
     }
 
     public void contextDestroyed(ServletContextEvent event) {

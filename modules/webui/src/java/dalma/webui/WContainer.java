@@ -7,10 +7,18 @@ import dalma.container.Container;
  *
  * @author Kohsuke Kawaguchi
  */
-public class WContainer {
+public class WContainer implements UIObject {
     public final Container core;
 
     public WContainer(Container core) {
         this.core = core;
+    }
+
+    public String getDisplayName() {
+        return "Dalma";
+    }
+
+    public boolean isUseSecurity() {
+        return false; // TODO
     }
 }
