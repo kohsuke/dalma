@@ -1,20 +1,27 @@
 package dalma.container;
 
 import dalma.Executor;
+import dalma.helpers.Java5Executor;
 
 import javax.management.JMException;
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
+import javax.management.remote.JMXServiceURL;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -169,5 +176,63 @@ public final class Container implements ContainerMBean {
      */
     public File getConfigFile() {
         return new File(new File(homeDir,"conf"),"dalma.properties");
+    }
+
+    /**
+     * Creates a configured {@link Container} from HOME/conf/dalma.properties
+     */
+    public static Container create(File home) throws IOException {
+        Properties conf = loadProperties(home);
+
+        Container container = new Container(home, new Java5Executor(
+            Executors.newFixedThreadPool(readProperty(conf,"thread.count",5))));
+
+        int jmxPort = readProperty(conf, "jmx.port", -1);
+        if(jmxPort>=0) {
+            logger.info("Initializing JMXMP connector at port "+jmxPort);
+            JMXServiceURL url = new JMXServiceURL("jmxmp", null, jmxPort);
+            JMXConnectorServer cs =
+                JMXConnectorServerFactory.newJMXConnectorServer(url, null, ManagementFactory.getPlatformMBeanServer());
+
+            cs.start();
+            logger.info("Started JMXMP connector");
+        }
+
+        return container;
+    }
+
+    private static int readProperty( Properties props, String key, int defaultValue ) {
+        String value = props.getProperty(key);
+        if(value==null)
+            return defaultValue;
+
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            logger.severe("Configuration value for "+key+" must be int, but found \""+value+"\"");
+            return defaultValue;
+        }
+    }
+
+    private static File getConfigFile(File home, String name) {
+        return new File(new File(home,"conf"),name);
+    }
+
+    private static Properties loadProperties(File home) {
+        Properties props = new Properties();
+        File config = getConfigFile(home,"dalma.properties");
+        if(config.exists()) {
+            try {
+                FileInputStream in = new FileInputStream(config);
+                try {
+                    props.load(in);
+                } finally {
+                    in.close();
+                }
+            } catch (IOException e) {
+                logger.log(Level.SEVERE,"Failed to read "+config,e);
+            }
+        }
+        return props;
     }
 }
