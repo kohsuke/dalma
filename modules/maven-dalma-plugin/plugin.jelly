@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project xmlns:j="jelly:core" 
+         xmlns:util="jelly:util"
+         xmlns:maven="jelly:maven"
+         xmlns:define="jelly:define"
+         xmlns:javanet="javanet">
+  
+  <!-- =============================
+       PLUG-IN GOALS
+       ============================= -->
+  <goal name="dalma"
+        prereqs="dalma:dar"
+        description="Build dalma archive for distribution" />
+
+  <goal name="dalma:dar"
+        prereqs="java:compile"
+        description="Build dalma archive for distribution">
+    
+    <jar
+      jarfile="${maven.build.dir}/${maven.dalma.final.name}"
+      basedir="${maven.build.dest}"
+      compress="${maven.jar.compress}"
+      excludes="${maven.jar.excludes}">
+      <!-- TODO: include dependency jars -->
+      <j:if test="${context.getVariable('maven.jar.includes') != null}">
+        <setProperty name="includes" value="${maven.jar.includes}" />
+      </j:if>
+    </jar>
+  </goal>
+</project>
