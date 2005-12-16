@@ -3,7 +3,7 @@
   <pomVersion>3</pomVersion>
   <extend>../../project.xml</extend>
   <name>Dalma IRC endpoint</name>
-  <id>dalma-endpoint-irc</id>
+  <artifactId>dalma-endpoint-irc</artifactId>
   <description>endpoint that connects to the IRC system</description>
   <shortDescription>IRC endpoint for dalma</shortDescription>
   

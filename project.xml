@@ -2,7 +2,8 @@
 <project>
   <pomVersion>3</pomVersion>
   <name>Dalma Workflow Engine</name>
-  <id>dalma-site</id>
+  <groupId>dalma</groupId>
+  <artifactId>dalma-site</artifactId>
   <currentVersion>0.1-SNAPSHOT</currentVersion>
   <package>dalma</package>
 

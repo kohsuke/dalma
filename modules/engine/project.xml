@@ -2,5 +2,5 @@
 <project>
   <pomVersion>3</pomVersion>
   <extend>../../project.xml</extend>
-  <id>dalma</id>
+  <artifactId>dalma</artifactId>
 </project>

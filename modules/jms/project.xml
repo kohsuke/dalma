@@ -3,7 +3,7 @@
   <pomVersion>3</pomVersion>
   <extend>../../project.xml</extend>
   <name>Dalma JMS endpoint</name>
-  <id>dalma-endpoint-jms</id>
+  <artifactId>dalma-endpoint-jms</artifactId>
   <description>endpoint that connects to Java Messaging System</description>
   <shortDescription>JMS endpoint for dalma</shortDescription>
   
