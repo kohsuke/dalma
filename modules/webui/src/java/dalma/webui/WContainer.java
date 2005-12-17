@@ -1,7 +1,7 @@
 package dalma.webui;
 
 import dalma.container.Container;
-import dalma.container.ContainerMBean;
+import dalma.container.WorkflowApplication;
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -11,6 +11,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * {@link Container} wrapper for the web UI.
@@ -18,9 +19,9 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  */
 public class WContainer implements UIObject {
-    public final ContainerMBean core;
+    public final Container core;
 
-    public WContainer(ContainerMBean core) {
+    public WContainer(Container core) {
         this.core = core;
     }
 
@@ -59,6 +60,14 @@ public class WContainer implements UIObject {
         core.deploy(appName,contents);
 
         resp.sendRedirect(req.getContextPath());
+    }
+
+    public List<WWorkflow> getWorkflows() {
+        List<WWorkflow> r = new ArrayList<WWorkflow>();
+        for (WorkflowApplication a : core.getApplications()) {
+            r.add(new WWorkflow(a));
+        }
+        return r;
     }
 
     private void sendError(StaplerRequest req, String msg, StaplerResponse resp) throws ServletException, IOException {
