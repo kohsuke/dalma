@@ -73,7 +73,9 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
         try {
             objectName = new ObjectName("dalma:container=" + ObjectName.quote(owner.getHomeDir().toString()) + ",name=" + name);
-            owner.mbeanServer.registerMBean(this,objectName);
+            MBeanProxy.register( owner.mbeanServer,
+                objectName,
+                WorkflowApplicationMBean.class, this );
         } catch (JMException e) {
             logger.log(Level.WARNING,"Failed to register to JMX",e);
         }

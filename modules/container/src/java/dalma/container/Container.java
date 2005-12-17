@@ -68,8 +68,9 @@ public final class Container implements ContainerMBean {
 
 
         try {
-            mbeanServer.registerMBean(this,
-                new ObjectName("dalma:dir="+ObjectName.quote(homeDir.toString())));
+            MBeanProxy.register( mbeanServer,
+                new ObjectName("dalma:dir="+ObjectName.quote(homeDir.toString())),
+                ContainerMBean.class, this );
         } catch (JMException e) {
             logger.log(Level.WARNING,"Failed to register to JMX",e);
         }
