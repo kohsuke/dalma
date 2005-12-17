@@ -9,7 +9,7 @@
 <jsp:include page="sidepanel.jsp" />
 
 <l:main-panel>
-  <s:form method="post" action="createApp">
+  <s:form method="post" action="createApp" enctype="multipart/form-data">
     <s:block>
       Select a .dar file to install
     </s:block>
