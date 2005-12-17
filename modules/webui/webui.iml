@@ -60,6 +60,17 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/commons-fileupload-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/commons-fileupload-1.0-src.zip!/commons-fileupload-1.0/src/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
   <component name="WebModuleBuildComponent">
@@ -114,6 +125,11 @@
       <attribute name="method" value="1" />
       <attribute name="URI" value="/WEB-INF/lib/spring-core.jar" />
       <url>jar://$MODULE_DIR$/../../lib/test/spring-core.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module">
+      <attribute name="method" value="1" />
+      <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.0.jar" />
+      <url>jar://$MODULE_DIR$/lib/commons-fileupload-1.0.jar!/</url>
     </containerElement>
     <containerElement type="library" level="module">
       <attribute name="method" value="1" />
