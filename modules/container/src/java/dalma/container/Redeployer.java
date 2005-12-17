@@ -90,7 +90,14 @@ class Redeployer extends FileChangeMonitor {
             while(e.hasMoreElements()) {
                 JarEntry j = e.nextElement();
                 File dst = new File(exploded, j.getName());
+
+                if(j.isDirectory()) {
+                    dst.mkdirs();
+                    continue;
+                }
+                
                 dst.getParentFile().mkdirs();
+
 
                 InputStream in = archive.getInputStream(j);
                 FileOutputStream out = new FileOutputStream(dst);
