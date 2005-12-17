@@ -1,6 +1,7 @@
 package dalma.webui;
 
 import dalma.container.Container;
+import dalma.container.ContainerMBean;
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -17,9 +18,9 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  */
 public class WContainer implements UIObject {
-    public final Container core;
+    public final ContainerMBean core;
 
-    public WContainer(Container core) {
+    public WContainer(ContainerMBean core) {
         this.core = core;
     }
 
@@ -55,7 +56,7 @@ public class WContainer implements UIObject {
             return;
         }
 
-        System.out.println(appName);
+        core.deploy(appName,contents);
 
         resp.sendRedirect(req.getContextPath());
     }
