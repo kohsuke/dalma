@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <pomVersion>3</pomVersion>
+  <extend>../../project.xml</extend>
+  <id>trivial-workflow</id>
+  <name>Trivial workflow for testing the webui module</name>
+  <package>dalma.test.trivial</package>
+  <description>Trivial workflow for testing the webui module</description>
+  
+  <dependencies>
+    <dependency>
+      <groupId>dalma</groupId>
+      <artifactId>dalma-container</artifactId>
+      <version>${pom.currentVersion}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+  </build>
+</project>
