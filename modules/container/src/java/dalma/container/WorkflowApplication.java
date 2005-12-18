@@ -6,6 +6,7 @@ import dalma.container.model.IllegalResourceException;
 import dalma.container.model.InjectionException;
 import dalma.container.model.Model;
 import dalma.impl.EngineImpl;
+import dalma.impl.Util;
 import org.apache.commons.javaflow.ContinuationClassLoader;
 
 import javax.management.JMException;
@@ -58,6 +59,9 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      */
     private final File confFile;
 
+    /**
+     * The workflow application. Null when not started.
+     */
     private Program program;
 
     private Model<?> model;
@@ -224,6 +228,19 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
     }
 
     /**
+     * Gets the human-readable description of this web application.
+     */
+    public String getDescription() {
+        if(program==null)
+            // TODO: this sucks!
+            return "(not available for stopped workflow)";
+
+        String msg = program.getDescription();
+        if(msg==null)   return "(no description available)";
+        return msg;
+    }
+
+    /**
      * Returns true if this application is currently running.
      */
     public synchronized boolean isRunning() {
@@ -249,16 +266,43 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      * this application from the container.
      */
     protected synchronized void remove() {
-        owner.applications.remove(getName());
-        if(objectName!=null) {
-            try {
-                owner.mbeanServer.unregisterMBean(objectName);
-            } catch(JMException e) {
-                logger.log(Level.WARNING,"Failed to unregister "+objectName);
-            } finally {
-                objectName = null;
+        synchronized (undeployLock) {
+            owner.applications.remove(getName());
+            if(objectName!=null) {
+                try {
+                    owner.mbeanServer.unregisterMBean(objectName);
+                } catch(JMException e) {
+                    logger.log(Level.WARNING,"Failed to unregister "+objectName);
+                } finally {
+                    objectName = null;
+                }
+            }
+            stop();
+            undeployed = true;
+            undeployLock.notifyAll();
+        }
+    }
+
+    /**
+     * Undeploys this workflow application.
+     */
+    public void undeploy() throws IOException {
+        synchronized (undeployLock) {
+            if(!undeployed) {
+                Util.deleteRecursive(appDir);
+                try {
+                    undeployLock.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // process it later
+                }
             }
         }
-        stop();
+
     }
+
+    private Object undeployLock = new Object();
+    /**
+     * True when this workflow is already undeployed.
+     */
+    private boolean undeployed = false;
 }
