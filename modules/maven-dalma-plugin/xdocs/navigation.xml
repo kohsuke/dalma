@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Maven dalma plugin">
+  <title>Maven dalma plugin</title>
+  <body>
+    <links>
+      <item name="Dalma" href="../index.html" />
+      <item name="java.net" href="http://www.java.net" />
+    </links>
+    <menu name="Overview">
+      <item name="Home"                         href="/index.html"/>
+      <item name="Goals"                        href="/goals.html" />
+      <item name="Properties"                   href="/properties.html" />
+    </menu>
+  </body>
+</project>

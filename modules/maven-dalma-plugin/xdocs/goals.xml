@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document>
+  <properties>
+    <title>Maven dalma plugin Goals</title>
+  </properties>
+  <body>
+    <goals>
+      <goal>
+        <name>dalma:dar</name>
+        <description>Build dalma archive for the project. This is mostly the same with the <tt>jar</tt> goal.</description>
+      </goal>
+    </goals>
+  </body>
+</document>

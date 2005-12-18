@@ -1,0 +1,18 @@
+<document>
+<properties>
+  <title>maven-dalma-plugin</title>
+</properties>
+<body>
+<section name="Maven Plug-in">
+  <p>
+    This maven plugin allows you to create a <a href="dar.html">dalma archive (.dar)</a> file easily. Run the following command to install:
+  </p>
+<source>
+maven plugin:download
+  -Dmaven.repo.remote=http://maven-repository.dev.java.net/nonav/maven
+  -DgroupId=dalma
+  -DartifactId=maven-dalma-plugin
+  -Dversion=0.1-SNAPSHOT
+</source>
+</section>
+</body></document>
