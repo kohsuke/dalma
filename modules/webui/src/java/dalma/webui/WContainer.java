@@ -29,6 +29,10 @@ public class WContainer implements UIObject {
         return "Dalma";
     }
 
+    public String getUrl() {
+        return "";
+    }
+
     public boolean isUseSecurity() {
         return false; // TODO
     }
@@ -68,6 +72,10 @@ public class WContainer implements UIObject {
             r.add(new WWorkflow(a));
         }
         return r;
+    }
+
+    public WWorkflow getWorkflow(String name) {
+        return WWorkflow.wrap(core.getApplication(name));
     }
 
     private void sendError(StaplerRequest req, String msg, StaplerResponse resp) throws ServletException, IOException {

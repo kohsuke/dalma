@@ -42,7 +42,7 @@
             </c:when>
             <c:otherwise>
               <img src="${rootURL}/images/redFlag.png" />
-              <span style="color: #008000">Stopping</span>
+              <span style="color: #008000">Stopped</span>
             </c:otherwise>
           </c:choose>
         </td>
