@@ -24,6 +24,10 @@ public class WWorkflow implements UIObject {
         return core.getName();
     }
 
+    public String getDescription() {
+        return core.getDescription();
+    }
+
     public boolean isRunning () {
         return core.isRunning();
     }
@@ -46,5 +50,10 @@ public class WWorkflow implements UIObject {
     public void doStart(StaplerRequest req, StaplerResponse resp) throws IOException {
         core.start();
         resp.sendRedirect(".");
+    }
+
+    public void doDoDelete(StaplerRequest req, StaplerResponse resp) throws IOException {
+        core.undeploy();
+        resp.sendRedirect(req.getContextPath());
     }
 }
