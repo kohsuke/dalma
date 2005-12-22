@@ -61,7 +61,7 @@ public final class Container implements ContainerMBean {
         for (WorkflowApplication app : applications.values()) {
             try {
                 app.start();
-            } catch (IOException e) {
+            } catch (FailedOperationException e) {
                 logger.log(Level.WARNING,"Failed to start "+app.getName(),e);
             }
         }
@@ -115,7 +115,7 @@ public final class Container implements ContainerMBean {
      * Called when a new directory is created in the 'apps' folder,
      * to create a {@link WorkflowApplication} over it.
      */
-    protected WorkflowApplication deploy(File appsubdir) throws IOException {
+    protected WorkflowApplication deploy(File appsubdir) throws FailedOperationException {
         WorkflowApplication wa = new WorkflowApplication(this, appsubdir);
         applications.put(wa.getName(),wa);
         wa.start();
@@ -153,7 +153,11 @@ public final class Container implements ContainerMBean {
         Map<String,WorkflowApplication> apps = new Hashtable<String,WorkflowApplication>();
 
         for (File subdir : subdirs)
-            apps.put(subdir.getName(), new WorkflowApplication(this, subdir));
+            try {
+                apps.put(subdir.getName(), new WorkflowApplication(this, subdir));
+            } catch (FailedOperationException e) {
+                logger.log(Level.WARNING,"Failed to load from "+subdir,e);
+            }
 
         return apps;
     }

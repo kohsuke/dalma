@@ -10,13 +10,15 @@ import java.io.File;
  * @author Kohsuke Kawaguchi
  */
 public interface WorkflowApplicationMBean {
-    void start() throws IOException;
+    void start() throws FailedOperationException;
     void stop();
+    void unload();
+    void load() throws FailedOperationException ;
 
-    void undeploy() throws IOException, InterruptedException;
+    void undeploy();
 
     String getName();
     String getDescription();
-    boolean isRunning();
+    WorkflowState getState();
     File getConfigFile();
 }

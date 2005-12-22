@@ -37,7 +37,7 @@ class Redeployer extends FileChangeMonitor {
             logger.info("New application '"+file.getName()+"' detected. Deploying.");
             try {
                 container.deploy(file);
-            } catch (IOException e) {
+            } catch (FailedOperationException e) {
                 logger.log(Level.SEVERE, "Unable to deploy", e );
             }
         }
@@ -52,10 +52,10 @@ class Redeployer extends FileChangeMonitor {
                 WorkflowApplication wa = container.getApplication(file.getName());
                 if(wa!=null) {
                     logger.info("Changed detected in application '"+wa.getName()+"'. Re-deploying.");
-                    wa.stop();
+                    wa.unload();
                     wa.start();
                 }
-            } catch (IOException e) {
+            } catch (FailedOperationException e) {
                 logger.log(Level.SEVERE, "Unable to redeploy", e );
             }
         }

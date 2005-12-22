@@ -94,17 +94,4 @@ public abstract class Program {
     public void cleanup(Engine engine) throws Exception {
 
     }
-
-    /**
-     * Gets the human-readable description of this workflow application.
-     *
-     * <p>
-     * The returned message is used for the management purpose (such as JMX.)
-     *
-     * @return
-     *      possibly null (to indicate that there's no description.)
-     */
-    public String getDescription() {
-        return null;
-    }
 }
