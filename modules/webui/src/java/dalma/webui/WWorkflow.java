@@ -1,6 +1,8 @@
 package dalma.webui;
 
 import dalma.container.WorkflowApplication;
+import dalma.container.WorkflowState;
+import dalma.container.FailedOperationException;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -29,7 +31,7 @@ public class WWorkflow implements UIObject {
     }
 
     public boolean isRunning () {
-        return core.isRunning();
+        return core.getState()==WorkflowState.RUNNING;
     }
 
     public String getUrl() {
@@ -47,7 +49,8 @@ public class WWorkflow implements UIObject {
         resp.sendRedirect(".");
     }
 
-    public void doStart(StaplerRequest req, StaplerResponse resp) throws IOException {
+    public void doStart(StaplerRequest req, StaplerResponse resp) throws IOException, FailedOperationException {
+        // TODO: report failed start operation correctly
         core.start();
         resp.sendRedirect(".");
     }
