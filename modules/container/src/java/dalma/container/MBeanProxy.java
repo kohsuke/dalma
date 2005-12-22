@@ -5,6 +5,7 @@ import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.StandardMBean;
+import javax.management.NotCompliantMBeanException;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
@@ -40,9 +41,36 @@ final class MBeanProxy implements InvocationHandler, MBeanRegistration {
 
         // since the proxy class has random names like '$Proxy1',
         // we need to use StandardMBean to designate a management interface
-        server.registerMBean(new StandardMBean(proxy,mbeanInterface),name);
+        server.registerMBean(new StandardMBeanEx(proxy,mbeanInterface),name);
 
     }
+
+    private static class StandardMBeanEx extends StandardMBean implements MBeanRegistration {
+        private MBeanRegistration mbr;
+
+        public StandardMBeanEx(Object implementation, Class mbeanInterface) throws NotCompliantMBeanException {
+            super(implementation, mbeanInterface);
+            this.mbr = (MBeanRegistration) implementation;
+        }
+
+        // delegate to mbr
+        public ObjectName preRegister(MBeanServer server, ObjectName name) throws Exception {
+            return mbr.preRegister(server, name);
+        }
+
+        public void postRegister(Boolean registrationDone) {
+            mbr.postRegister(registrationDone);
+        }
+
+        public void preDeregister() throws Exception {
+            mbr.preDeregister();
+        }
+
+        public void postDeregister() {
+            mbr.postDeregister();
+        }
+    }
+
 
     /**
      * The real MBean object.
@@ -77,7 +105,7 @@ final class MBeanProxy implements InvocationHandler, MBeanRegistration {
         }
     }
 
-    private void unregister() {
+    private synchronized void unregister() {
         try {
             server.unregisterMBean(name);
         } catch (JMException e) {
@@ -85,7 +113,7 @@ final class MBeanProxy implements InvocationHandler, MBeanRegistration {
         }
     }
 
-    public ObjectName preRegister(MBeanServer server, ObjectName name) throws Exception {
+    public synchronized ObjectName preRegister(MBeanServer server, ObjectName name) throws Exception {
         this.server = server;
         this.name = name;
         return name;
@@ -99,7 +127,7 @@ final class MBeanProxy implements InvocationHandler, MBeanRegistration {
         // noop
     }
 
-    public void postDeregister() {
+    public synchronized void postDeregister() {
         server = null;
         name = null;
     }
