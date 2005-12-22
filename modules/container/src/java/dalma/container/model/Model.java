@@ -65,6 +65,14 @@ public final class Model<T> {
                 throw new InjectionException("resource \""+name+"\" wants "+type.getName()+" but found "+value.getClass().getName()+" in configuration");
             injector.set(target,type.cast(value));
         }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
     }
 
     /**
@@ -98,5 +106,9 @@ public final class Model<T> {
     public void inject(T target, Properties prop ) throws InjectionException, ParseException {
         for (Part<?> res : parts)
             res.inject(target,prop);
+    }
+
+    public List<Part> getParts() {
+        return parts;
     }
 }
