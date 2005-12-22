@@ -29,6 +29,7 @@ James integration
 
 Container Version
 ==============
+- make the log view expandable to show details (stack trace) of error.
 - the container should remember which application is STOPPED and which is RUNNING.
   newly installed app should start from STOPPED state since it needs to be configured.
 
