@@ -3,6 +3,7 @@ package dalma.webui;
 import dalma.container.WorkflowApplication;
 import dalma.container.WorkflowState;
 import dalma.container.FailedOperationException;
+import dalma.container.model.Model;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -36,6 +37,10 @@ public class WWorkflow implements UIObject {
 
     public String getUrl() {
         return "workflow/"+getName()+'/';
+    }
+
+    public Model getModel() {
+        return core.getModel();
     }
 
 
