@@ -9,6 +9,7 @@
 <l:side-panel>
   <l:tasks>
     <l:task icon="images/box.png" href="newApp" title="Install new App" />
+    <l:task icon="images/caution.png" href="log" title="View System Log" />
     <l:task icon="images/wrench.gif" href="configure" title="Configure" />
   </l:tasks>
 </l:side-panel>

@@ -297,3 +297,20 @@ th.pane {
   color: red;
   font-weight: bold;
 }
+
+.log-preamble {
+  color: rgb(100,100,100);
+}
+
+.log-text {
+    font-weight: bold;
+}
+
+
+.log-level-SEVERE {
+    color: red;
+}
+
+.log-level-WARNING {
+    color: goldenrod;
+}

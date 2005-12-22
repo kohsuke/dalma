@@ -12,6 +12,8 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.LogRecord;
 
 /**
  * {@link Container} wrapper for the web UI.
@@ -21,8 +23,11 @@ import java.util.ArrayList;
 public class WContainer implements UIObject {
     public final Container core;
 
-    public WContainer(Container core) {
+    private final LogRecorder logRecorder;
+
+    public WContainer(Container core, LogRecorder logRecorder) {
         this.core = core;
+        this.logRecorder = logRecorder;
     }
 
     public String getDisplayName() {
@@ -35,6 +40,10 @@ public class WContainer implements UIObject {
 
     public boolean isUseSecurity() {
         return false; // TODO
+    }
+
+    public List<LogRecord> getLogs() {
+        return logRecorder.getLogRecords();
     }
 
     public void doCreateApp(StaplerRequest req, StaplerResponse resp ) throws IOException, ServletException {
@@ -81,5 +90,10 @@ public class WContainer implements UIObject {
     private void sendError(StaplerRequest req, String msg, StaplerResponse resp) throws ServletException, IOException {
         req.setAttribute("message",msg);
         resp.forward(this,"error",req);
+    }
+
+    public void shutdown() {
+        Logger.getLogger("dalma").removeHandler(logRecorder);
+        core.stop();
     }
 }

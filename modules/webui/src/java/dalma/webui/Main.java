@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * Entry point.
@@ -19,16 +20,19 @@ import java.util.Properties;
  */
 public class Main implements ServletContextListener {
 
-    private Container container;
+    private WContainer container;
 
     public void contextInitialized(ServletContextEvent event) {
         File home = getHomeDir(event);
         home.mkdirs();
         System.out.println("dalma home directory: "+home);
 
+        LogRecorder logRecorder = new LogRecorder();
+        Logger.getLogger("dalma").addHandler(logRecorder);
+
         try {
-            container = Container.create(home);
-            event.getServletContext().setAttribute("app",new WContainer(container));
+            container = new WContainer(Container.create(home), logRecorder);
+            event.getServletContext().setAttribute("app",container);
         } catch (IOException e) {
             throw new Error(e);
         }
@@ -49,7 +53,7 @@ public class Main implements ServletContextListener {
 
     public void contextDestroyed(ServletContextEvent event) {
         if(container!=null)
-            container.stop();
+            container.shutdown();
     }
 
     /**
