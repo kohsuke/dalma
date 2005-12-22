@@ -17,6 +17,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.io.BufferedOutputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -217,11 +222,29 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      *
      * @return always non-null.
      */
-    private Properties loadConfigProperties() throws IOException {
+    public Properties loadConfigProperties() throws IOException {
         Properties props = new Properties();
-        if(confFile.exists())
-            props.load(new FileInputStream(confFile));
+        if(confFile.exists()) {
+            InputStream in = new BufferedInputStream(new FileInputStream(confFile));
+            try {
+                props.load(in);
+            } finally {
+                in.close();
+            }
+        }
         return props;
+    }
+
+    /**
+     * Saves the given propertie sinto {@link #confFile}.
+     */
+    public void saveConfigProperties(Properties props) throws IOException {
+        OutputStream fos = new BufferedOutputStream(new FileOutputStream(confFile));
+        try {
+            props.store(fos,null);
+        } finally {
+            fos.close();
+        }
     }
 
     private static void log(String msg, Throwable t) {
