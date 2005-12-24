@@ -77,4 +77,17 @@ public abstract class Fiber<T extends Runnable> {
     public static <T extends Runnable> Fiber<T> create(T entryPoint) {
         return FiberImpl.create(entryPoint);
     }
+
+    /**
+     * Returns the {@link Fiber} that the current thread is executing.
+     *
+     * <p>
+     * This mehtod can be only called from within the workflow.
+     *
+     * @throws IllegalStateException
+     *      if the calling thread isn't a workflow thread.
+     */
+    public static Fiber<?> currentFiber() {
+        return FiberImpl.currentFiber(true);
+    }
 }
