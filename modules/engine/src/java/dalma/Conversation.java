@@ -1,9 +1,14 @@
 package dalma;
 
 /**
+ * Represents a running instance of a workflow.
+ *
  * @author Kohsuke Kawaguchi
  */
 public interface Conversation {
+    /**
+     * Gets the current state of the conversation.
+     */
     ConversationState getState();
 
     /**
