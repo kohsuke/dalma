@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.Date;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -98,6 +99,11 @@ public final class EngineImpl extends EngineSPI implements Serializable {
      * Possibly null {@link ErrorHandler}.
      */
     transient private ErrorHandler errorHandler;
+
+    /**
+     * See {@link #getLastActiveTime()}
+     */
+    private long lastActiveTime = 0;
 
     public EngineImpl(File rootDir,ClassLoader classLoader,Executor executor) throws IOException {
         this.rootDir = rootDir;
@@ -190,6 +196,7 @@ public final class EngineImpl extends EngineSPI implements Serializable {
         executor.execute(new Runnable() {
             public void run() {
                 try {
+                    lastActiveTime = System.currentTimeMillis();
                     f.run();
                 } catch(FiberDeath t) {
                     // this fiber is dead!
@@ -203,6 +210,8 @@ public final class EngineImpl extends EngineSPI implements Serializable {
                     // even if the error recovery process fails,
                     // don't let the worker thread die.
                     addToErrorQueue(t);
+                } finally {
+                    lastActiveTime = System.currentTimeMillis();
                 }
             }
         });
@@ -230,6 +239,10 @@ public final class EngineImpl extends EngineSPI implements Serializable {
 
     public int getConversationsSize() {
         return conversations.size();
+    }
+
+    public Date getLastActiveTime() {
+        return new Date(lastActiveTime);
     }
 
     public Map<String,EndPoint> getEndPoints() {

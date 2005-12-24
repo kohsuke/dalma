@@ -1,7 +1,6 @@
 package dalma;
 
 import dalma.impl.FiberImpl;
-import dalma.impl.EngineImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +8,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Date;
 import java.util.logging.Logger;
 
 
@@ -55,8 +55,33 @@ public abstract class Engine {
      * Gets the number of {@link Conversation}s in this engine.
      * <p>
      * Short for <tt>getConversations().size()</tt>, but more efficient.
+     *
+     * @return
+     *      a non-negative integer.
      */
     public abstract int getConversationsSize();
+
+    /**
+     * Gets the timestamp when any of the conversations run last time.
+     *
+     * <p>
+     * For example, if all the conversations are blocked on a particular
+     * condition for 15 minutes, this method returns "now-15min".
+     *
+     * <p>
+     * This information is persisted and carried across engine lifespan,
+     * but due to a performance reason, it's only persisted lazily,
+     * and as a consequence it may fail to report a correct value when
+     * the engine terminated abnormally.
+     *
+     * <p>
+     * If nothing has ever run before (such as right after a new engine
+     * is instanciated), this method returns <tt>new Date(0)</tt>.
+     *
+     * @return
+     *      always non-null.
+     */
+    public abstract Date getLastActiveTime();
 
     /**
      * Gets a read-only copy of all the {@link EndPoint}s in this engine.
@@ -195,6 +220,10 @@ public abstract class Engine {
 
     /**
      * Sets the logger that this engine uses.
+     *
+     * <p>
+     * The default logger, if this method is not invoked,
+     * is "dalma.impl.....".
      *
      * @param logger
      *      if null, the engine will stop logging.

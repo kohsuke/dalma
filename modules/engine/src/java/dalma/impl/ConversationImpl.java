@@ -224,9 +224,12 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
             ObjectInputStream ois = new ObjectInputStreamEx(
                 new BufferedInputStream(new FileInputStream(cont)),engine.classLoader);
-            List<FiberImpl.PersistedData> list = (List<FiberImpl.PersistedData>) ois.readObject();
-
-            ois.close();
+            List<FiberImpl.PersistedData> list;
+            try {
+                list = (List<FiberImpl.PersistedData>) ois.readObject();
+            } finally {
+                ois.close();
+            }
             cont.delete();
 
             if(fibers.size()!=list.size())
