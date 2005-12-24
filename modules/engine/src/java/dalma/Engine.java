@@ -52,6 +52,13 @@ public abstract class Engine {
     // snapshot, because of the synchronization issue
 
     /**
+     * Gets the number of {@link Conversation}s in this engine.
+     * <p>
+     * Short for <tt>getConversations().size()</tt>, but more efficient.
+     */
+    public abstract int getConversationsSize();
+
+    /**
      * Gets a read-only copy of all the {@link EndPoint}s in this engine.
      *
      * @return

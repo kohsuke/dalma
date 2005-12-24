@@ -223,9 +223,11 @@ public final class EngineImpl extends EngineSPI implements Serializable {
 
     public synchronized Collection<Conversation> getConversations() {
         makeSureStarted();
-        synchronized(conversations) {
-            return new ArrayList<Conversation>(conversations.values());
-        }
+        return new ArrayList<Conversation>(conversations.values());
+    }
+
+    public int getConversationsSize() {
+        return conversations.size();
     }
 
     public Map<String,EndPoint> getEndPoints() {
