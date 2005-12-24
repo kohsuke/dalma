@@ -302,12 +302,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
             program = null;
         }
 
-        try {
-            engine.stop();
-        } catch (InterruptedException e) {
-            // process the interruption later
-            Thread.currentThread().interrupt();
-        }
+        engine.stop();
         engine = null;
         state = STOPPED;
 

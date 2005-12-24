@@ -26,8 +26,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
+ * {@link Engine} implementation.
+ *
  * @author Kohsuke Kawaguchi
  */
 public final class EngineImpl extends EngineSPI implements Serializable {
@@ -35,7 +38,7 @@ public final class EngineImpl extends EngineSPI implements Serializable {
     /**
      * Logger that logs events.
      */
-    private transient Logger logger;
+    private transient Logger logger = Logger.getLogger(EngineImpl.class.getName());
 
     /**
      * Executes conversations that can be run.
@@ -137,8 +140,7 @@ public final class EngineImpl extends EngineSPI implements Serializable {
                 ConversationImpl conv = ConversationImpl.load(this, subdir);
                 conversations.put(conv.id,conv);
             } catch (IOException e) {
-                // TODO: log this error somewhere
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Failed to load conversation "+subdir,e);
             }
         }
     }
@@ -310,7 +312,7 @@ public final class EngineImpl extends EngineSPI implements Serializable {
             throw new IllegalStateException("engine is already started");
     }
 
-    public void stop() throws InterruptedException {
+    public void stop() {
         makeSureStarted();
 
         // clone first to avoid concurrent modification
@@ -321,6 +323,13 @@ public final class EngineImpl extends EngineSPI implements Serializable {
 
         for( EndPointImpl ep : eps )
             ep.stop();
+
+        // write any pending changes
+        try {
+            save();
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Failed to save state",e);
+        }
     }
 
     public void setLogger(Logger logger) {

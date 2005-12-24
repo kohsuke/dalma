@@ -190,11 +190,8 @@ public abstract class Engine {
      * <p>
      * This method blocks until all the running {@link Conversation} suspends/completes,
      * so it may take some time.
-     *
-     * @throws InterruptedException
-     *      if the calling thread is interrupted while waiting for the completion. 
      */
-    public abstract void stop() throws InterruptedException;
+    public abstract void stop();
 
     /**
      * Sets the logger that this engine uses.
