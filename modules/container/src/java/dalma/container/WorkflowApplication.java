@@ -330,7 +330,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         model = null;
         state = UNLOADED;
 
-        logger.info("Stopped "+name);
+        logger.info("Unloaded "+name);
     }
 
     /**
