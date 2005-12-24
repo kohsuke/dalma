@@ -11,6 +11,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Map;
+import java.util.Date;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -49,6 +50,15 @@ public class WWorkflow implements UIObject {
     public String getConversationSize() {
         Engine engine = core.getEngine();
         return engine!=null ? String.valueOf(engine.getConversationsSize()) : "N/A";
+    }
+
+    public String getLastActiveTime() {
+        Engine engine = core.getEngine();
+        if(engine==null)    return "N/A";
+        long t = engine.getLastActiveTime().getTime();
+        if(t==0)            return "N/A";
+
+        return Functions.getTimeSpanString(System.currentTimeMillis()-t);
     }
 
     /**

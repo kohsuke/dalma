@@ -32,7 +32,7 @@
           ${w.conversationSize}
         </td>
         <td align="center">
-          0
+          ${w.lastActiveTime}
         </td>
         <td align="center">
           <c:choose>
