@@ -14,6 +14,7 @@
     <javaflow dstdir="target/classes" srcdir="target/classes">
       <include name="dalma/spi/port/*.class" />
       <include name="dalma/endpoints/invm/Channel.class" />
+      <include name="dalma/endpoints/timer/TimerEndPoint.class" />
     </javaflow>
 
     <javaflow dstdir="target/test-classes" srcdir="target/test-classes">
