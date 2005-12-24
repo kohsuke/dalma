@@ -10,10 +10,10 @@ import org.kohsuke.stapler.StaplerResponse;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+import java.util.List;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * {@link Container} wrapper for the web UI.

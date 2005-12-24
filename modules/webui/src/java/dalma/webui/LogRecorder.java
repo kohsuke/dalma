@@ -1,10 +1,10 @@
 package dalma.webui;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ArrayList;
 
 /**
  * {@link Handler} that simply buffers {@link LogRecord}.
