@@ -91,7 +91,11 @@ final class XmlFile {
         private final File destFile;
 
         public AtomicFileWriter(File f) throws IOException {
-            tmpFile = File.createTempFile("atomic",null,f.getParentFile());
+            try {
+                tmpFile = File.createTempFile("atomic",null,f.getParentFile());
+            } catch (IOException e) {
+                throw new IOException2("Failed to create a temp dir in "+f.getParentFile(),e);
+            }
             destFile = f;
             core = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmpFile),"UTF-8"));
         }
@@ -127,9 +131,13 @@ final class XmlFile {
     private static final class IOException2 extends IOException  {
         private final Exception cause;
 
-        public IOException2(Exception cause) {
-            super(cause.getMessage());
+        public IOException2(String msg, Exception cause) {
+            super(msg);
             this.cause = cause;
+        }
+
+        public IOException2(Exception cause) {
+            this(cause.getMessage(),cause);
         }
 
         public Throwable getCause() {
