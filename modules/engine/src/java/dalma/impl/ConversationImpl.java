@@ -117,9 +117,12 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         justCreated = true;
 
         FiberImpl f = new FiberImpl(this,target);
-        f.start();
 
+        // save needs to happen before start, or else
+        // by the time we save the conversation might be gone.
         save();
+
+        f.start();
     }
 
     private void init(EngineImpl engine,File rootDir) {
