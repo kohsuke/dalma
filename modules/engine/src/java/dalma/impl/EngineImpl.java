@@ -82,6 +82,11 @@ public final class EngineImpl extends EngineSPI implements Serializable {
     transient final Object completionLock = new Object();
 
     /**
+     * This lock is used to control "dalma.xml" access.
+     */
+    transient final Object saveLoadLock = new Object();
+
+    /**
      * True once the engine is started.
      */
     transient private boolean started;
@@ -105,10 +110,12 @@ public final class EngineImpl extends EngineSPI implements Serializable {
      * Loads the configuration from disk.
      */
     private void load() throws IOException {
-        XmlFile df = getDataFile();
-        if(df.exists()) {
-            // load data into this object
-            df.unmarshal(this);
+        synchronized(saveLoadLock) {
+            XmlFile df = getDataFile();
+            if(df.exists()) {
+                // load data into this object
+                df.unmarshal(this);
+            }
         }
     }
 
@@ -148,11 +155,13 @@ public final class EngineImpl extends EngineSPI implements Serializable {
      * into the data file.
      */
     private void save() throws IOException {
-        try {
-            SerializationContext.set(this,SerializationContext.Mode.ENGINE);
-            getDataFile().write(this);
-        } finally {
-            SerializationContext.remove();
+        synchronized(saveLoadLock) {
+            try {
+                SerializationContext.set(this,SerializationContext.Mode.ENGINE);
+                getDataFile().write(this);
+            } finally {
+                SerializationContext.remove();
+            }
         }
     }
 
