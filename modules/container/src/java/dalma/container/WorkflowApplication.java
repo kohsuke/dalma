@@ -368,6 +368,16 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
     }
 
     /**
+     * Gets the engine that's executing the workflow.
+     * <p>
+     * The engine is owned by this {@link WorkflowApplication}, so the caller shouldn't
+     * try to alter its state.
+     */
+    public Engine getEngine() {
+        return engine;
+    }
+
+    /**
      * Gets the model object that describes resources needed by this application.
      */
     public Model<?> getModel() {
