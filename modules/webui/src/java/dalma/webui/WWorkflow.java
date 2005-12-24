@@ -4,6 +4,7 @@ import dalma.container.WorkflowApplication;
 import dalma.container.WorkflowState;
 import dalma.container.FailedOperationException;
 import dalma.container.model.Model;
+import dalma.Engine;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -45,8 +46,9 @@ public class WWorkflow implements UIObject {
         return core.getModel();
     }
 
-    public int getConversationSize() {
-        return core.getEngine().getConversations().size();
+    public String getConversationSize() {
+        Engine engine = core.getEngine();
+        return engine!=null ? String.valueOf(engine.getConversationsSize()) : "N/A";
     }
 
     /**
