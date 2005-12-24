@@ -10,6 +10,8 @@ import dalma.spi.FiberSPI;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * EndPoint that waits for some time to pass.
@@ -23,7 +25,12 @@ import java.util.TimerTask;
  */
 public class TimerEndPoint extends EndPointImpl {
 
-    private static final Timer timer = new Timer(true);
+    private Timer timer;
+
+    /**
+     * Timers that were queued while the endpoint is stopped.
+     */
+    private List<TimerCondition> queuedConditions = new ArrayList<TimerCondition>();
 
     public TimerEndPoint() {
         super(TimerEndPoint.class.getName());
@@ -49,7 +56,12 @@ public class TimerEndPoint extends EndPointImpl {
         public void onParked() {
             assert task==null;
             task = new TimerTaskImpl();
-            timer.schedule(task,dt);
+            synchronized(TimerEndPoint.this) {
+                if(timer==null)
+                    queuedConditions.add(this);
+                else
+                    timer.schedule(task,dt);
+            }
         }
 
         public void onLoad() {
@@ -69,12 +81,16 @@ public class TimerEndPoint extends EndPointImpl {
         }
     }
 
-    protected void start() {
-        // nothing to do
+    protected synchronized void start() {
+        timer = new Timer(true);
+        for (TimerCondition tc : queuedConditions)
+            timer.schedule(tc.task,tc.dt);
+        queuedConditions.clear();
     }
 
-    protected void stop() {
+    protected synchronized void stop() {
         timer.cancel();
+        timer = null;
     }
 
     /**
