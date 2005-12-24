@@ -29,7 +29,7 @@
           </a>
         </td>
         <td align="center">
-          0
+          ${w.conversationSize}
         </td>
         <td align="center">
           0
@@ -42,7 +42,7 @@
             </c:when>
             <c:otherwise>
               <img src="${rootURL}/images/redFlag.png" />
-              <span style="color: #008000">Stopped</span>
+              <span style="color: #800000">Stopped</span>
             </c:otherwise>
           </c:choose>
         </td>
