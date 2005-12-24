@@ -38,6 +38,17 @@ import java.util.logging.Logger;
  * <p>
  * The monitor of this object is used to notify the completion of a conversation.
  *
+ * <h2>Persisting Conversation</h2>
+ * <p>
+ * There are two different modes of 'persistence' for this object (and fibers.)
+ * One is called hydration/dehydration, which is when we just persist the execution state
+ * of fibers to the disk to save memory usage (and to improve fault tolerance.)
+ * <p>
+ * The other is called save/load, which is when we persist the conversation
+ * object itself, but excluding the execution state of user code, to prepare
+ * for the engine to go down.
+ *
+ *
  * @author Kohsuke Kawaguchi
  */
 public final class ConversationImpl extends ConversationSPI implements Serializable {
@@ -117,12 +128,12 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         justCreated = true;
         engine.conversations.put(id,this);
 
-        FiberImpl f = new FiberImpl(this,target);
-
         // save needs to happen before start, or else
         // by the time we save the conversation might be gone.
         save();
 
+        // start the first fiber in this conversation
+        FiberImpl f = new FiberImpl(this,target);
         f.start();
     }
 

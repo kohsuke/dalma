@@ -67,7 +67,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     /**
      * The {@link PersistedData} that includes continuation to be executed.
      */
-    private PersistedData<T> execution;
+    private transient PersistedData<T> execution;
 
     /**
      * The current state of the {@link FiberImpl}.
@@ -319,11 +319,9 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
      */
     /*package*/ void onLoad() {
         assert execution==null;
-        if(state== FiberState.CREATED)
-            start();
-        else
         if(cond!=null)
             cond.onLoad();
+        assert execution==null;
         assert state==FiberState.WAITING || state==FiberState.RUNNABLE || state== FiberState.ENDED;
     }
 
