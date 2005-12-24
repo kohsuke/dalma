@@ -365,7 +365,9 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
         }
 
         private Object readResolve() {
-            return conv.getFiber(id);
+            FiberImpl fiber = conv.getFiber(id);
+            assert fiber!=null;
+            return fiber;
         }
 
         private static final long serialVersionUID = 1L;

@@ -390,7 +390,9 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             // we can fix this by allowing Conversation object itself to be persisted
             // (and then readResolve may replace if it's still running),
             // but how do we do about the classLoader field?
-            return SerializationContext.get().engine.getConversation(id);
+            ConversationImpl conv = SerializationContext.get().engine.getConversation(id);
+            assert conv!=null;
+            return conv;
         }
 
         private static final long serialVersionUID = 1L;
