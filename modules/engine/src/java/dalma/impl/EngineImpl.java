@@ -369,9 +369,7 @@ public final class EngineImpl extends EngineSPI implements Serializable {
 
     public ConversationImpl createConversation(Runnable target) throws IOException {
         makeSureStarted();
-        ConversationImpl conv = new ConversationImpl(this,target);
-        conversations.put(conv.id,conv);
-        return conv;
+        return new ConversationImpl(this,target);
     }
 
 //    public void save(OutputStream os) throws IOException {

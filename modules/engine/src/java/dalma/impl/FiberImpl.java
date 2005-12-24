@@ -294,7 +294,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
 
     // TODO: think about synchronization between hydration and activation
     /**
-     * Called when the state of the {@link FiberImpl} is being moved to the disk.
+     * Called when the state of the {@link FiberImpl} is being moved from the disk.
      */
     /*package*/ void hydrate(PersistedData<T> c) {
         assert state!= FiberState.RUNNING;
@@ -315,15 +315,15 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     }
 
     /**
-     * Called when the conversation is restored from the disk.
+     * Called after the conversation is restored from the disk.
      */
     /*package*/ void onLoad() {
+        assert execution==null;
         if(state== FiberState.CREATED)
             start();
         else
         if(cond!=null)
             cond.onLoad();
-        assert execution==null;
         assert state==FiberState.WAITING || state==FiberState.RUNNABLE || state== FiberState.ENDED;
     }
 

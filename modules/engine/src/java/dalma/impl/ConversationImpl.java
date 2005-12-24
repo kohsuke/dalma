@@ -115,6 +115,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             throw new IOException("Unable to create "+rootDir);
 
         justCreated = true;
+        engine.conversations.put(id,this);
 
         FiberImpl f = new FiberImpl(this,target);
 
@@ -312,7 +313,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             synchronized(engine.completionLock) {
                 Map<Integer,ConversationImpl> convs = engine.conversations;
                 synchronized(convs) {
-                    convs.remove(id);
+                    ConversationImpl removed = convs.remove(id);
+                    assert removed==this;
                     if(convs.isEmpty()) {
                         engine.completionLock.notifyAll();
                     }
