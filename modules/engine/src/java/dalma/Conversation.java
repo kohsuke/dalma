@@ -6,6 +6,7 @@ package dalma;
  * @author Kohsuke Kawaguchi
  */
 public interface Conversation {
+
     /**
      * Gets the current state of the conversation.
      */
@@ -14,12 +15,12 @@ public interface Conversation {
     /**
      * Gets the engine to which this conversation belongs to.
      */
-    public Engine getEngine();
+    Engine getEngine();
 
     /**
      * Kills a running conversation.
      */
-    public void remove();
+    void remove();
 
     /**
      * Waits for the completion of this conversation.
@@ -39,5 +40,5 @@ public interface Conversation {
      *      If this thread is interrupted while waiting.
      */
     // we don't need exit code for the same reason Thread doesn't need one.
-    public void join() throws InterruptedException;
+    void join() throws InterruptedException;
 }
