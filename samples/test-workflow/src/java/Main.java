@@ -14,7 +14,11 @@ public class Main extends Program {
     public String y;
 
     public void main(Engine engine) throws Exception {
-        for( int i=0; i<10; i++ )
-            System.out.println("Running");
+        System.out.println("Running");
+        if(engine.getConversations().isEmpty()) {
+            System.out.println("Started conversation");
+            for( int i=0; i<10; i++ )
+                engine.createConversation(new MyConversation());
+        }
     }
 }
