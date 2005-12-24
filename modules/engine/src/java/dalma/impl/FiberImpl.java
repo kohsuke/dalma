@@ -15,6 +15,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Smallest execution unit inside a {@link Conversation}.
+ *
+ * <h3>Persistence and Fiber</h3>
+ * <p>
+ * Fiber can be persisted when it's {@link FiberState#CREATED}
+ * and {@link FiberState#WAITING}.
+ *
  * @author Kohsuke Kawaguchi
  */
 public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements Serializable, ConditionListener {
@@ -311,6 +318,9 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
      * Called when the conversation is restored from the disk.
      */
     /*package*/ void onLoad() {
+        if(state== FiberState.CREATED)
+            start();
+        else
         if(cond!=null)
             cond.onLoad();
         assert execution==null;
