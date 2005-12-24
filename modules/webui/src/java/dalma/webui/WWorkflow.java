@@ -45,6 +45,10 @@ public class WWorkflow implements UIObject {
         return core.getModel();
     }
 
+    public int getConversationSize() {
+        return core.getEngine().getConversations().size();
+    }
+
     /**
      * Has to be named as "get" to make JSTL happy. Ugly.
      */
