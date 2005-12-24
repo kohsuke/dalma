@@ -5,5 +5,5 @@ import dalma.Engine;
 /**
  * @author Kohsuke Kawaguchi
  */
-public interface EngineSPI extends Engine {
+public abstract class EngineSPI extends Engine {
 }

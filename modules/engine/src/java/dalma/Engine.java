@@ -1,5 +1,8 @@
 package dalma;
 
+import dalma.impl.FiberImpl;
+import dalma.impl.EngineImpl;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -14,7 +17,7 @@ import java.util.logging.Logger;
  *
  * @author Kohsuke Kawaguchi
  */
-public interface Engine {
+public abstract class Engine {
     // at the engine level, it makes sense to separate class loading from the engine.
 //    /**
 //     * Creates a new {@link Workflow} by using the specified jar files
@@ -36,7 +39,7 @@ public interface Engine {
     // wouldn't it be nice if we can start a new workflow by simply
     // passing an instance of a Program?
 
-    Conversation createConversation( Runnable target ) throws IOException;
+    public abstract Conversation createConversation( Runnable target ) throws IOException;
 
     /**
      * Returns the list of {@link Conversation}s in this engine.
@@ -45,7 +48,7 @@ public interface Engine {
      *      always return non-null collection. The returned object
      *      is a snapshot of the conversations.
      */
-    Collection<Conversation> getConversations();
+    public abstract Collection<Conversation> getConversations();
     // snapshot, because of the synchronization issue
 
     /**
@@ -54,7 +57,7 @@ public interface Engine {
      * @return
      *      always retrun non-null (but possibly empty) collection.
      */
-    Map<String,EndPoint> getEndPoints();
+    public abstract Map<String,EndPoint> getEndPoints();
 
     /**
      * Gets the {@link EndPoint} of the given name.
@@ -62,7 +65,7 @@ public interface Engine {
      * @return
      *      null if no such {@link EndPoint} is found.
      */
-    EndPoint getEndPoint(String name);
+    public abstract EndPoint getEndPoint(String name);
 
     /**
      * Adds a new {@link EndPoint} to this engine.
@@ -72,7 +75,7 @@ public interface Engine {
      * @throws IllegalStateException
      *      if the engine is already started.
      */
-    void addEndPoint(EndPoint endPoint);
+    public abstract void addEndPoint(EndPoint endPoint);
 
     /**
      * Creates and adds a new {@link EndPoint} to this engine.
@@ -96,7 +99,7 @@ public interface Engine {
      * @return
      *      the endpoint created from the connection string.
      */
-    EndPoint addEndPoint(String endPointName, String endpointURL) throws ParseException;
+    public abstract EndPoint addEndPoint(String endPointName, String endpointURL) throws ParseException;
 
     /**
      * Adds multiple {@link EndPoint}s to this engine at once.
@@ -124,7 +127,7 @@ public interface Engine {
      * @throws IllegalStateException
      *      if the engine is already started.
      */
-    Map<String,EndPoint> addEndPoints(Properties endpointURLs) throws ParseException;
+    public abstract Map<String,EndPoint> addEndPoints(Properties endpointURLs) throws ParseException;
 
     /**
      * Configures an engine by using <a href="http://jakarta.apache.org/bsf/">Bean Scripting Framework</a>.
@@ -156,7 +159,7 @@ public interface Engine {
      *      The file that contains the script to be run. Must not be null.
      * @see http://dalma.dev.java.net/nonav/maven/configure.html#Configuring_with_Bean_Scripting_Framework
      */
-    void configureWithBSF(File scriptFile) throws IOException;
+    public abstract void configureWithBSF(File scriptFile) throws IOException;
 
     /**
      * Starts the engine and activates all the {@link EndPoint}s.
@@ -172,7 +175,7 @@ public interface Engine {
      * @throws IllegalStateException
      *      if the engin has already been started.
      */
-    void start();
+    public abstract void start();
 
     /**
      * Stops the engine and releases all the resources it acquired.
@@ -184,7 +187,7 @@ public interface Engine {
      * @throws InterruptedException
      *      if the calling thread is interrupted while waiting for the completion. 
      */
-    void stop() throws InterruptedException;
+    public abstract void stop() throws InterruptedException;
 
     /**
      * Sets the logger that this engine uses.
@@ -192,7 +195,7 @@ public interface Engine {
      * @param logger
      *      if null, the engine will stop logging.
      */
-    void setLogger(Logger logger);
+    public abstract void setLogger(Logger logger);
 
     /**
      * Waits until all the conversation in the engine exits.
@@ -204,7 +207,7 @@ public interface Engine {
      * Just because there's no conversation in the engine doesn't mean
      * that the engine is going to shutdown.
      */
-    void waitForCompletion() throws InterruptedException;
+    public abstract void waitForCompletion() throws InterruptedException;
 
     /**
      * Gets the {@link ErrorHandler}.
@@ -213,7 +216,7 @@ public interface Engine {
      * invocation. The property is initially null, in which case the engine uses
      * {@link ErrorHandler#DEFAULT}.
      */
-    ErrorHandler getErrorHandler();
+    public abstract ErrorHandler getErrorHandler();
 
     /**
      * Sets the {@link ErrorHandler}.
@@ -223,5 +226,19 @@ public interface Engine {
      *
      * @see ErrorHandler
      */
-    void setErrorHandler(ErrorHandler errorHandler);
+    public abstract void setErrorHandler(ErrorHandler errorHandler);
+
+    /**
+     * Returns the {@link Engine} in which the current thread is executing.
+     *
+     * <p>
+     * This mehtod can be only called from within the workflow conversation,
+     * to access the surrounding {@link Engine}.
+     *
+     * @throws IllegalStateException
+     *      if the calling thread isn't a workflow thread.
+     */
+    public static Engine currentEngine() {
+        return FiberImpl.currentFiber(true).getOwner().getEngine();
+    }
 }

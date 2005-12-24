@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 /**
  * @author Kohsuke Kawaguchi
  */
-public final class EngineImpl implements EngineSPI, Serializable {
+public final class EngineImpl extends EngineSPI implements Serializable {
 
     /**
      * Logger that logs events.
