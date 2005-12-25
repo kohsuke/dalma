@@ -1,14 +1,12 @@
 package dalma;
 
-import dalma.impl.FiberImpl;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Date;
 import java.util.logging.Logger;
 
 
@@ -269,18 +267,4 @@ public abstract class Engine {
      * @see ErrorHandler
      */
     public abstract void setErrorHandler(ErrorHandler errorHandler);
-
-    /**
-     * Returns the {@link Engine} in which the current thread is executing.
-     *
-     * <p>
-     * This mehtod can be only called from within the workflow conversation,
-     * to access the surrounding {@link Engine}.
-     *
-     * @throws IllegalStateException
-     *      if the calling thread isn't a workflow thread.
-     */
-    public static Engine currentEngine() {
-        return FiberImpl.currentFiber(true).getOwner().getEngine();
-    }
 }
