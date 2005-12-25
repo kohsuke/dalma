@@ -29,11 +29,9 @@ James integration
 
 Container Version
 ==============
-- serialization of conversation and fibers need more thoughts,
-  especially wrt the creation state. after it's created, it's saved without
-  dehydrated, causing an assertion failure.
+- DESIGN: record of completed conversations. should it be inside engine, or at container,
+  or at webui level?
 
-- make the log view expandable to show details (stack trace) of error.
 - the container should remember which application is STOPPED and which is RUNNING.
   newly installed app should start from STOPPED state since it needs to be configured.
 
