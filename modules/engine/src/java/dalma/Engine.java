@@ -267,4 +267,22 @@ public abstract class Engine {
      * @see ErrorHandler
      */
     public abstract void setErrorHandler(ErrorHandler errorHandler);
+
+    /**
+     * Adds an {@link EngineListener} to this engine.
+     *
+     * @param listener
+     *      must not be null.
+     */
+    public abstract void addListener( EngineListener listener );
+
+    /**
+     * Removes an existing {@link EngineListener} to this engine.
+     *
+     * @param listener
+     *      must not be null.
+     * @throws IllegalArgumentException
+     *      if the given listener was not registered to this engine.
+     */
+    public abstract void removeListener( EngineListener listener );
 }

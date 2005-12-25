@@ -7,6 +7,7 @@ import dalma.Engine;
 import dalma.ErrorHandler;
 import dalma.Executor;
 import dalma.Workflow;
+import dalma.EngineListener;
 import dalma.endpoints.timer.TimerEndPoint;
 import dalma.spi.EngineSPI;
 import org.apache.bsf.BSFManager;
@@ -33,6 +34,11 @@ import java.util.logging.Level;
 
 /**
  * {@link Engine} implementation.
+ *
+ * <h3>Persistence of Engine</h3>
+ * <p>
+ * Engine object is serialized to persist the state of the engine itself
+ * across JVM sessions. 
  *
  * @author Kohsuke Kawaguchi
  */
@@ -91,6 +97,8 @@ public final class EngineImpl extends EngineSPI implements Serializable {
      * This lock is used to control "dalma.xml" access.
      */
     transient final Object saveLoadLock = new Object();
+
+    transient final EngineListenerSet listeners = new EngineListenerSet();
 
     /**
      * True once the engine is started.
@@ -232,6 +240,14 @@ public final class EngineImpl extends EngineSPI implements Serializable {
 
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
+    }
+
+    public void addListener(EngineListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(EngineListener listener) {
+        listeners.remove(listener);
     }
 
     public synchronized Collection<Conversation> getConversations() {
