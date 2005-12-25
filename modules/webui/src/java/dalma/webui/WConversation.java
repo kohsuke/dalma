@@ -21,8 +21,20 @@ public class WConversation extends UIObject {
         this.core = core;
     }
 
+    public WWorkflow getParent() {
+        return parent;
+    }
+
+    public int getId() {
+        return core.getId();
+    }
+
     public String getDisplayName() {
         return "#"+core.getId();
+    }
+
+    public String getTitle() {
+        return core.getTitle();
     }
 
     public String getUrl() {
