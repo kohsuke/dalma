@@ -105,6 +105,7 @@
     </a:copy>
     <a:copy todir="${out}">
       <a:fileset dir=".">
+        <a:include name="samples/*/project.xml" />
         <a:include name="samples/*/*.txt" />
         <a:include name="samples/*/src/**/*" />
       </a:fileset>
@@ -125,6 +126,7 @@
     <a:mkdir dir="target/src-dist" />
     <a:copy todir="target/src-dir">
       <a:fileset dir="${basedir}">
+        <a:exclude name="target/**/*" />
         <a:include name="**/project.xml" />
         <a:include name="**/maven.xml" />
         <a:include name="**/project.properties" />
@@ -144,7 +146,18 @@
   <preGoal name="javanet:dist">
     <j:set var="maven.javanet.release.folder" value="/nightly" />
     <j:set var="maven.final.name" value="dalma-${pom.currentVersion}" />
+    <attainGoal name="dist:container" />
   </preGoal>
+  
+  <postGoal name="javanet:dist">
+    <!-- upload container files, too -->
+    <javaNetUpload projectName="${maven.javanet.project}"
+      toFile="${maven.javanet.release.folder}/dalmacon-${pom.currentVersion}.zip"
+      fromFile="target/distributions/dalmacon-${pom.currentVersion}.zip"
+      overwrite="yes"
+      fileStatus="stable"
+    />
+  </postGoal>
 
   <goal name="multiproject:clean">
     <attainGoal name="multiproject:projects-init" />

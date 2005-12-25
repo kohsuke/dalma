@@ -17,10 +17,12 @@
       <item name="Engine (core)"                href="/dalma/index.html"/>
       <item name="Container" collapse="true"    href="/container/index.html">
         <item name="Directory structure"        href="/container/directories.html" />
+        <item name="JMX support"                href="/container/jmx.html" />
       </item>
       <item name="E-mail endpoint"              href="/dalma-endpoint-email/index.html"/>
       <item name="JMS endpoint"                 href="/dalma-endpoint-jms/index.html"/>
       <item name="IRC endpoint"                 href="/dalma-endpoint-irc/index.html"/>
+      <item name="Maven dalma plugin"           href="/maven-dalma-plugin/index.html" />
     </menu>
 
     <menu name="Basic Concepts">
