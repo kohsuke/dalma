@@ -21,7 +21,7 @@ public class MyConversation extends Workflow {
             case 0:
                 // reproduce
                 try {
-                    Engine.currentEngine().createConversation(new MyConversation());
+                    getOwner().getEngine().createConversation(new MyConversation());
                 } catch (IOException e) {
                     e.printStackTrace();
                     return; //hmm?
