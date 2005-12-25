@@ -8,5 +8,33 @@
   <p>
     ${it.description}
   </p>
+  <h2>Running Instances</h2>
+  <div class="dashboard">
+    <table id="projectstatus" class="pane">
+      <tr>
+        <th>&nbsp;</th>
+        <th>Title</th>
+        <th>Status</th>
+      </tr>
+      <c:forEach var="c" items="${it.conversations}">
+        <tr>
+          <!--td>
+            <img src="${rootURL}/images/box.png" />
+          </td-->
+          <td>
+            <a href="conversations/${c.id}">
+              #${c.id}
+            </a>
+          </td>
+          <td>
+            ${c.title}
+          </td>
+          <td align="center">
+            ${c.state}
+          </td>
+        </tr>
+      </c:forEach>
+    </table>
+  </div>
 </l:main-panel>
 <t:footer/>

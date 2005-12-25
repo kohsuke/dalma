@@ -1,6 +1,7 @@
 package dalma.webui;
 
 import dalma.Engine;
+import dalma.Conversation;
 import dalma.container.FailedOperationException;
 import dalma.container.WorkflowApplication;
 import dalma.container.WorkflowState;
@@ -11,6 +12,9 @@ import org.kohsuke.stapler.StaplerResponse;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -71,6 +75,12 @@ public class WWorkflow implements UIObject {
     public static WWorkflow wrap(WorkflowApplication app) {
         if(app==null)   return null;
         return new WWorkflow(app);
+    }
+
+    public Collection<Conversation> getConversations() {
+        Engine e = core.getEngine();
+        if(e==null) return Collections.emptyList();
+        return e.getConversations();
     }
 
     public void doStop(StaplerRequest req, StaplerResponse resp) throws IOException {
