@@ -14,4 +14,11 @@
     </function-signature>
   </function>
 
+  <function>
+    <name>getExceptionDetail</name>
+    <function-class>dalma.webui.Functions</function-class>
+    <function-signature>
+      java.lang.String getExceptionDetail(java.lang.Throwable);
+    </function-signature>
+  </function>
 </taglib>

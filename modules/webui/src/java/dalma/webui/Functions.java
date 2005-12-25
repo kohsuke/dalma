@@ -1,6 +1,8 @@
 package dalma.webui;
 
 import java.util.Date;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -8,6 +10,12 @@ import java.util.Date;
 public class Functions {
     public static Date createDate(long lt) {
         return new Date(lt);
+    }
+
+    public static String getExceptionDetail(Throwable t) {
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
     }
 
     /**

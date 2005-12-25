@@ -306,11 +306,14 @@ th.pane {
     font-weight: bold;
 }
 
-
 .log-level-SEVERE {
     color: red;
 }
 
 .log-level-WARNING {
     color: goldenrod;
+}
+
+.log-detail {
+    font-weight: normal;
 }
