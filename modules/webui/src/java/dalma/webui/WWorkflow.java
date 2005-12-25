@@ -8,7 +8,11 @@ import dalma.container.WorkflowState;
 import dalma.container.model.Model;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.apache.commons.fileupload.DiskFileUpload;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
 
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
@@ -19,7 +23,7 @@ import java.util.Collections;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class WWorkflow implements UIObject {
+public class WWorkflow extends UIObject {
     private final WorkflowApplication core;
 
     public WWorkflow(WorkflowApplication core) {
@@ -113,6 +117,30 @@ public class WWorkflow implements UIObject {
             props.put(name,e.getValue()[0]);
         }
         core.saveConfigProperties(props);
+
+        resp.sendRedirect(".");
+    }
+
+    public void doSubmitNewBinary(StaplerRequest req, StaplerResponse resp ) throws IOException, ServletException {
+        byte[] contents = null;
+
+        try {
+            DiskFileUpload fu = new DiskFileUpload();
+            for( FileItem fi : (List<FileItem>)fu.parseRequest(req) ) {
+                if(fi.getFieldName().equals("file"))
+                contents = fi.get();
+            }
+        } catch (FileUploadException e) {
+            sendError(req, e.getMessage(), resp);
+            return;
+        }
+
+        if(contents == null || contents.length==0) {
+            sendError(req, "form data incomplete", resp);
+            return;
+        }
+
+        core.owner.deploy(core.getName(),contents);
 
         resp.sendRedirect(".");
     }

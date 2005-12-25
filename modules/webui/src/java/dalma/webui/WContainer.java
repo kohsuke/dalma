@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author Kohsuke Kawaguchi
  */
-public class WContainer implements UIObject {
+public class WContainer extends UIObject {
     public final Container core;
 
     private final LogRecorder logRecorder;
@@ -85,11 +85,6 @@ public class WContainer implements UIObject {
 
     public WWorkflow getWorkflow(String name) {
         return WWorkflow.wrap(core.getApplication(name));
-    }
-
-    private void sendError(StaplerRequest req, String msg, StaplerResponse resp) throws ServletException, IOException {
-        req.setAttribute("message",msg);
-        resp.forward(this,"error",req);
     }
 
     public void shutdown() {

@@ -1,7 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="st" uri="http://stapler.dev.java.net/" %>
 <%@ taglib prefix="l" uri="http://scotland.dev.java.net/layout" %>
-<jsp:include page="sidepanel.jsp" />
+<st:include page="sidepanel.jsp" />
 <l:main-panel>
   <div class="error">
     ${message}

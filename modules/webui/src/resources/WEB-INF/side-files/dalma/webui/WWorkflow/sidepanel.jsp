@@ -17,6 +17,7 @@
       </c:otherwise>
     </c:choose>
     <l:task icon="images/wrench.gif" href="configure" title="Configure" />
+    <l:task icon="images/box.png"    href="newBinary" title="Redeploy" />
     <l:task icon="images/delete.png" href="delete" title="Uninstall" />
   </l:tasks>
 </l:side-panel>
