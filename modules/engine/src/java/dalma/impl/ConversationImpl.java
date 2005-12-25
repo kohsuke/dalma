@@ -164,11 +164,14 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         this.workflow = target;
         workflow.setOwner(this);
 
-        // save needs to happen before start, or else
-        // by the time we save the conversation might be gone.
+        // create a persisted data store for this conversation first
         save();
 
-        // start the first fiber in this conversation
+        engine.listeners.onConversationStarted(this);
+
+        // start the first fiber in this conversation.
+        // as soon as we call 'start', conversation may end in any minute,
+        // so this has to be the last
         FiberImpl f = new FiberImpl(this,target);
         f.start();
     }
@@ -364,7 +367,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     }
 
     public void remove() {
-        // this lock is to allow multiple concurrent invocations of the remove method
+        // this lock is to handle multiple concurrent invocations of the remove method
         synchronized(removeLock) {
             // the first thing we have to do is to wait for all the executing fibers
             // to complete. when we are doing that, we don't want new fibers to
@@ -380,6 +383,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
                 // can't process it now. later.
                 Thread.currentThread().interrupt();
             }
+
+            engine.listeners.onConversationCompleted(this);
 
             synchronized(engine.completionLock) {
                 Map<Integer,ConversationImpl> convs = engine.conversations;
