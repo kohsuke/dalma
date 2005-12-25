@@ -198,7 +198,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
         try {
             program.init(engine);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // faled
             throw new FailedOperationException(mainClass.getName()+".init() method reported an exception",e);
         }
@@ -207,7 +207,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
         try {
             program.main(engine);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // faled
             throw new FailedOperationException(mainClass.getName()+".main() method reported an exception",e);
         }
