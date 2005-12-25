@@ -74,7 +74,7 @@ public abstract class WorkflowTestProgram extends TestCase {
         constructor.setAccessible(true);
         Runnable r = (Runnable)constructor.newInstance(args);
 
-        return engine.createConversation(r);
+        return engine.createConversation2(r);
     }
 
     private Constructor findConstructor(Class c, int length) throws NoSuchMethodException {

@@ -71,7 +71,7 @@ public class IRCDemo extends Launcher {
                     text = text.substring(5);
                     try {
                         ConversationSPI.currentConversation().getEngine()
-                            .createConversation(new ChannelConversationImpl(iep,iep.getChannel(text)));
+                            .createConversation2(new ChannelConversationImpl(iep,iep.getChannel(text)));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

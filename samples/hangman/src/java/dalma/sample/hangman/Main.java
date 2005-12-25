@@ -39,7 +39,7 @@ public class Main {
              */
             public void onNewMail(MimeMessage mail) throws Exception {
                 System.out.println("Starting a new game for "+mail.getFrom()[0]);
-                engine.createConversation(new HangmanWorkflow(eep,mail));
+                engine.createConversation2(new HangmanWorkflow(eep,mail));
             }
         });
 

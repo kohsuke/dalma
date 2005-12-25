@@ -72,7 +72,7 @@ public abstract class Launcher {
         Class clazz = classLoader.loadClass(c.getName());
         Runnable r = (Runnable)findConstructor(clazz,args.length).newInstance(args);
 
-        return engine.createConversation(r);
+        return engine.createConversation2(r);
     }
 
     private Constructor findConstructor(Class c, int length) throws NoSuchMethodException {
