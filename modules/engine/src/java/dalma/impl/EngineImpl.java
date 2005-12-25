@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.Date;
+import java.util.Comparator;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -235,7 +236,9 @@ public final class EngineImpl extends EngineSPI implements Serializable {
 
     public synchronized Collection<Conversation> getConversations() {
         makeSureStarted();
-        return new ArrayList<Conversation>(conversations.values());
+        ArrayList<Conversation> convs = new ArrayList<Conversation>(conversations.values());
+        Collections.sort(convs,ID_COMPARATOR);
+        return convs;
     }
 
     public int getConversationsSize() {
@@ -404,5 +407,12 @@ public final class EngineImpl extends EngineSPI implements Serializable {
             return SerializationContext.get().engine;
         }
     }
+
     private static final EngineMoniker MONIKER = new EngineMoniker();
+
+    private static final Comparator<Conversation> ID_COMPARATOR = new Comparator<Conversation>() {
+        public int compare(Conversation lhs, Conversation rhs) {
+            return lhs.getId()-rhs.getId();
+        }
+    };
 }
