@@ -34,7 +34,7 @@ public class MyConversation extends Workflow {
                 // die
                 return;
             }
-            TimerEndPoint.waitFor(3, SECONDS);
+            sleep(3, SECONDS);
         }
     }
 
