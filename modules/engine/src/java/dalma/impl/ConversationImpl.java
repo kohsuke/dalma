@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.LogRecord;
@@ -128,6 +129,12 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     private String title;
 
     /**
+     * The timestamp when this conversation is created.
+     * @see System#currentTimeMillis()
+     */
+    private final long startDate;
+
+    /**
      * This logger is connected to {@link #masterLogger}, and also to the log recorder
      * of this conversation.
      */
@@ -141,6 +148,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      */
     ConversationImpl(EngineImpl engine, Workflow target) throws IOException {
         id = engine.generateUniqueId();
+        startDate = System.currentTimeMillis();
 
         File logDir = new File(rootDir,"log");
         logDir.mkdirs();
@@ -441,6 +449,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
     public String getTitle() {
         return title;
+    }
+
+    public Date getStartDate() {
+        return new Date(startDate);
     }
 
     private Object writeReplace() {

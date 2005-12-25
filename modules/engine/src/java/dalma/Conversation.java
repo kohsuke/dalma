@@ -2,6 +2,7 @@ package dalma;
 
 import java.util.logging.LogRecord;
 import java.util.List;
+import java.util.Date;
 
 /**
  * Represents a running instance of a workflow.
@@ -83,4 +84,12 @@ public interface Conversation {
      *      any String. Possibly null.
      */
     String getTitle();
+
+    /**
+     * Returns the time when this conversation is created.
+     *
+     * @return
+     *      always non-null.
+     */
+    Date getStartDate();
 }

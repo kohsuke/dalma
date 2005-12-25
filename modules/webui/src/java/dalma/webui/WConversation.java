@@ -2,6 +2,8 @@ package dalma.webui;
 
 import dalma.Conversation;
 
+import java.util.Date;
+
 /**
  * @author Kohsuke Kawaguchi
  */
@@ -25,5 +27,9 @@ public class WConversation extends UIObject {
 
     public String getUrl() {
         return parent.getUrl()+"conversation/"+core.getId()+'/';
+    }
+
+    public Date getStartDate() {
+        return core.getStartDate();
     }
 }
