@@ -11,6 +11,12 @@ import java.util.List;
 public interface Conversation {
 
     /**
+     * Gets a unique number that identifies this conversation among
+     * other conversations in the same engine.
+     */
+    int getId();
+
+    /**
      * Gets the current state of the conversation.
      */
     ConversationState getState();

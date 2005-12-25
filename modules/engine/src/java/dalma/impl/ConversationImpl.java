@@ -140,13 +140,15 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      */
     ConversationImpl(EngineImpl engine, Workflow target) throws IOException {
         id = engine.generateUniqueId();
-        init(engine,new File(engine.getConversationsDir(),String.valueOf(id)));
-        if(!rootDir.mkdirs())
-            throw new IOException("Unable to create "+rootDir);
 
         File logDir = new File(rootDir,"log");
         logDir.mkdirs();
         logRecorder = new LogRecorder(logDir);
+
+        init(engine,new File(engine.getConversationsDir(),String.valueOf(id)));
+        if(!rootDir.mkdirs())
+            throw new IOException("Unable to create "+rootDir);
+
 
         justCreated = true;
         engine.conversations.put(id,this);
@@ -213,6 +215,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         } finally {
             SerializationContext.remove();
         }
+    }
+
+    public int getId() {
+        return id;
     }
 
     /**
