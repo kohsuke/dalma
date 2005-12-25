@@ -6,6 +6,7 @@ import dalma.EndPoint;
 import dalma.Engine;
 import dalma.ErrorHandler;
 import dalma.Executor;
+import dalma.Workflow;
 import dalma.endpoints.timer.TimerEndPoint;
 import dalma.spi.EngineSPI;
 import org.apache.bsf.BSFManager;
@@ -368,8 +369,12 @@ public final class EngineImpl extends EngineSPI implements Serializable {
     }
 
     public ConversationImpl createConversation(Runnable target) throws IOException {
+        return createConversation(new RunnableWorkflowImpl(target));
+    }
+
+    public ConversationImpl createConversation(Workflow workflow) throws IOException {
         makeSureStarted();
-        return new ConversationImpl(this,target);
+        return new ConversationImpl(this,workflow);
     }
 
 //    public void save(OutputStream os) throws IOException {

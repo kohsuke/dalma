@@ -39,7 +39,9 @@ public abstract class Engine {
     // wouldn't it be nice if we can start a new workflow by simply
     // passing an instance of a Program?
 
-    public abstract Conversation createConversation( Runnable target ) throws IOException;
+    public abstract Conversation createConversation( Runnable workflow ) throws IOException;
+
+    public abstract Conversation createConversation( Workflow workflow ) throws IOException;
 
     /**
      * Returns the list of {@link Conversation}s in this engine.

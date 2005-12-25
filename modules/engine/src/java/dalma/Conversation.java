@@ -1,5 +1,8 @@
 package dalma;
 
+import java.util.logging.LogRecord;
+import java.util.List;
+
 /**
  * Represents a running instance of a workflow.
  *
@@ -18,9 +21,17 @@ public interface Conversation {
     Engine getEngine();
 
     /**
-     * Kills a running conversation.
+     * Kills a conversation forcibly, even if it's running.
      */
     void remove();
+
+    /**
+     * Gets the log that this conversation left.
+     *
+     * <p>
+     *
+     */
+    List<LogRecord> getLog();
 
     /**
      * Waits for the completion of this conversation.
@@ -41,4 +52,29 @@ public interface Conversation {
      */
     // we don't need exit code for the same reason Thread doesn't need one.
     void join() throws InterruptedException;
+
+    /**
+     * Sets the title of this conversation.
+     *
+     * <p>
+     * The title of a conversation is most often set by
+     * {@link Workflow#setTitle(String)} so that a running
+     * workflow program can report a simple "current status"
+     * to the external environment (such as the web UI.)
+     *
+     * @see #getTitle
+     */
+    void setTitle(String title);
+
+    /**
+     * Gets the title of this conversation.
+     *
+     * <p>
+     * This method returns the last value set by {@link #setTitle(String)}.
+     * Initially the value is null.
+     *
+     * @return
+     *      any String. Possibly null.
+     */
+    String getTitle();
 }

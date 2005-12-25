@@ -5,6 +5,7 @@ import dalma.ConversationDeath;
 import dalma.ConversationState;
 import dalma.Fiber;
 import dalma.FiberState;
+import dalma.Workflow;
 import dalma.spi.ConversationSPI;
 import org.apache.commons.javaflow.Continuation;
 
@@ -28,6 +29,7 @@ import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.LogRecord;
 
 /**
  * Represents a running conversation.
@@ -77,6 +79,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      */
     private transient /*final*/ File rootDir;
 
+    private final LogRecorder logRecorder;
+
     /**
      * {@link GeneratorImpl}s that belong to this conversation.
      */
@@ -114,19 +118,40 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      */
     final int id;
 
-    private static final Logger logger = Logger.getLogger(ConversationImpl.class.getName());
+    /**
+     * Represents the inner shell of this conversation.
+     * Null when this conversation is dehydrated.
+     */
+    private transient Workflow workflow;
+
+    private String title;
+
+    /**
+     * This logger is connected to {@link #masterLogger}, and also to the log recorder
+     * of this conversation.
+     */
+    private Logger logger;
+
+    private static final Logger masterLogger = Logger.getLogger(ConversationImpl.class.getName());
+
 
     /**
      * Creates a new conversation that starts with the given target.
      */
-    ConversationImpl(EngineImpl engine,Runnable target) throws IOException {
+    ConversationImpl(EngineImpl engine, Workflow target) throws IOException {
         id = engine.generateUniqueId();
         init(engine,new File(engine.getConversationsDir(),String.valueOf(id)));
         if(!rootDir.mkdirs())
             throw new IOException("Unable to create "+rootDir);
 
+        File logDir = new File(rootDir,"log");
+        logDir.mkdirs();
+        logRecorder = new LogRecorder(logDir);
+
         justCreated = true;
         engine.conversations.put(id,this);
+        this.workflow = target;
+        workflow.setOwner(this);
 
         // save needs to happen before start, or else
         // by the time we save the conversation might be gone.
@@ -140,9 +165,12 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     private void init(EngineImpl engine,File rootDir) {
         this.engine = engine;
         this.rootDir = rootDir;
-        waitList = Collections.synchronizedSet(new HashSet<ConversationCondition>());
-        runningCounts = new Counter();
-        removeLock = new Object();
+        this.waitList = Collections.synchronizedSet(new HashSet<ConversationCondition>());
+        this.runningCounts = new Counter();
+        this.removeLock = new Object();
+        this.logger = Logger.getAnonymousLogger();
+        this.logger.setParent(masterLogger);
+        this.logger.addHandler(logRecorder);
     }
 
     public void addGenerator(GeneratorImpl g) {
@@ -153,6 +181,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
     public GeneratorImpl getGenerator(UUID id) {
         return generators.get(id);
+    }
+
+    public List<LogRecord> getLog() {
+        return logRecorder.getLogs();
     }
 
     /**
@@ -239,6 +271,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             List<FiberImpl.PersistedData> list;
             try {
                 list = (List<FiberImpl.PersistedData>) ois.readObject();
+                assert workflow==null;
+                workflow = (Workflow) ois.readObject();
             } finally {
                 ois.close();
             }
@@ -283,6 +317,9 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
             oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(cont)));
             oos.writeObject(state);
+            assert workflow!=null;
+            oos.writeObject(workflow);
+            workflow = null;
         } catch (IOException e) {
             throw new ConversationDeath("failed to persist the state of the conversation "+cont, e);
         } finally {
@@ -381,6 +418,14 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
                 throw new IllegalStateException("a conversation can't wait for its own completion");
             fiber.suspend(new ConversationCondition(this));
         }
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     private Object writeReplace() {
