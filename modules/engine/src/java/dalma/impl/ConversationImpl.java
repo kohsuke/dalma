@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -194,9 +195,17 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      */
     public static ConversationImpl load(EngineImpl engine, File dir) throws IOException {
         ConversationImpl conv;
+        File config = new File(dir, "conversation.xml");
+
+        if(!config.exists()) {
+            // bogus directory?
+            Util.deleteRecursive(dir);
+            throw new FileNotFoundException(config+" not found. deleting this conversation");
+        }
+
         try {
             SerializationContext.set(engine,SerializationContext.Mode.CONVERSATION);
-            conv = (ConversationImpl) new XmlFile(new File(dir,"conversation.xml")).read(engine.classLoader);
+            conv = (ConversationImpl) new XmlFile(config).read(engine.classLoader);
         } finally {
             SerializationContext.remove();
         }
