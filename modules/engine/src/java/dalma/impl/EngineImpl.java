@@ -368,7 +368,7 @@ public final class EngineImpl extends EngineSPI implements Serializable {
         return conversations.get(id);
     }
 
-    public ConversationImpl createConversation2(Runnable target) throws IOException {
+    public ConversationImpl createConversation(Runnable target) throws IOException {
         return createConversation(new RunnableWorkflowImpl(target));
     }
 
