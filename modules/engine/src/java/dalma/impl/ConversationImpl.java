@@ -130,7 +130,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      * This logger is connected to {@link #masterLogger}, and also to the log recorder
      * of this conversation.
      */
-    private Logger logger;
+    private transient Logger logger;
 
     private static final Logger masterLogger = Logger.getLogger(ConversationImpl.class.getName());
 
