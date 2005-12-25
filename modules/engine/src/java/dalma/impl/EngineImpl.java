@@ -380,15 +380,6 @@ public final class EngineImpl extends EngineSPI implements Serializable {
         return new ConversationImpl(this,workflow);
     }
 
-//    public void save(OutputStream os) throws IOException {
-//        if(!(os instanceof BufferedOutputStream))
-//            os = new BufferedOutputStream(os);
-//        // TODO: we need to make sure that none of the conversations are running
-//        ObjectOutputStream oos = new ObjectOutputStream(os);
-//        oos.writeObject(this);
-//        oos.flush();
-//    }
-
     private Object writeReplace() {
         if(SerializationContext.get().mode!=SerializationContext.Mode.ENGINE)
             // if the engine is written as a part of dehydration,
