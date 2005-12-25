@@ -18,30 +18,29 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  */
 public abstract class Engine {
-    // at the engine level, it makes sense to separate class loading from the engine.
-//    /**
-//     * Creates a new {@link Workflow} by using the specified jar files
-//     * as classpath.
-//     */
-//    Workflow createWorkflow( String entryPointClassName, URL[] classpath );
-//
-//    /**
-//     * Creates a new {@link Workflow} by using the specified entry
-//     * point class that derives from {@link Program} interface.
-//     *
-//     * <p>
-//     * This is for advanced use cases where the caller is responsible
-//     * for the javaflow bytecode enhancement of the classes.
-//     */
-//    Workflow createWorkflow( Class entryPoint );
-
-    // TODO: ad-hoc conversation?
-    // wouldn't it be nice if we can start a new workflow by simply
-    // passing an instance of a Program?
-
-    public abstract Conversation createConversation( Runnable workflow ) throws IOException;
-
+    /**
+     * Creates a new managed workflow instance.
+     *
+     * <p>
+     * This method starts the given {@link Workflow} as a dalma-managed
+     * workflow instance inside this engine.
+     *
+     * @param workflow
+     *      The workflow program to be run. Must not be null.
+     * @return
+     *      A {@link Conversation} object that represents the started workflow.
+     *      Always non-null.
+     */
     public abstract Conversation createConversation( Workflow workflow ) throws IOException;
+
+    /**
+     * Creates a new managed workflow instance.
+     *
+     * <p>
+     * This method is similar to {@link #createConversation(Workflow)},
+     * but it allows you to run any {@link Runnable} as a {@link Workflow}.
+     */
+    public abstract Conversation createConversation( Runnable workflow ) throws IOException;
 
     /**
      * Gets the {@link Conversation} of a specific ID.
