@@ -44,6 +44,14 @@ public abstract class Engine {
     public abstract Conversation createConversation( Workflow workflow ) throws IOException;
 
     /**
+     * Gets the {@link Conversation} of a specific ID.
+     *
+     * @return
+     *      null if no such conversation exists.
+     */
+    public abstract Conversation getConversation(int id);
+
+    /**
      * Returns the list of {@link Conversation}s in this engine.
      *
      * @return

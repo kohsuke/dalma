@@ -366,7 +366,7 @@ public final class EngineImpl extends EngineSPI implements Serializable {
             }
     }
 
-    ConversationImpl getConversation(int id) {
+    public ConversationImpl getConversation(int id) {
         makeSureStarted();
         return conversations.get(id);
     }
