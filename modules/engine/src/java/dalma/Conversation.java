@@ -92,4 +92,12 @@ public interface Conversation {
      *      always non-null.
      */
     Date getStartDate();
+
+    /**
+     * Returns the time when this conversation is completed.
+     *
+     * @return
+     *      null if the conversation is not finished yet.
+     */
+    Date getCompletionDate();
 }

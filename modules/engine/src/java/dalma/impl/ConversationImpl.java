@@ -135,6 +135,12 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     private final long startDate;
 
     /**
+     * -1 if not completed yet.
+     * @see #getCompletionDate()
+     */
+    private long endDate = -1;
+
+    /**
      * This logger is connected to {@link #masterLogger}, and also to the log recorder
      * of this conversation.
      */
@@ -384,6 +390,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
                 Thread.currentThread().interrupt();
             }
 
+            endDate = System.currentTimeMillis();
             engine.listeners.onConversationCompleted(this);
 
             synchronized(engine.completionLock) {
@@ -458,6 +465,13 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
     public Date getStartDate() {
         return new Date(startDate);
+    }
+
+    public Date getCompletionDate() {
+        if(endDate==-1)
+            return null;
+        else
+            return new Date(endDate);
     }
 
     private Object writeReplace() {
