@@ -8,7 +8,7 @@
   <p>
     ${it.description}
   </p>
-  <h2>Running Instances</h2>
+  <h2>On-going Conversations</h2>
   <div class="dashboard">
     <table id="projectstatus" class="pane">
       <tr>
