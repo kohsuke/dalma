@@ -20,7 +20,7 @@ import java.io.Writer;
  *
  * @author Kohsuke Kawaguchi
  */
-final class XmlFile {
+public final class XmlFile {
     private final XStream xs;
     private final File file;
 
@@ -37,9 +37,16 @@ final class XmlFile {
      * Loads the contents of this file into a new object.
      */
     public Object read(ClassLoader cl) throws IOException {
+        xs.setClassLoader(cl);
+        return read();
+    }
+
+    /**
+     * Loads the contents of this file into a new object.
+     */
+    public Object read() throws IOException {
         Reader r = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
         try {
-            xs.setClassLoader(cl);
             return xs.fromXML(r);
         } catch(StreamException e) {
             throw new IOException2(e);
