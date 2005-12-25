@@ -22,7 +22,7 @@
             <img src="${rootURL}/images/box.png" />
           </td-->
           <td>
-            <a href="conversations/${c.id}">
+            <a href="conversation/${c.id}">
               #${c.id}
             </a>
           </td>

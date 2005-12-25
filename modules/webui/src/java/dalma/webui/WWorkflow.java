@@ -81,6 +81,12 @@ public class WWorkflow extends UIObject {
         return new WWorkflow(app);
     }
 
+    public WConversation getConversation(int index) {
+        Engine e = core.getEngine();
+        if(e==null) return null;
+        return WConversation.wrap(this,e.getConversation(index));
+    }
+
     public Collection<Conversation> getConversations() {
         Engine e = core.getEngine();
         if(e==null) return Collections.emptyList();
