@@ -2,6 +2,7 @@ package dalma.sample.hangman;
 
 import dalma.EndPoint;
 import dalma.TimeUnit;
+import dalma.Workflow;
 import dalma.endpoints.email.EmailEndPoint;
 
 import javax.mail.MessagingException;
@@ -21,7 +22,7 @@ import java.io.Serializable;
  *
  * @author Kohsuke Kawaguchi
  */
-public class HangmanWorkflow implements Runnable, Serializable {
+public class HangmanWorkflow extends Workflow {
     /**
      * {@link EndPoint} that we are talking to.
      */

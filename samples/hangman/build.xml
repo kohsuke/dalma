@@ -4,6 +4,8 @@
   <path id="hangman.path">
     <!-- dalma engine -->
     <fileset dir="../.." includes="*.jar" />
+    <!-- dalma container -->
+    <fileset dir="../.." includes="container/*.jar" />
     <!-- email endpoint -->
     <fileset dir="../.." includes="email/*.jar" />
   </path>
@@ -29,6 +31,17 @@
       <manifest>
         <attribute name="Class-Path" value="../../../dalma-${VERSION}.jar ../../../email/dalma-endpoint-email-${VERSION}.jar" />
         <attribute name="Main-Class" value="dalma.sample.hangman.Main" />
+      </manifest>
+      <fileset dir="target/classes" />
+      <fileset dir="src/java" />
+    </jar>
+  </target>
+
+  <target name="dar" depends="instrument"
+      description="Creates a dalma archive for the deployment into a container">
+    <jar file="target/hangman.dar">
+      <manifest>
+        <attribute name="Dalma-Main-Class" value="dalma.sample.hangman.Main" />
       </manifest>
       <fileset dir="target/classes" />
       <fileset dir="src/java" />
