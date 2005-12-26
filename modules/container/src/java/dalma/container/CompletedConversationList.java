@@ -5,11 +5,12 @@ import dalma.Conversation;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-import java.util.Observable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Observable;
+import java.util.TreeMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -46,7 +47,10 @@ final class CompletedConversationList extends Observable {
      */
     private transient boolean reloadingInProgress;
 
-    private Vector<CompletedConversation> convs;
+    /**
+     * Keyed by ID.
+     */
+    private Map<Integer,CompletedConversation> convs;
 
     /**
      * Determines when to discard a log record.
@@ -80,12 +84,12 @@ final class CompletedConversationList extends Observable {
 
         synchronized(convs) {
             // apply log policy and trim the entries
-            for (Iterator<CompletedConversation> itr = convs.iterator(); itr.hasNext();) {
-                CompletedConversation c = itr.next();
+            for (Iterator<Map.Entry<Integer,CompletedConversation>> itr = convs.entrySet().iterator(); itr.hasNext();) {
+                CompletedConversation c = itr.next().getValue();
                 if(!policy.keep(c))
                     itr.remove();
             }
-            convs.add(conv);
+            convs.put(conv.getId(),conv);
         }
 
         File dt = getDataFile(conv);
@@ -97,7 +101,7 @@ final class CompletedConversationList extends Observable {
     }
 
     public void remove(Conversation conv) {
-        if(!convs.remove(conv))
+        if(convs.remove(conv.getId())==null)
             throw new IllegalArgumentException();
         // delete from disk, too
         getDataFile(conv).delete();
@@ -107,9 +111,9 @@ final class CompletedConversationList extends Observable {
      * Gets a snapshot view of all the {@link CompletedConversation}s.
      *
      * @return
-     *      always non-null, possibly empty.
+     *      always non-null, possibly empty. Map is keyed by ID.
      */
-    public List<Conversation> getList() {
+    public Map<Integer,Conversation> getList() {
         assert convs!=null;
         if(nextUpdate<System.currentTimeMillis() && !reloadingInProgress) {
             synchronized(this) {
@@ -124,13 +128,14 @@ final class CompletedConversationList extends Observable {
             }
         }
         // return a new copy to avoid synchronization issue
-        return new ArrayList<Conversation>(convs);
+        return new HashMap<Integer,Conversation>(convs);
     }
 
 
     private final Runnable reloadTask = new Runnable() {
         public void run() {
-            Vector<CompletedConversation> convs = new Vector<CompletedConversation>();
+            Map<Integer,CompletedConversation> convs = new TreeMap<Integer,CompletedConversation>();
+            convs = Collections.synchronizedMap(convs);
 
             File[] data = dir.listFiles(new FileFilter() {
                 public boolean accept(File file) {
@@ -140,7 +145,8 @@ final class CompletedConversationList extends Observable {
             if(data!=null) {
                 for (File dt : data) {
                     try {
-                        convs.add(CompletedConversation.load(dt));
+                        CompletedConversation conv = CompletedConversation.load(dt);
+                        convs.put(conv.getId(),conv);
                     } catch (IOException e) {
                         logger.log(Level.WARNING, "Unable to load "+dt, e);
                         dt.delete();    // discard this entry to avoid repeating this error in the future

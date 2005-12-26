@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -396,9 +397,9 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      * Gets records about completed conversations.
      *
      * @return
-     *      always non-null.
+     *      always non-null. Map is keyed by ID.
      */
-    public List<Conversation> getCompletedConversations() {
+    public Map<Integer,Conversation> getCompletedConversations() {
         return ccList.getList();
     }
 
