@@ -146,7 +146,7 @@ public class WWorkflow extends UIObject {
                 contents = fi.get();
             }
         } catch (FileUploadException e) {
-            sendError(req, e.getMessage(), resp);
+            sendError(req, e, resp);
             return;
         }
 
@@ -155,8 +155,13 @@ public class WWorkflow extends UIObject {
             return;
         }
 
-        core.owner.deploy(core.getName(),contents);
-
-        resp.sendRedirect(".");
+        try {
+            core.owner.deploy(core.getName(),contents);
+            resp.sendRedirect(".");
+        } catch (FailedOperationException e) {
+            sendError(req, e, resp);
+        } catch (InterruptedException e) {
+            sendError(req, e, resp);
+        }
     }
 }

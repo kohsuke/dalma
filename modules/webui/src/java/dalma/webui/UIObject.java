@@ -34,4 +34,10 @@ public abstract class UIObject {
         req.setAttribute("message",msg);
         resp.forward(this,"error",req);
     }
+
+    protected final void sendError(StaplerRequest req, Exception e, StaplerResponse resp) throws ServletException, IOException {
+        req.setAttribute("message",e.getMessage());
+        req.setAttribute("exception",e);
+        resp.forward(this,"error",req);
+    }
 }
