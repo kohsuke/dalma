@@ -4,6 +4,8 @@ import static dalma.container.WorkflowState.*;
 import dalma.Engine;
 import dalma.Program;
 import dalma.Description;
+import dalma.EngineListener;
+import dalma.Conversation;
 import dalma.container.model.IllegalResourceException;
 import dalma.container.model.InjectionException;
 import dalma.container.model.Model;
@@ -98,10 +100,11 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      */
     private Program program;
 
-
     private ObjectName objectName;
 
     private WorkflowState state;
+
+    private final CompletedConversationList ccList;
 
     public WorkflowApplication(Container owner,File appDir) throws FailedOperationException {
         this.owner = owner;
@@ -110,6 +113,10 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         this.confFile = new File(new File(new File(owner.getHomeDir(), "conf"), "apps"), name+".properties");
         this.appDir  = appDir;
         this.state = UNLOADED;
+
+        File clog = new File(workDir, "completed-logs");
+        clog.mkdir();
+        this.ccList = new CompletedConversationList(clog);
 
         try {
             objectName = new ObjectName("dalma:container=" + ObjectName.quote(owner.getHomeDir().toString()) + ",name=" + name);
@@ -203,6 +210,12 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
             throw new FailedOperationException(mainClass.getName()+".init() method reported an exception",e);
         }
 
+        // hook things up so that completed conversations will be added to the record
+        engine.addListener(new EngineListener() {
+            public void onConversationCompleted(Conversation conv) {
+                ccList.add(conv);
+            }
+        });
         engine.start();
 
         try {
@@ -377,6 +390,16 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      */
     public Model<?> getModel() {
         return model;
+    }
+
+    /**
+     * Gets records about completed conversations.
+     *
+     * @return
+     *      always non-null.
+     */
+    public List<Conversation> getCompletedConversations() {
+        return ccList.getList();
     }
 
     /**
