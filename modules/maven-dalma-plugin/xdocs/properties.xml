@@ -20,6 +20,17 @@
               <code>${pom.artifactId}.dar</code>.</p>
           </td>
         </tr>
+        <tr>
+          <td>maven.dalma.mainclass</td>
+          <td>Yes</td>
+          <td>
+            <p>
+              The fully-qualified name of the <a href="">Program</a>-derived class,
+              which is used as the entry point of the workflow application.
+              Defaults to <code>Main</code> (a class in the root package.)
+            </p>
+          </td>
+        </tr>
       </table>
     </section>
   </body>
