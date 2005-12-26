@@ -155,14 +155,15 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     ConversationImpl(EngineImpl engine, Workflow target) throws IOException {
         id = engine.generateUniqueId();
         startDate = System.currentTimeMillis();
+        File rootDir = new File(engine.getConversationsDir(), String.valueOf(id));
+        if(!rootDir.mkdirs())
+            throw new IOException("Unable to create "+this.rootDir);
 
         File logDir = new File(rootDir,"log");
         logDir.mkdirs();
         logRecorder = new LogRecorder(logDir);
 
-        init(engine,new File(engine.getConversationsDir(),String.valueOf(id)));
-        if(!rootDir.mkdirs())
-            throw new IOException("Unable to create "+rootDir);
+        init(engine,rootDir);
 
 
         justCreated = true;
