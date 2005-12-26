@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <pomVersion>3</pomVersion>
+  <currentVersion>1.0</currentVersion>
+  <id>@ID@</id>
+  <name>@NAME@</name>
+  <package>@PACKAGE@</package>
+  <description>[TODO: explain what this workflow is about]</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>dalma</groupId>
+      <artifactId>dalma-container</artifactId>
+      <version>@DALMA_VERSION@</version>
+    </dependency>
+    <dependency>
+      <id>dalma</id>
+      <artifactId>dalma-container</artifactId>
+      <version>@DALMA_VERSION@</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/conf</directory>
+      </resource>
+    </resources>
+  </build>
+</project>

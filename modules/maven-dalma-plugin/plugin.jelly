@@ -3,7 +3,7 @@
          xmlns:util="jelly:util"
          xmlns:maven="jelly:maven"
          xmlns:define="jelly:define"
-         xmlns:javanet="javanet">
+         xmlns:g="genapp">
   
   <!-- =============================
        PLUG-IN GOALS
@@ -29,5 +29,10 @@
         <attribute name="Dalma-Main-Class" value="${maven.dalma.mainclass}" />
       </manifest>
     </jar>
+  </goal>
+
+  <goal name="dalma:genapp"
+        description="Generate a new dalma workflow application (like 'genapp' goal)">
+    <g:generate maven.genapp.template.dir="${plugin.resources}/genapp-template" />
   </goal>
 </project>
