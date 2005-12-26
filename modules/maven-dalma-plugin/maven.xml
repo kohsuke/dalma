@@ -1,5 +1,6 @@
 <project>
   <preGoal name="java:jar-resources">
+    <!-- filters project.xml in the template -->
     <filter token="DALMA_VERSION" value="${pom.currentVersion}" />
   </preGoal>
 </project>
