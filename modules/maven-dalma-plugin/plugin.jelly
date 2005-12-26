@@ -25,6 +25,9 @@
       <j:if test="${context.getVariable('maven.jar.includes') != null}">
         <setProperty name="includes" value="${maven.jar.includes}" />
       </j:if>
+      <manifest>
+        <attribute name="Dalma-Main-Class" value="${maven.dalma.mainclass}" />
+      </manifest>
     </jar>
   </goal>
 </project>
