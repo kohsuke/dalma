@@ -24,9 +24,13 @@ public interface ContainerMBean {
      * Deploys a new application.
      *
      * @param name
-     *      name of the new application. The directory of
+     *      name of the new application, such as "foo."
+     *      A directory of this name will be created.
+     *
+     * @throws InterruptedException
+     *      
      */
-    void deploy(String name,byte[] data) throws IOException;
+    void deploy(String name,byte[] data) throws InterruptedException, FailedOperationException;
 
     ///**
     // * Enables the auto-redeployment feature.

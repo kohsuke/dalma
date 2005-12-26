@@ -27,6 +27,10 @@ import java.util.Enumeration;
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -103,17 +107,39 @@ public final class Container implements ContainerMBean {
             app.stop();
     }
 
-    public synchronized void deploy(String name, byte[] data) throws IOException {
-        logger.info("Accepting application '"+name+"' from JMX");
+    public synchronized void deploy(String name, byte[] data) throws FailedOperationException, InterruptedException {
+        logger.info("Accepting application '"+name+"'");
+        // use a temp file first to hide from auto redeployer
         File tmpFile = new File(appsDir,name+".tmp");
-        OutputStream os = new FileOutputStream(tmpFile);
-        os.write(data);
-        os.close();
+        try {
+            OutputStream os = new FileOutputStream(tmpFile);
+            try {
+                os.write(data);
+            } finally {
+                os.close();
+            }
+        } catch (IOException e) {
+            throw new FailedOperationException("Failed to write to a file",e);
+        }
+
+        Future<FailedOperationException> ft = redeployer.getFuture(new File(appsDir, name));
+
         File darFile = new File(appsDir,name+".dar");
         if(darFile.exists())
             darFile.delete();
         tmpFile.renameTo(darFile);
         // the rest is up to redeployer to pick up
+
+        try {
+            FailedOperationException err = ft.get(15, TimeUnit.SECONDS);
+            if(err!=null)
+                // wrap to a new exception to get a stack trace that makes sense
+                throw new FailedOperationException("Deployment failed",err);
+        } catch (ExecutionException e) {
+            throw new AssertionError(e);    // impossible
+        } catch (TimeoutException e) {
+            throw new FailedOperationException("Operation timed out",e);
+        }
     }
 
     /**
