@@ -93,6 +93,10 @@ public class WWorkflow extends UIObject {
         return e.getConversations();
     }
 
+    public Collection<Conversation> getCompletedConversations() {
+        return core.getCompletedConversations();
+    }
+
     public void doStop(StaplerRequest req, StaplerResponse resp) throws IOException {
         core.stop();
         resp.sendRedirect(".");
