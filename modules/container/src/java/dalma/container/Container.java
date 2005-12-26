@@ -1,6 +1,7 @@
 package dalma.container;
 
 import dalma.Executor;
+import dalma.impl.Util;
 import dalma.helpers.Java5Executor;
 
 import javax.management.JMException;
@@ -15,12 +16,16 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Enumeration;
+import java.util.jar.JarFile;
+import java.util.jar.JarEntry;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,7 +42,12 @@ public final class Container implements ContainerMBean {
      * The root directory of the dalma installation. The value of DALMA_HOME.
      * We want the absolute version since we send this across JMX.
      */
-    private final File homeDir;
+    final File homeDir;
+
+    /**
+     * DALMA_HOME/apps
+     */
+    final File appsDir;
 
     /**
      * {@link Executor} that is shared by all {@link WorkflowApplication}s.
@@ -46,12 +56,13 @@ public final class Container implements ContainerMBean {
 
     final Map<String,WorkflowApplication> applications;
 
-    private Redeployer redeployer;
+    private final Redeployer redeployer;
 
     protected final MBeanServer mbeanServer;
 
     public Container(File root, Executor executor) {
         this.homeDir = root.getAbsoluteFile();
+        this.appsDir = new File(homeDir, "apps");
         this.executor = executor;
         this.mbeanServer = ManagementFactory.getPlatformMBeanServer();
         this.applications = findApps();
@@ -75,23 +86,17 @@ public final class Container implements ContainerMBean {
             logger.log(Level.WARNING,"Failed to register to JMX",e);
         }
 
-        enableAutoRedeploy();
+        redeployer = new Redeployer(this);
+        logger.info("Auto-redeployment activated");
     }
 
-    private void enableAutoRedeploy() {
-        if(redeployer==null) {
-            logger.info("Auto-redeployment activated");
-            redeployer = new Redeployer(this);
-        }
-    }
-
-    private void disableAutoRedeploy() {
-        if(redeployer!=null) {
-            redeployer.cancel();
-            redeployer = null;
-            logger.info("Auto-redeployment deactivated");
-        }
-    }
+    //private void disableAutoRedeploy() {
+    //    if(redeployer!=null) {
+    //        redeployer.cancel();
+    //        redeployer = null;
+    //        logger.info("Auto-redeployment deactivated");
+    //    }
+    //}
 
     public void stop() {
         for (WorkflowApplication app : applications.values())
@@ -100,11 +105,11 @@ public final class Container implements ContainerMBean {
 
     public synchronized void deploy(String name, byte[] data) throws IOException {
         logger.info("Accepting application '"+name+"' from JMX");
-        File tmpFile = new File(getAppDir(),name+".tmp");
+        File tmpFile = new File(appsDir,name+".tmp");
         OutputStream os = new FileOutputStream(tmpFile);
         os.write(data);
         os.close();
-        File darFile = new File(getAppDir(),name+".dar");
+        File darFile = new File(appsDir,name+".dar");
         if(darFile.exists())
             darFile.delete();
         tmpFile.renameTo(darFile);
@@ -138,15 +143,23 @@ public final class Container implements ContainerMBean {
      * Finds all the workflow applications.
      */
     private Map<String,WorkflowApplication> findApps() {
-        File appdir = getAppDir();
-        if(!appdir.exists()) {
-            logger.severe("Workflow application directory doesn't exist: "+appdir);
+        if(!appsDir.exists()) {
+            logger.severe("Workflow application directory doesn't exist: "+appsDir);
             return Collections.emptyMap(); // no apps
         }
 
-        File[] subdirs = appdir.listFiles(new FileFilter() {
-            public boolean accept(File pathname) {
-                return pathname.isDirectory();
+        // first extract all dars (unless they are up-to-date)
+        File[] dars = appsDir.listFiles(new FileFilter() {
+            public boolean accept(File path) {
+                return path.getPath().endsWith(".dar");
+            }
+        });
+        for( File dar : dars )
+            explode(dar);
+
+        File[] subdirs = appsDir.listFiles(new FileFilter() {
+            public boolean accept(File path) {
+                return path.isDirectory();
             }
         });
 
@@ -160,13 +173,6 @@ public final class Container implements ContainerMBean {
             }
 
         return apps;
-    }
-
-    /**
-     * Gets the 'apps' directory in which the application class files / dar files are stored.
-     */
-    public File getAppDir() {
-        return new File(homeDir, "apps");
     }
 
     /**
@@ -239,5 +245,60 @@ public final class Container implements ContainerMBean {
             }
         }
         return props;
+    }
+
+    /**
+     * Extracts the given dar file into the same directory.
+     */
+    static void explode(File dar) {
+        try {
+            String name = dar.getName();
+            File exploded = new File(dar.getParentFile(),name.substring(0,name.length()-4));
+            if(exploded.exists()) {
+                if(exploded.lastModified() > dar.lastModified()) {
+                    return;
+                }
+                Util.deleteRecursive(exploded);
+            }
+
+            logger.info("Extracting "+dar);
+
+            byte[] buf = new byte[1024];    // buffer
+
+            JarFile archive = new JarFile(dar);
+            Enumeration<JarEntry> e = archive.entries();
+            while(e.hasMoreElements()) {
+                JarEntry j = e.nextElement();
+                File dst = new File(exploded, j.getName());
+
+                if(j.isDirectory()) {
+                    dst.mkdirs();
+                    continue;
+                }
+
+                dst.getParentFile().mkdirs();
+
+
+                InputStream in = archive.getInputStream(j);
+                FileOutputStream out = new FileOutputStream(dst);
+                try {
+                    while(true) {
+                        int sz = in.read(buf);
+                        if(sz<0)
+                            break;
+                        out.write(buf,0,sz);
+                    }
+                } finally {
+                    in.close();
+                    out.close();
+                }
+            }
+
+            archive.close();
+        } catch (IOException x) {
+            logger.log(Level.SEVERE,"Unable to extract "+dar,x);
+            // leave the engine stopped,
+            // so that if the user updates the file again, it will restart the engine
+        }
     }
 }

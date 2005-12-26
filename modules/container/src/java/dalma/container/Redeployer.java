@@ -18,21 +18,21 @@ import java.util.logging.Level;
  *
  * @author Kohsuke Kawaguchi
  */
-class Redeployer extends FileChangeMonitor {
+final class Redeployer extends FileChangeMonitor {
 
     private static final Logger logger = Logger.getLogger(Redeployer.class.getName());
 
     private final Container container;
 
-    public Redeployer(Container container) {
-        super(new File(container.getHomeDir(), "apps"));
+    Redeployer(Container container) {
+        super(container.appsDir);
         this.container = container;
     }
 
     @Override
     protected void onAdded(File file) {
         if(isDar(file))
-            explode(file);
+            Container.explode(file);
         if(file.isDirectory()) {
             logger.info("New application '"+file.getName()+"' detected. Deploying.");
             try {
@@ -46,7 +46,7 @@ class Redeployer extends FileChangeMonitor {
     @Override
     protected void onUpdated(File file) {
         if(isDar(file))
-            explode(file);
+            Container.explode(file);
         if(file.isDirectory()) {
             try {
                 WorkflowApplication wa = container.getApplication(file.getName());
@@ -73,52 +73,4 @@ class Redeployer extends FileChangeMonitor {
         return f.getName().endsWith(".dar");
     }
 
-    /**
-     * Extracts the given dar file.
-     */
-    private void explode(File dar) {
-        try {
-            String name = dar.getName();
-            File exploded = new File(dar.getParentFile(),name.substring(0,name.length()-4));
-            if(exploded.exists())
-                Util.deleteRecursive(exploded);
-
-            byte[] buf = new byte[1024];    // buffer
-
-            JarFile archive = new JarFile(dar);
-            Enumeration<JarEntry> e = archive.entries();
-            while(e.hasMoreElements()) {
-                JarEntry j = e.nextElement();
-                File dst = new File(exploded, j.getName());
-
-                if(j.isDirectory()) {
-                    dst.mkdirs();
-                    continue;
-                }
-                
-                dst.getParentFile().mkdirs();
-
-
-                InputStream in = archive.getInputStream(j);
-                FileOutputStream out = new FileOutputStream(dst);
-                try {
-                    while(true) {
-                        int sz = in.read(buf);
-                        if(sz<0)
-                            break;
-                        out.write(buf,0,sz);
-                    }
-                } finally {
-                    in.close();
-                    out.close();
-                }
-            }
-
-            archive.close();
-        } catch (IOException x) {
-            logger.log(Level.SEVERE,"Unable to extract the dar file "+dar,x);
-            // leave the engine stopped,
-            // so that if the user updates the file again, it will restart the engine
-        }
-    }
 }

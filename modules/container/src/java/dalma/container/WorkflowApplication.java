@@ -90,6 +90,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
     /**
      * Root of the class directory.
+     * <tt>DALMA_HOME/apps/&lt;name></tt>
      */
     private final File appDir;
 
@@ -452,15 +453,20 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
     }
 
     /**
-     * Undeploys this workflow application.
+     * Completely removes this workflow application.
      */
     public void undeploy() {
         synchronized (undeployLock) {
             if(!undeployed) {
+                File dar = new File(owner.appsDir, name + ".dar");
+                if(dar.exists() && !dar.delete()) {
+                    logger.log(Level.WARNING, "failed to delete "+appDir);
+                }
+
                 try {
                     Util.deleteRecursive(appDir);
                 } catch (IOException e) {
-                    logger.log(Level.WARNING, "failed to clean up the app directory",e);
+                    logger.log(Level.WARNING, "failed to delete "+appDir,e);
                     // this leaves the app dir in an inconsistent state,
                     // but otherwise it's not a fatal error.
                 }
@@ -474,7 +480,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
     }
 
-    private Object undeployLock = new Object();
+    private final Object undeployLock = new Object();
     /**
      * True when this workflow is already undeployed.
      */
