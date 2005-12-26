@@ -1,0 +1,49 @@
+<document>
+<properties>
+  <title>Dalma Archive (.dar)</title>
+</properties>
+<body>
+<section name="What is a .dar file?">
+  <p>
+    Dalmacon uses a jar file that has the <tt>.dar</tt> extension to package a workflow application (which possibly consists of multiple class files and jar files) into a single file. This makes it easy to copy/install workflow applications into Dalmacon. A dar file has the following structure:
+  </p>
+<pre><![CDATA[
+foo.dar
+  +- META-INF
+  |   +- MANIFEST.MF
+  +- *.jar
+  +- org
+  |   +- acme
+  |       +- Foo.class
+  |       +- ...
+  ...
+]]></pre>
+  <subsection name="MANIFEST.MF">
+    <p>
+      <tt>MANIFEST.MF</tt> is used in the same way and has the same format as in a jar file. Dalma adds one optiona attribute called <tt>Dalma-Main-Class</tt>, which points to the fully-qualified class name of a <a href="">Program</a>-derived class that serves as the entry point of a workflow application. (It's analogous to the <tt>Main-Class</tt> attribute that points to a class that has the <tt>main</tt> method.)
+    </p><p>
+      When this attribute is not present, <tt>Main</tt> (a class in the root package) is used.
+    </p>
+  </subsection>
+  <subsection name="*.jar">
+    <p>
+      Additional jar files that a workflow application depends on may simply be placed at the top-level. Those jar files are made available to the workflow application classloader.
+    </p>
+  </subsection>
+  <subsection name="Class files">
+    <p>
+      Class files can be put into a dar file just like in a jar file, and those class files are also made available to the same workflow application classloader that loads <tt>*.jar</tt>. (Alternatively, you can choose to package all your code into jar files and have no bare-naked <tt>*.class</tt> files.)
+    </p>
+  </subsection>
+</section>
+<section name="When to use a dar file?">
+  <p>
+    Use a dar file when you distribute your workflow application.
+  </p>
+</section>
+<section name="When NOT to use a dar file?">
+  <p>
+    When you are developing a workflow application, use the "exploded" format (which is a normal directory that has the same file structure as a dar file) to improve the speed of the debug cycle. Creating and extracting a dar file is unnecessary overhead in such a situation.
+  </p>
+</section>
+</body></document>
