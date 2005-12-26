@@ -29,8 +29,9 @@ James integration
 
 Container Version
 ==============
-- DESIGN: record of completed conversations. should it be inside engine, or at container,
-  or at webui level?
+- file a bug against JSP, asking easier way to define functions
+
+- add filter to logview.
 
 - the container should remember which application is STOPPED and which is RUNNING.
   newly installed app should start from STOPPED state since it needs to be configured.
