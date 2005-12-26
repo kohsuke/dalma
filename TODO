@@ -23,8 +23,6 @@ James integration
 
 Container Version
 ==============
-- install new app should wait until it's complete,
-  and error report should occur accordingly.
 - define a place to put modules
 - define module installer screen
 
