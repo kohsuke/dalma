@@ -150,11 +150,15 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
             throw new FailedOperationException("Failed to load the main class from application",e);
         } catch (IOException e) {
             throw new FailedOperationException("Failed to load the main class from application",e);
+        } catch (LinkageError e) {
+            throw new FailedOperationException("Failed to load the main class from application",e);
         }
 
         try {
             model = new Model(mainClass);
         } catch (IllegalResourceException e) {
+            throw new FailedOperationException("Failed to configure program",e);
+        } catch (LinkageError e) {
             throw new FailedOperationException("Failed to configure program",e);
         }
 
