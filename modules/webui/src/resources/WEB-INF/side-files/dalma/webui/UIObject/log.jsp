@@ -4,7 +4,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="d" uri="http://dalma.dev.java.net/" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<jsp:include page="sidepanel.jsp" />
+<%@ taglib prefix="st" uri="http://stapler.dev.java.net/" %>
+<st:include page="sidepanel.jsp" />
 <l:main-panel>
   <script type="text/javascript">
     function doSection(detail,image){

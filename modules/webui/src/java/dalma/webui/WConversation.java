@@ -3,6 +3,8 @@ package dalma.webui;
 import dalma.Conversation;
 
 import java.util.Date;
+import java.util.List;
+import java.util.logging.LogRecord;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -43,5 +45,9 @@ public class WConversation extends UIObject {
 
     public Date getStartDate() {
         return core.getStartDate();
+    }
+
+    public List<LogRecord> getLogs() {
+        return core.getLog();
     }
 }
