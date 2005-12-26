@@ -81,10 +81,15 @@ public class WWorkflow extends UIObject {
         return new WWorkflow(app);
     }
 
-    public WConversation getConversation(int index) {
+    public WConversation getConversation(int id) {
         Engine e = core.getEngine();
-        if(e==null) return null;
-        return WConversation.wrap(this,e.getConversation(index));
+        if(e!=null) {
+            Conversation c = e.getConversation(id);
+            if(c!=null)
+                return WConversation.wrap(this,c);
+        }
+
+        return WConversation.wrap(this,core.getCompletedConversations().get(id));
     }
 
     public Collection<Conversation> getConversations() {
@@ -94,7 +99,7 @@ public class WWorkflow extends UIObject {
     }
 
     public Collection<Conversation> getCompletedConversations() {
-        return core.getCompletedConversations();
+        return core.getCompletedConversations().values();
     }
 
     public void doStop(StaplerRequest req, StaplerResponse resp) throws IOException {
