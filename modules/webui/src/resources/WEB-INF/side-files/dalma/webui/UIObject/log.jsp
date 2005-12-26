@@ -18,7 +18,7 @@
       }
     }
   </script>
-  <table>
+  <table width="100%">
     <c:forEach var="log" items="${it.logs}" varStatus="loop">
       <tr class="log-preamble">
         <td><fmt:formatDate value="${d:createDate(log.millis)}" type="both" timeStyle="short" dateStyle="short" /></td>
