@@ -192,6 +192,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         this.logger = Logger.getAnonymousLogger();
         this.logger.setParent(masterLogger);
         this.logger.addHandler(logRecorder);
+        this.logger.setLevel(Level.ALL);
     }
 
     public void addGenerator(GeneratorImpl g) {
@@ -473,6 +474,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             return null;
         else
             return new Date(endDate);
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 
     private Object writeReplace() {

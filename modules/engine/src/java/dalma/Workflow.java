@@ -1,8 +1,10 @@
 package dalma;
 
 import dalma.endpoints.timer.TimerEndPoint;
+import dalma.impl.ConversationImpl;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 /**
  * Base class of a workflow program.
@@ -22,7 +24,7 @@ import java.io.Serializable;
  */
 public abstract class Workflow implements Runnable, Serializable {
 
-    private Conversation owner;
+    private ConversationImpl owner;
 
     /**
      * This method shall be overrided to implement the actual workflow code
@@ -46,7 +48,7 @@ public abstract class Workflow implements Runnable, Serializable {
      *
      * Shall never be used by anyone else.
      */
-    public void setOwner(Conversation owner) {
+    public void setOwner(ConversationImpl owner) {
         this.owner = owner;
     }
 
@@ -60,6 +62,18 @@ public abstract class Workflow implements Runnable, Serializable {
      */
     public void setTitle(String title) {
         owner.setTitle(title);
+    }
+
+    /**
+     * Gets the {@link Logger} for this workflow.
+     *
+     * <p>
+     * Logs recorded to this logger are persisted
+     * as a part of {@link Conversation}, and allows the monitoring
+     * application (and users) to see what's going on.
+     */
+    protected Logger getLogger() {
+        return owner.getLogger();
     }
 
     /**

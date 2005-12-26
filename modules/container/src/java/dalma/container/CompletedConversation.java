@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import java.io.Serializable;
 import java.io.File;
 import java.io.IOException;
@@ -65,10 +66,6 @@ final class CompletedConversation implements Conversation, Serializable {
         throw uoe();
     }
 
-    public void setTitle(String title) {
-        throw uoe();
-    }
-
     public String getTitle() {
         return title;
     }
@@ -86,7 +83,6 @@ final class CompletedConversation implements Conversation, Serializable {
     public Date getCompletionDate() {
         return new Date(endDate);
     }
-
 
     private UnsupportedOperationException uoe() {
         return new UnsupportedOperationException("This operation is not available on the completed conversation");

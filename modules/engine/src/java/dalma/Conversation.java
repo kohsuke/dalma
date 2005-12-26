@@ -1,6 +1,7 @@
 package dalma;
 
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import java.util.List;
 import java.util.Date;
 
@@ -59,19 +60,6 @@ public interface Conversation {
      */
     // we don't need exit code for the same reason Thread doesn't need one.
     void join() throws InterruptedException;
-
-    /**
-     * Sets the title of this conversation.
-     *
-     * <p>
-     * The title of a conversation is most often set by
-     * {@link Workflow#setTitle(String)} so that a running
-     * workflow program can report a simple "current status"
-     * to the external environment (such as the web UI.)
-     *
-     * @see #getTitle
-     */
-    void setTitle(String title);
 
     /**
      * Gets the title of this conversation.
