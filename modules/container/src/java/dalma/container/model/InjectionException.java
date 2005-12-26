@@ -1,6 +1,8 @@
 package dalma.container.model;
 
 /**
+ * Signals an error during the injection.
+ * 
  * @author Kohsuke Kawaguchi
  */
 public class InjectionException extends Exception {

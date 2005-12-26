@@ -26,7 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Roof ot the dalma container.
+ * Root of Dalmacon.
  *
  * @author Kohsuke Kawaguchi
  */
