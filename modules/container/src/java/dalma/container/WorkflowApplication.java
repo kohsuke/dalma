@@ -1,37 +1,32 @@
 package dalma.container;
 
-import static dalma.container.WorkflowState.*;
-import dalma.Engine;
-import dalma.Program;
-import dalma.Description;
-import dalma.EngineListener;
 import dalma.Conversation;
+import dalma.Description;
+import dalma.Engine;
+import dalma.EngineListener;
+import dalma.Program;
+import static dalma.container.WorkflowState.*;
 import dalma.container.model.IllegalResourceException;
 import dalma.container.model.InjectionException;
 import dalma.container.model.Model;
 import dalma.impl.EngineImpl;
 import dalma.impl.Util;
-import org.apache.commons.javaflow.ContinuationClassLoader;
 
 import javax.management.JMException;
 import javax.management.ObjectName;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
 import java.io.FileOutputStream;
-import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.BufferedOutputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Map;
 import java.util.Enumeration;
+import java.util.Map;
+import java.util.Properties;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -202,6 +197,11 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
         logger.info("Starting "+name);
 
+        // set the context class loader when configuring the engine
+        // and calling into application classes
+        final ClassLoader old = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(classLoader);
+
         try {
             try {
                 engine = new EngineImpl(
@@ -262,6 +262,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
             logger.info("Started "+name);
         } finally {
+            Thread.currentThread().setContextClassLoader(old);
             if(state!=RUNNING) {
                 // compensation
                 program = null;
