@@ -21,13 +21,20 @@
       basedir="${maven.build.dest}"
       compress="${maven.jar.compress}"
       excludes="${maven.jar.excludes}">
-      <!-- TODO: include dependency jars -->
-      <j:if test="${context.getVariable('maven.jar.includes') != null}">
-        <setProperty name="includes" value="${maven.jar.includes}" />
-      </j:if>
       <manifest>
         <attribute name="Dalma-Main-Class" value="${maven.dalma.mainclass}" />
       </manifest>
+      <!-- include dependency jars -->
+      <j:forEach var="lib" items="${pom.artifacts}">
+        <j:set var="dep" value="${lib.dependency}"/>
+        <j:if test="${dep.getProperty('dar.bundle')=='true'}">
+          <fileset file="${lib.path}" />
+        </j:if>
+      </j:forEach>
+      <!-- additional jar files given -->
+      <j:if test="${context.getVariable('maven.jar.includes') != null}">
+        <setProperty name="includes" value="${maven.jar.includes}" />
+      </j:if>
     </jar>
   </goal>
 
