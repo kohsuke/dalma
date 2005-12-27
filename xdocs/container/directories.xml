@@ -16,11 +16,10 @@ dalmacon/ (directory pointed by $DALMA_HOME)
  |   +- <app>/
  |       +- *.jar
  |       +- <class files>
- +- modules/
- |   +- <module>/
- |       +- *.jar
  +- conf/
- |   +- <app>.properties
+ |   +- dalma.properties
+ |   +- apps/
+ |       +- <app>.properties
  +- work/
      +- <app>/
          +- data
@@ -44,14 +43,14 @@ dalmacon/ (directory pointed by $DALMA_HOME)
       Alternatively, a workflow application can be packaged into a <a href="dar.html">dalma archive (*.dar)</a> and placed directly in the <tt>apps/</tt> directory.
     </p>
   </subsection>
-  <subsection name="modules/">
+  <!--subsection name="modules/">
     <p>
       This directory hosts additional endpoint implementations. Each module is placed in their own individual directory, but note that all the jar files and class files are loaded by the same classloader. Individual directories are only to make module development/deployment easier.
     </p>
-  </subsection>
+  </subsection-->
   <subsection name="conf/">
     <p>
-      This directory hosts configuration files for each workflow application (in &lt;appname>.properties) as well as a configuration file for the container itself (dalma.properties).
+      This directory hosts configuration files for each workflow application (in conf/apps/&lt;appname>.properties) as well as a configuration file for the container itself (conf/dalma.properties).
     </p>
   </subsection>
   <subsection name="work/">
