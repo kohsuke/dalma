@@ -113,7 +113,20 @@ public final class Container implements ContainerMBean {
      */
     private ClassLoader createClassLoader() {
         ClassLoaderBuilder clb = new ClassLoaderBuilder(getClass().getClassLoader());
+        // lib/*.jar
         clb.addJarFiles(new File(homeDir,"lib"));
+
+        // modules/*/*.jar
+        File[] modules = new File(homeDir,"modules").listFiles(new FileFilter() {
+            public boolean accept(File path) {
+                return path.isDirectory();
+            }
+        });
+        if(modules !=null)
+            for (File mod : modules) {
+                clb.addJarFiles(mod);
+            }
+
         return clb.make();
     }
 
