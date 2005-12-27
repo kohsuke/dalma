@@ -77,8 +77,6 @@ public final class Container implements ContainerMBean {
         this.mbeanServer = ManagementFactory.getPlatformMBeanServer();
         this.applications = findApps();
 
-        // TODO: monitor the file system and find added applications on the fly
-
         for (WorkflowApplication app : applications.values()) {
             try {
                 app.start();
