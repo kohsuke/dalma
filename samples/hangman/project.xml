@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <pomVersion>3</pomVersion>
+  <extend>../../project.xml</extend>
+  <artifactId>dalma-sample-hangman</artifactId>
+  <name>dalma hangman sample</name>
+  <package>dalma.sample.hangman</package>
+  <description>Workflow that implements a Hangman game via e-mail</description>
+  
+  <dependencies>
+    <!-- dalma -->
+    <dependency>
+      <groupId>dalma</groupId>
+      <artifactId>dalma-container</artifactId>
+      <version>${pom.currentVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>dalma</groupId>
+      <artifactId>dalma-endpoint-email</artifactId>
+      <version>${pom.currentVersion}</version>
+      <properties>
+        <dar.bundle>true</dar.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>dalma</groupId>
+      <artifactId>dalma</artifactId>
+      <version>${pom.currentVersion}</version>
+    </dependency>
+    <!-- javamail -->
+    <dependency>
+      <id>javamail</id>
+      <version>1.3.3</version>
+      <jar>mail.jar</jar>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+        <dar.bundle>true</dar.bundle>
+        <dist>endpoint</dist>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>activation</id>
+      <version>1.0.3</version>
+      <jar>activation.jar</jar>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+        <dar.bundle>true</dar.bundle>
+        <dist>endpoint</dist>
+      </properties>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+  </build>
+</project>
