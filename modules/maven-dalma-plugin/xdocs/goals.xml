@@ -1,15 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <document>
+<properties>
+  <title>Maven dalma plugin Goals</title>
+</properties>
+<body>
+  <section name="dalma:dar goal">
+    <p>
+      This goal builds a dalma archive (<a href="../container/dar.html">.dar</a>) for the project. This mostly works in the same way as the <tt>jar</tt> goal --- it puts the same resources and class files as with the <tt>jar</tt> goal, it puts the same additional files specified by the <a href="http://maven.apache.org/maven-1.x/reference/plugins/jar/properties.html"><tt>maven.jar.includes</tt></a> property.
+    </p><p>
+      In addition to those files, this goal supports the following two features:
+    </p>
+    <ol>
+      <li>
+        Puts <a href="TODO">the <tt>Dalma-Main-Class</tt> attribute</a> to the manifest, as specified by the <a href="properties.html">maven.dalma.mainclass</a> property.
+      </li>
+      <li>
+        If dependency jar files in the manifest has <tt>dar.bundle</tt> property as follows, bundle those jar file s in the generated dar file. This makes it easy to redistribute libraries that your workflow application uses.
+      </li>
+<source><![CDATA[
+<dependency>
+  <groupId>dalma</groupId>
+  <artifactId>dalma-endpoint-email</artifactId>
+  <version>1.0</version>
   <properties>
-    <title>Maven dalma plugin Goals</title>
+    <dar.bundle>true</dar.bundle>
   </properties>
-  <body>
-    <goals>
-      <goal>
-        <name>dalma:dar</name>
-        <description>Build dalma archive for the project. This is mostly the same with the <tt>jar</tt> goal.</description>
-      </goal>
-    </goals>
-  </body>
+</dependency>
+]]></source>
+  </section>
+  <section name="dalma:genapp goal">
+    <p>
+      This goal works like <a href="http://maven.apache.org/maven-1.x/start/ten-minute-test.html">the genapp goal</a>, and produces a skeleton of a new workflow project into the current directory.
+    </p><p>
+      This is a handy goal when you are starting a new workflow applciation. It creates <tt>project.xml</tt> and a few other files.
+    </p>
+  </section>
+</body>
 </document>
