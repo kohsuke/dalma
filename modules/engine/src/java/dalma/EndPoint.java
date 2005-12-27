@@ -67,6 +67,14 @@ public abstract class EndPoint implements Serializable {
         return Loader.get().createEndPoint(endPointName,endpointURL);
     }
 
+    /**
+     * The same as {@link #create(String, String)} except
+     * that it uses the given {@link ClassLoader} to locate {@link EndPoint} implementations.
+     */
+    public static EndPoint create( String endPointName, String endpointURL, ClassLoader cl ) throws ParseException {
+        return Loader.get(cl).createEndPoint(endPointName,endpointURL);
+    }
+
 
     private static final class Loader {
         private static final Logger logger = Logger.getLogger(Loader.class.getName());
@@ -77,7 +85,9 @@ public abstract class EndPoint implements Serializable {
         private final Properties endPointFactories = new Properties();
 
         static Loader get() {
-            ClassLoader cl = inferDefaultClassLoader();
+            return get(inferDefaultClassLoader());
+        }
+        static Loader get(ClassLoader cl) {
             Loader loader = loaders.get(cl);
             if(loader==null) {
                 loaders.put(cl,loader=new Loader(cl));
