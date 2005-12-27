@@ -64,10 +64,16 @@ public final class Container implements ContainerMBean {
 
     protected final MBeanServer mbeanServer;
 
+    /**
+     * {@link ClassLoader} that can load lib/*.jar
+     */
+    final ClassLoader appClassLoader;
+
     public Container(File root, Executor executor) {
         this.homeDir = root.getAbsoluteFile();
         this.appsDir = new File(homeDir, "apps");
         this.executor = executor;
+        this.appClassLoader = createClassLoader();
         this.mbeanServer = ManagementFactory.getPlatformMBeanServer();
         this.applications = findApps();
 
@@ -101,6 +107,15 @@ public final class Container implements ContainerMBean {
     //        logger.info("Auto-redeployment deactivated");
     //    }
     //}
+
+    /**
+     * Creates a {@link ClassLoader} that loads all lib/*.jar.
+     */
+    private ClassLoader createClassLoader() {
+        ClassLoaderBuilder clb = new ClassLoaderBuilder(getClass().getClassLoader());
+        clb.addJarFiles(new File(homeDir,"lib"));
+        return clb.make();
+    }
 
     public void stop() {
         for (WorkflowApplication app : applications.values())

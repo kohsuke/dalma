@@ -300,30 +300,11 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      * Creates a new {@link ClassLoader} that loads workflow application classes.
      */
     private ClassLoader createClassLoader() {
-        try {
-            List<URL> urls = new ArrayList<URL>();
+        ClassLoaderBuilder clb = new ClassLoaderBuilder(owner.appClassLoader);
+        clb.addJarFiles(appDir);
+        clb.addPathElement(appDir);
 
-            // list up *.jar files in the appDir
-            File[] jarFiles = appDir.listFiles(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".jar");
-                }
-            });
-
-            for (File jar : jarFiles)
-                urls.add(jar.toURI().toURL());
-
-            // and add the workflow application folder itself
-            urls.add(appDir.toURI().toURL());
-
-            return new ContinuationClassLoader(
-                urls.toArray(new URL[urls.size()]),
-                getClass().getClassLoader());
-        } catch (MalformedURLException e) {
-            // given that jar files and appDir exists,
-            // I don't think this ever happens
-            throw new Error(e);
-        }
+        return clb.makeContinuable();
     }
 
     /**
