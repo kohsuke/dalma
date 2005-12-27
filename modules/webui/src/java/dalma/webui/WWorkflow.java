@@ -107,10 +107,14 @@ public class WWorkflow extends UIObject {
         resp.sendRedirect(".");
     }
 
-    public void doStart(StaplerRequest req, StaplerResponse resp) throws IOException, FailedOperationException {
+    public void doStart(StaplerRequest req, StaplerResponse resp) throws IOException, ServletException {
         // TODO: report failed start operation correctly
-        core.start();
-        resp.sendRedirect(".");
+        try {
+            core.start();
+            resp.sendRedirect(".");
+        } catch (FailedOperationException e) {
+            sendError(req,e,resp);
+        }
     }
 
     public void doDoDelete(StaplerRequest req, StaplerResponse resp) throws IOException {
