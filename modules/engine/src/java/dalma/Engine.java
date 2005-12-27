@@ -28,6 +28,9 @@ public abstract class Engine {
      * @return
      *      A {@link Conversation} object that represents the started workflow.
      *      Always non-null.
+     *
+     * @throws IllegalStateException
+     *      if the engine has not {@link #start() stareted} yet.
      */
     public abstract Conversation createConversation( Workflow workflow ) throws IOException;
 
@@ -37,6 +40,9 @@ public abstract class Engine {
      * <p>
      * This method is similar to {@link #createConversation(Workflow)},
      * but it allows you to run any {@link Runnable} as a {@link Workflow}.
+     *
+     * @throws IllegalStateException
+     *      if the engine has not {@link #start() stareted} yet.
      */
     public abstract Conversation createConversation( Runnable workflow ) throws IOException;
 
@@ -45,6 +51,9 @@ public abstract class Engine {
      *
      * @return
      *      null if no such conversation exists.
+     *
+     * @throws IllegalStateException
+     *      if the engine has not {@link #start() stareted} yet.
      */
     public abstract Conversation getConversation(int id);
 
@@ -54,6 +63,9 @@ public abstract class Engine {
      * @return
      *      always return non-null collection. The returned object
      *      is a snapshot of the conversations.
+     *
+     * @throws IllegalStateException
+     *      if the engine has not {@link #start() stareted} yet.
      */
     public abstract Collection<Conversation> getConversations();
     // snapshot, because of the synchronization issue
@@ -224,6 +236,11 @@ public abstract class Engine {
      * so it may take some time.
      */
     public abstract void stop();
+
+    /**
+     * Returns true if the engine has already {@link #start() started}.
+     */
+    public abstract boolean isStarted();
 
     /**
      * Sets the logger that this engine uses.

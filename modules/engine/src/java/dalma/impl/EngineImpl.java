@@ -335,6 +335,10 @@ public final class EngineImpl extends EngineSPI implements Serializable {
         loadConversations();
     }
 
+    public boolean isStarted() {
+        return started;
+    }
+
     private void makeSureStarted() {
         if(!started)
             throw new IllegalStateException("engine is not started");
