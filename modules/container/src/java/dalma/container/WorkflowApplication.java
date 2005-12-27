@@ -203,63 +203,73 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         logger.info("Starting "+name);
 
         try {
-            engine = new EngineImpl(
-                new File(workDir,"data"),
-                classLoader,
-                owner.executor);
-        } catch (IOException e) {
-            throw new FailedOperationException("Failed to start engine",e);
-        }
-
-        try {
-            Object main = mainClass.newInstance();
-            if(!(main instanceof Program)) {
-                logger.severe(mainClass.getName()+" doesn't extend the Program class");
-                return;
+            try {
+                engine = new EngineImpl(
+                    new File(workDir,"data"),
+                    classLoader,
+                    owner.executor);
+            } catch (IOException e) {
+                throw new FailedOperationException("Failed to start engine",e);
             }
-            program = (Program)main;
-        } catch (InstantiationException e) {
-            throw new FailedOperationException("Failed to load the main class from application",e);
-        } catch (IllegalAccessException e) {
-            throw new FailedOperationException("Failed to load the main class from application",e);
-        }
 
-        // perform resource injection
-        try {
-            ((Model)model).inject(program,loadConfigProperties());
-        } catch (InjectionException e) {
-            throw new FailedOperationException("Failed to configure program",e);
-        } catch (ParseException e) {
-            throw new FailedOperationException("Failed to configure program",e);
-        } catch (IOException e) {
-            throw new FailedOperationException("Failed to configure program",e);
-        }
-
-        try {
-            program.init(engine);
-        } catch (Throwable e) {
-            // faled
-            throw new FailedOperationException(mainClass.getName()+".init() method reported an exception",e);
-        }
-
-        // hook things up so that completed conversations will be added to the record
-        engine.addListener(new EngineListener() {
-            public void onConversationCompleted(Conversation conv) {
-                ccList.add(conv);
+            try {
+                Object main = mainClass.newInstance();
+                if(!(main instanceof Program)) {
+                    logger.severe(mainClass.getName()+" doesn't extend the Program class");
+                    return;
+                }
+                program = (Program)main;
+            } catch (InstantiationException e) {
+                throw new FailedOperationException("Failed to load the main class from application",e);
+            } catch (IllegalAccessException e) {
+                throw new FailedOperationException("Failed to load the main class from application",e);
             }
-        });
-        engine.start();
 
-        try {
-            program.main(engine);
-        } catch (Throwable e) {
-            // faled
-            throw new FailedOperationException(mainClass.getName()+".main() method reported an exception",e);
+            // perform resource injection
+            try {
+                ((Model)model).inject(program,loadConfigProperties());
+            } catch (InjectionException e) {
+                throw new FailedOperationException("Failed to configure program",e);
+            } catch (ParseException e) {
+                throw new FailedOperationException("Failed to configure program",e);
+            } catch (IOException e) {
+                throw new FailedOperationException("Failed to configure program",e);
+            }
+
+            try {
+                program.init(engine);
+            } catch (Throwable e) {
+                // faled
+                throw new FailedOperationException(mainClass.getName()+".init() method reported an exception",e);
+            }
+
+            // hook things up so that completed conversations will be added to the record
+            engine.addListener(new EngineListener() {
+                public void onConversationCompleted(Conversation conv) {
+                    ccList.add(conv);
+                }
+            });
+            engine.start();
+
+            try {
+                program.main(engine);
+            } catch (Throwable e) {
+                // faled
+                throw new FailedOperationException(mainClass.getName()+".main() method reported an exception",e);
+            }
+
+            state = RUNNING;
+
+            logger.info("Started "+name);
+        } finally {
+            if(state!=RUNNING) {
+                // compensation
+                program = null;
+                if(engine.isStarted())
+                    engine.stop();
+                engine = null;
+            }
         }
-
-        state = RUNNING;
-
-        logger.info("Started "+name);
     }
 
     /**
