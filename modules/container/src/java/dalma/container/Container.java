@@ -24,6 +24,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 import java.util.concurrent.Executors;
@@ -60,6 +62,11 @@ public final class Container implements ContainerMBean {
 
     final Map<String,WorkflowApplication> applications;
 
+    /**
+     * All installed {@link Module}s.
+     */
+    final List<Module> modules;
+
     private final Redeployer redeployer;
 
     protected final MBeanServer mbeanServer;
@@ -71,6 +78,7 @@ public final class Container implements ContainerMBean {
 
     public Container(File root, Executor executor) {
         this.homeDir = root.getAbsoluteFile();
+        this.modules = findModules();
         this.appsDir = new File(homeDir, "apps");
         this.executor = executor;
         this.appClassLoader = createClassLoader();
@@ -115,15 +123,9 @@ public final class Container implements ContainerMBean {
         clb.addJarFiles(new File(homeDir,"lib"));
 
         // modules/*/*.jar
-        File[] modules = new File(homeDir,"modules").listFiles(new FileFilter() {
-            public boolean accept(File path) {
-                return path.isDirectory();
-            }
-        });
-        if(modules !=null)
-            for (File mod : modules) {
-                clb.addJarFiles(mod);
-            }
+        for (Module mod : modules) {
+            clb.addJarFiles(mod.dir);
+        }
 
         return clb.make();
     }
@@ -189,6 +191,22 @@ public final class Container implements ContainerMBean {
 
     public WorkflowApplication getApplication(String name) {
         return applications.get(name);
+    }
+
+    private List<Module> findModules() {
+        List<Module> r = new ArrayList<Module>();
+
+        File[] modules = new File(homeDir,"modules").listFiles(new FileFilter() {
+            public boolean accept(File path) {
+                return path.isDirectory();
+            }
+        });
+
+        if(modules !=null)
+            for (File mod : modules)
+                r.add(new Module(this,mod));
+
+        return Collections.unmodifiableList(r);
     }
 
     /**
