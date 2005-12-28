@@ -227,7 +227,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
             // perform resource injection
             try {
-                ((Model)model).inject(program,loadConfigProperties());
+                ((Model)model).inject(engine,program,loadConfigProperties());
             } catch (InjectionException e) {
                 throw new FailedOperationException("Failed to configure program",e);
             } catch (ParseException e) {

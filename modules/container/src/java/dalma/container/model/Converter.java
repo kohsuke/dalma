@@ -1,6 +1,7 @@
 package dalma.container.model;
 
 import dalma.EndPoint;
+import dalma.Engine;
 
 import java.text.ParseException;
 import java.io.File;
@@ -16,7 +17,7 @@ abstract class Converter<T> {
 
     abstract Class<T> getType();
 
-    abstract T load(String propertyName, String value) throws ParseException;
+    abstract T load(Engine engine, String propertyName, String value) throws ParseException;
     //String save(T value);
 
     /**
@@ -42,7 +43,7 @@ abstract class Converter<T> {
                 return String.class;
             }
 
-            public String load(String propertyName, String value) {
+            public String load(Engine engine, String propertyName, String value) {
                 return value;
             }
 
@@ -56,7 +57,7 @@ abstract class Converter<T> {
                 return File.class;
             }
 
-            public File load(String propertyName, String value) {
+            public File load(Engine engine, String propertyName, String value) {
                 return new File(value);
             }
 
@@ -70,7 +71,7 @@ abstract class Converter<T> {
                 return Boolean.class;
             }
 
-            public Boolean load(String propertyName, String value) {
+            public Boolean load(Engine engine, String propertyName, String value) {
                 return Boolean.valueOf(value);
             }
 
@@ -86,7 +87,7 @@ abstract class Converter<T> {
                 return Integer.class;
             }
 
-            public Integer load(String propertyName, String value) {
+            public Integer load(Engine engine, String propertyName, String value) {
                 if (value == null) return 0;
                 return Integer.valueOf(value);
             }
@@ -102,8 +103,8 @@ abstract class Converter<T> {
                 return EndPoint.class;
             }
 
-            public EndPoint load(String propertyName, String value) throws ParseException {
-                return EndPoint.create(propertyName, value);
+            public EndPoint load(Engine engine, String propertyName, String value) throws ParseException {
+                return engine.addEndPoint(propertyName,value);
             }
         }
     };

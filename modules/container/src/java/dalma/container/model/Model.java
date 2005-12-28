@@ -1,6 +1,7 @@
 package dalma.container.model;
 
 import dalma.Resource;
+import dalma.Engine;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -56,11 +57,11 @@ public final class Model<T> {
                 throw new IllegalResourceException(type+" is not supported as a resource type");
         }
 
-        private void inject(T target, Properties prop) throws ParseException, InjectionException {
+        private void inject(Engine engine, T target, Properties prop) throws ParseException, InjectionException {
             String token = prop.getProperty(name);
             if(token==null && !optional)
                 throw new InjectionException("resource \""+name+"\" must be configured");
-            Object value = converter.load(name, token);
+            Object value = converter.load(engine, name, token);
             if(!type.isInstance(value))
                 throw new InjectionException("resource \""+name+"\" wants "+type.getName()+" but found "+value.getClass().getName()+" in configuration");
             injector.set(target,type.cast(value));
@@ -103,9 +104,9 @@ public final class Model<T> {
         this.parts = Collections.unmodifiableList(parts);
     }
 
-    public void inject(T target, Properties prop ) throws InjectionException, ParseException {
+    public void inject(Engine engine, T target, Properties prop ) throws InjectionException, ParseException {
         for (Part<?> res : parts)
-            res.inject(target,prop);
+            res.inject(engine,target,prop);
     }
 
     public List<Part> getParts() {
