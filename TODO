@@ -45,3 +45,5 @@ Container Version
 - implement true auto-redeploy
     currently, we only check directory timestamp
 
+- consider using commons-vfs. note that it was never released
+
