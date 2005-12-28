@@ -147,15 +147,24 @@
     <j:set var="maven.javanet.release.folder" value="/nightly" />
     <j:set var="maven.final.name" value="dalma-${pom.currentVersion}" />
     <attainGoal name="dist:container" />
+    <m:reactor basedir="modules" includes="webui/project.xml" goals="war" />
   </preGoal>
   
   <postGoal name="javanet:dist">
-    <!-- upload container files, too -->
+    <!-- upload container -->
     <javaNetUpload projectName="${maven.javanet.project}"
       toFile="${maven.javanet.release.folder}/dalmacon-${pom.currentVersion}.zip"
       fromFile="target/distributions/dalmacon-${pom.currentVersion}.zip"
       overwrite="yes"
       fileStatus="stable"
+    />
+    <!-- upload war -->
+    <javaNetUpload projectName="${maven.javanet.project}"
+      toFile="${maven.javanet.release.folder}/dalma-webui-${pom.currentVersion}.war"
+      fromFile="modules/webui/dalma.war"
+      description="Dalma Web UI ver.${pom.currentVersion}"
+      overwrite="yes"
+      fileStatus="draft"
     />
   </postGoal>
 
