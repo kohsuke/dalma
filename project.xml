@@ -27,6 +27,12 @@
   <issueTrackingUrl>https://${maven.javanet.project}.dev.java.net/servlets/ProjectIssues</issueTrackingUrl>
   <mailingLists>
     <mailingList>
+      <name>Announcement List</name>
+      <subscribe>announce-subscribe@${maven.javanet.project}.dev.java.net</subscribe>
+      <unsubscribe>announce-unsubscribe@${maven.javanet.project}.dev.java.net</unsubscribe>
+      <archive>https://${maven.javanet.project}.dev.java.net/servlets/SummarizeList?listName=announce</archive>
+    </mailingList>
+    <mailingList>
       <name>Users List</name>
       <subscribe>users-subscribe@${maven.javanet.project}.dev.java.net</subscribe>
       <unsubscribe>users-unsubscribe@${maven.javanet.project}.dev.java.net</unsubscribe>
@@ -57,9 +63,10 @@
   <dependencies>
     <dependency>
       <id>commons-javaflow</id>
-      <version>trunk</version>
+      <version>1.0-SNAPSHOT</version>
       <properties>
         <dist>engine</dist>
+        <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
     </dependency>
@@ -70,6 +77,7 @@
       <type>jar</type>
       <properties>
         <dist>engine</dist>
+        <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
     </dependency>
@@ -78,6 +86,7 @@
       <version>1.1.3.3</version>
       <properties>
         <dist>engine</dist>
+        <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
     </dependency>
@@ -86,6 +95,7 @@
       <version>1.1.2</version>
       <properties>
         <dist>engine</dist>
+        <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
     </dependency>
@@ -95,6 +105,7 @@
       <version>1.0</version>
       <properties>
         <dist>engine</dist>
+        <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
     </dependency>
@@ -104,6 +115,7 @@
       <version>1.0.4</version>
       <properties>
         <dist>engine</dist>
+        <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
     </dependency>
