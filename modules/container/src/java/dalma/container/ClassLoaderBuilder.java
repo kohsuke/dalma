@@ -1,6 +1,8 @@
 package dalma.container;
 
 import org.apache.commons.javaflow.ContinuationClassLoader;
+import org.apache.commons.javaflow.bytecode.transformation.bcel.BcelClassTransformer;
+import org.apache.bcel.util.ClassLoaderRepository;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -64,6 +66,10 @@ class ClassLoaderBuilder {
     }
 
     public ClassLoader makeContinuable() {
-        return new ContinuationClassLoader(urls.toArray(new URL[urls.size()]),parent);
+        DelegatingRepository dr = new DelegatingRepository();
+        ClassLoader cl = new ContinuationClassLoader(urls.toArray(new URL[urls.size()]), parent,
+            new BcelClassTransformer(dr));
+        dr.setRepository(new ClassLoaderRepository(cl));
+        return cl;
     }
 }
