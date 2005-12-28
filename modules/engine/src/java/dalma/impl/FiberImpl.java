@@ -113,7 +113,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     public synchronized void join() throws InterruptedException {
         FiberImpl<?> fiber = FiberImpl.currentFiber(false);
         
-        if(!StackRecorder.get().isRestoring()) {
+        if(!StackRecorder.get().isRestoring) {
             if(getState()==FiberState.ENDED)
                 return;
 
@@ -145,7 +145,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
 
     // called by the continuation thread
     public synchronized <T> T suspend(Condition<T> c) {
-        if(!StackRecorder.get().isRestoring()) {
+        if(!StackRecorder.get().isRestoring) {
             if(c ==null)
                 throw new IllegalArgumentException("dock cannot be null");
             assert cond==null;
@@ -155,7 +155,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
         }
 
         Continuation.suspend();
-        if(StackRecorder.get().isCapturing()) {
+        if(StackRecorder.get().isCapturing) {
             StackRecorder.get().pushReference(this);
             return null;
         }
