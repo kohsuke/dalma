@@ -266,8 +266,8 @@
         <root url="jar://$PROJECT_DIR$/lib/redist/jakarta-bcel-20050813.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/redist/xstream-1.1.2.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/redist/xpp3_min-1.1.3.4.I.jar!/" />
-        <root url="jar://$PROJECT_DIR$/lib/redist/commons-io-1.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/redist/commons-javaflow-1.0-SNAPSHOT.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/redist/commons-io-20050621.133116.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
