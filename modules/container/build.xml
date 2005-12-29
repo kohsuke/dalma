@@ -11,6 +11,7 @@
       </classpath>
     </taskdef>
 
+    <mkdir dir="target/test-classes" />
     <javaflow dstdir="target/test-classes" srcdir="target/test-classes">
       <include name="*.class" />
     </javaflow>

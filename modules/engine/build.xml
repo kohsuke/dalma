@@ -19,6 +19,7 @@
       <include name="dalma/endpoints/timer/TimerEndPoint.class" />
     </javaflow>
 
+    <mkdir dir="target/test-classes" />
     <javaflow dstdir="target/test-classes" srcdir="target/test-classes">
       <include name="dalma/endpoints/input/LineInputEndPoint.class" />
     </javaflow>
