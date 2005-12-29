@@ -318,8 +318,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
                 f.hydrate(list.get(f.id));
             }
         } catch (IOException e) {
+            runningCounts.dec();
             throw new ConversationDeath("failed to restore the state of the conversation "+cont,e);
         } catch (ClassNotFoundException e) {
+            runningCounts.dec();
             throw new ConversationDeath("failed to restore the state of the conversation "+cont,e);
         } finally {
             SerializationContext.remove();
