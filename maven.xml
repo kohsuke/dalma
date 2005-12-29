@@ -161,7 +161,7 @@
     <!-- upload war -->
     <javaNetUpload projectName="${maven.javanet.project}"
       toFile="${maven.javanet.release.folder}/dalma-webui-${pom.currentVersion}.war"
-      fromFile="modules/webui/dalma.war"
+      fromFile="modules/webui/target/dalma.war"
       description="Dalma Web UI ver.${pom.currentVersion}"
       overwrite="yes"
       fileStatus="draft"
