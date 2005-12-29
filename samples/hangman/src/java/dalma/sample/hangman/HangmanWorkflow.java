@@ -9,7 +9,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.logging.Level;
 
 /**
  * A hangman game.
@@ -23,6 +23,7 @@ import java.io.Serializable;
  * @author Kohsuke Kawaguchi
  */
 public class HangmanWorkflow extends Workflow {
+
     /**
      * {@link EndPoint} that we are talking to.
      */
@@ -38,6 +39,10 @@ public class HangmanWorkflow extends Workflow {
         try {
             // the answer
             String word = WordList.getRandomWord();
+
+            getLogger().info("Started a new game with "+msg.getFrom()[0]);
+            getLogger().info("Answer is "+word);
+            setTitle("Game with "+msg.getFrom()[0]);
 
             int retry = 6;  // allow 6 guesses
 
@@ -62,7 +67,7 @@ public class HangmanWorkflow extends Workflow {
                     return;
                 }
 
-                System.out.println("Received a reply from "+mail.getFrom()[0]);
+                getLogger().info("Received a reply from "+mail.getFrom()[0]);
 
                 // pick up the char the user chose
                 char ch =getSelectedChar(mail.getContent());
@@ -81,6 +86,7 @@ public class HangmanWorkflow extends Workflow {
                     mail = (MimeMessage)mail.reply(false);
                     mail.setText("Bingo! The word was\n\n   "+word);
                     ep.send(mail);
+                    getLogger().info("The user won");
                     return;
                 }
             }
@@ -88,8 +94,9 @@ public class HangmanWorkflow extends Workflow {
             MimeMessage reply = (MimeMessage)mail.reply(false);
             reply.setText("Bzzzt! The word was\n\n   "+word);
             ep.send(reply);
+            getLogger().info("The user lost");
         } catch (Exception e) {
-            e.printStackTrace();
+            getLogger().log(Level.WARNING, "error", e);
         }
     }
 
