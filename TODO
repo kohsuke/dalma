@@ -23,9 +23,10 @@ James integration
 
 Container Version
 ==============
+- more documentation. 10 minutes test drive
+- install it on other containers as a test before release
 - define a place to put modules
 - define module installer screen
-
 - autoredeploy jar update issue.
   jar files seem to be locked and can't be re-written.
 
@@ -39,7 +40,6 @@ Container Version
   newly installed app should start from STOPPED state since it needs to be configured.
 
 - file a bug asking for the -cp option in jconsole
-- have a descriptor
 - then expose enough information from JMX so that the web interface can be run on a separate JVM
   - such as information about the current conversation
 - build the web interface on top of JMX
