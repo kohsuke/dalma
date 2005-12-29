@@ -1,0 +1,5 @@
+<project default="default">
+  <goal name="javanet:-deploy-each">
+    <!-- do not deploy -->
+  </goal>
+</project>

@@ -3,4 +3,8 @@
     <!-- filters project.xml in the template -->
     <filter token="DALMA_VERSION" value="${pom.currentVersion}" />
   </preGoal>
+  
+  <goal name="javanet:-deploy-each">
+    <attainGoal name="javanet:deploy-plugin" />
+  </goal>
 </project>

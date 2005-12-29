@@ -168,6 +168,22 @@
       fileStatus="draft"
     />
   </postGoal>
+  
+  <goal name="javanet:deploy"
+        description="deploy each module into java.net">
+    <attainGoal name="multiproject:projects-init" />
+    <m:reactor
+      basedir="${maven.multiproject.basedir}"
+      includes="${maven.multiproject.includes}"
+      excludes="${maven.multiproject.excludes}"
+      goals="javanet:-deploy-each"
+    />
+  </goal>
+  
+  <goal name="javanet:-deploy-each">
+    <!-- default way to deploy would be 'jar' -->
+    <attainGoal name="javanet:deploy-jar" />
+  </goal>
 
   <goal name="multiproject:clean">
     <attainGoal name="multiproject:projects-init" />
