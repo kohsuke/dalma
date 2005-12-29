@@ -29,6 +29,8 @@ Container Version
 - autoredeploy jar update issue.
   jar files seem to be locked and can't be re-written.
 
+- don't send workflow application logs to the system log.
+
 - file a bug against JSP, asking easier way to define functions
 
 - add filter to logview.
