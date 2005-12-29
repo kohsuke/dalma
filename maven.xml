@@ -155,8 +155,9 @@
     <javaNetUpload projectName="${maven.javanet.project}"
       toFile="${maven.javanet.release.folder}/dalmacon-${pom.currentVersion}.zip"
       fromFile="target/distributions/dalmacon-${pom.currentVersion}.zip"
+      description="Dalma container ver.${pom.currentVersion}"
       overwrite="yes"
-      fileStatus="stable"
+      fileStatus="draft"
     />
     <!-- upload war -->
     <javaNetUpload projectName="${maven.javanet.project}"
