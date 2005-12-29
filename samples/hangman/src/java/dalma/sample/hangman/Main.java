@@ -5,6 +5,7 @@ import dalma.EngineFactory;
 import dalma.Program;
 import dalma.Resource;
 import dalma.EndPoint;
+import dalma.Description;
 import dalma.endpoints.email.EmailEndPoint;
 import dalma.endpoints.email.NewMailHandler;
 import dalma.helpers.ThreadPoolExecutor;
@@ -17,6 +18,9 @@ import java.io.File;
  *
  * @author Kohsuke Kawaguchi
  */
+@Description(
+    "This application runs a hangman game through e-mail"
+)
 public class Main extends Program {
 
     /**
