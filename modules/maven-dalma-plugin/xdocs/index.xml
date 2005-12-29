@@ -5,13 +5,18 @@
 <body>
 <section name="Maven Plug-in">
   <p>
-    This maven plugin allows you to create a <a href="dar.html">dalma archive (.dar)</a> file easily. Run the following command to install:
+    This maven plugin provides goals that are useful for developing workflow applications using Dalma.
+  </p>
+</section>
+<section name="Installation">
+  <p>
+    Run the following command to install:
   </p>
 <source>
-maven plugin:download
-  -Dmaven.repo.remote=http://maven-repository.dev.java.net/nonav/maven
-  -DgroupId=dalma
-  -DartifactId=maven-dalma-plugin
+maven plugin:download \
+  -Dmaven.repo.remote=https://maven-repository.dev.java.net/nonav/repository \
+  -DgroupId=dalma \
+  -DartifactId=maven-dalma-plugin \
   -Dversion=0.1-SNAPSHOT
 </source>
 </section>
