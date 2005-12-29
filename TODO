@@ -26,6 +26,9 @@ Container Version
 - define a place to put modules
 - define module installer screen
 
+- autoredeploy jar update issue.
+  jar files seem to be locked and can't be re-written.
+
 - file a bug against JSP, asking easier way to define functions
 
 - add filter to logview.
