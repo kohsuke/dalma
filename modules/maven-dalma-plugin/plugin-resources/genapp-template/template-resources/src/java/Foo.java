@@ -1,5 +1,0 @@
-package @PACKAGE@;
-
-class Foo {
-
-}
