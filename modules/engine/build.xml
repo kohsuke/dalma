@@ -13,6 +13,7 @@
 
     <javaflow dstdir="target/classes" srcdir="target/classes">
       <include name="dalma/spi/port/*.class" />
+      <include name="dalma/spi/FiberSPI.class" />
       <include name="dalma/endpoints/invm/Channel.class" />
       <include name="dalma/impl/RunnableWorkflowImpl.class" />
       <include name="dalma/endpoints/timer/TimerEndPoint.class" />
