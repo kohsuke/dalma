@@ -66,7 +66,7 @@
       <version>1.0-SNAPSHOT</version>
       <properties>
         <dist>engine</dist>
-        <belongsTo>dalma-site</belongsTo>
+        <belongsTo>dalma</belongsTo>
         <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
@@ -78,6 +78,7 @@
       <type>jar</type>
       <properties>
         <dist>engine</dist>
+        <belongsTo>dalma</belongsTo>
         <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
@@ -87,6 +88,7 @@
       <version>1.1.3.3</version>
       <properties>
         <dist>engine</dist>
+        <belongsTo>dalma</belongsTo>
         <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
@@ -96,6 +98,7 @@
       <version>1.1.2</version>
       <properties>
         <dist>engine</dist>
+        <belongsTo>dalma</belongsTo>
         <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
@@ -106,6 +109,7 @@
       <version>1.0</version>
       <properties>
         <dist>engine</dist>
+        <belongsTo>dalma</belongsTo>
         <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
@@ -116,6 +120,7 @@
       <version>1.0.4</version>
       <properties>
         <dist>engine</dist>
+        <belongsTo>dalma</belongsTo>
         <war.bundle>true</war.bundle>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
@@ -173,13 +178,13 @@
   </build>
 
   <reports>
-    <!--report>maven-license-plugin</report>
+    <report>maven-license-plugin</report>
     <report>maven-changelog-plugin</report>
     <report>maven-changes-plugin</report>
     <report>maven-developer-activity-plugin</report>
     <report>maven-file-activity-plugin</report>
     <report>maven-javadoc-plugin</report>
-    <report>maven-junit-report-plugin</report-->
+    <report>maven-junit-report-plugin</report>
     <!--
     <report>maven-jcoverage-plugin</report>
     <report>maven-jxr-plugin</report>
