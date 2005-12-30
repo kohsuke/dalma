@@ -59,6 +59,7 @@ foo.dar
     <attribute name="Dalma-Main-Class" value="org.acme.Foo" />
   </manifest>
   <fileset dir="build/classes" />
+  <fileset dir="lib" includes="*.jar" />
 </jar>
 ]]></source>
   </subsection>

@@ -1,0 +1,27 @@
+<document>
+<properties>
+  <title>Developing a Workflow with Ant</title>
+</properties>
+<body>
+  <section name="Developing a workflow with Ant">
+    <p>
+      Most of the tool support in Dalma comes in the form of a Maven plug-in, but if you'd like to build your workflow engine with Ant, you are welcome.
+    </p>
+    <subsection name="Copying jars to your workspace">
+      <!-- TODO: create a workspace template image to start with. -->
+      <p>
+        First, <a href="https://dalma.dev.java.net/servlets/ProjectDocumentList?folderID=4629&amp;expandFolder=4629">download a main binary distribution (dalma-<i>[version]</i>.zip)</a> and then copy <tt>dalma-<i>[version]</i>.jar</tt> and <tt>container/dalma-container-<i>[version]</i>.jar</tt> to your workspace. You'll need those two jars for compiling your workflow applications.
+      </p><p>
+        Note that as long as you are deploying into the WebUI or the container, you won't have to redistribute these jars.
+      </p><p>
+        If your workflow application uses one or more <a href="endpoint.hml">endpoints</a>, you'll need jar files that implement endpoints. Unlike the engine jar, these jar files do need to be redistributed with your workflow application.
+      </p>
+    </subsection>
+    <subsection name="Building a workspace">
+      <p>
+        Building a workflow application is no different from building your ordinary Java application. Refer to <a href="container/dar.html#How_to_create_a_dar_file_">this document</a> for how to build a dar file for deployment into WebUI/container.
+      </p>
+    </subsection>
+  </section>
+</body>
+</document>

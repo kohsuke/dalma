@@ -1,0 +1,123 @@
+<document>
+<properties>
+  <title>10 Minutes Guide to Dalma</title>
+</properties>
+<body>
+<section name="10 Minutes Guide to Dalma">
+  <p>
+    This document shows you how you can develop, deploy, and run a workflow application in 10 minutes.
+  </p>
+  <subsection name="Install Software">
+    <ol>
+      <li>Install <a href="http://maven.apache.org/maven-1.x/">Maven 1.x</a>. We'll use this for deveploing a workflow application.</li>
+      <li>Install <a href="maven-dalma-plugin/index.html">Maven Dalma plugin</a>.</li>
+      <li>Install <a href="http://tomcat.apache.org/">Tomcat 5.x</a>. Actually, any web container with Servlet 2.4 support would do.</li>
+      <li>Install <a href="webui/index.html">Dalma WebUI</a> into the web container. There are multiple ways to run workflow applications, but in this tutorial, we'll deploy workflow applications into WebUI.</li>
+      <li>Install JDK 5.0 or later, because WebUI requires it.</li>
+    </ol>
+    <p>
+      That's all we need for now. Please make sure that the web container runs on J2SE 5.0.
+    </p>
+  </subsection>
+  <subsection name="Create a new workflow application">
+    <p>
+      Create a new directory, and <tt>cd</tt> into that directory.
+    </p>
+<source>
+$ mkdir newapp
+$ cd newapp
+</source>
+    <p>
+      Run maven to generate a skeleton of new workflow application. It asks you a few questions, but if you are feeling lucky you can just hit ENTER to all of them.
+    </p>
+<source>
+$ maven dalma:genapp
+ __  __
+|  \/  |__ _Apache__ ___
+| |\/| / _` \ V / -_) ' \  ~ intelligent projects ~
+|_|  |_\__,_|\_/\___|_||_|  v. 1.0.2
+
+Please specify an id for your application:  [app]
+newapp
+Please specify a name for your application:  [Example Workflow Application]
+My first workflow application
+Please specify the package for your application:  [com.example]
+org.kohsuke.newapp
+build:start:
+
+dalma:genapp:
+    [copy] Copying 3 files to C:\kohsuke\My Projects\dalma\newapp\src\java\org\kohsuke\newapp
+    [copy] Copying 2 files to C:\kohsuke\My Projects\dalma\newapp
+    [copy] Copied 1 empty directory to C:\kohsuke\My Projects\dalma\newapp
+BUILD SUCCESSFUL
+</source>
+    <p>
+      This produces maven project descriptor and a set of source files for a sample workflow. If you are developing a real application, you'd now launch an IDE and start implementing the real workflow. But since this is a 10 minutes guide, we'll just go ahead with the generated sample workflow, which is just going to launch a few workflow instances that do random stuff. If you are interested, the source code is in <tt>src/java</tt> directory for you to see.
+    </p>
+  </subsection>
+  <subsection name="Build a workflow application">
+    <p>
+      To compile this into a workflow application, run <tt>maven dalma:dar</tt>.
+    </p>
+<source>
+% maven dalma:dar
+ __  __
+|  \/  |__ _Apache__ ___
+| |\/| / _` \ V / -_) ' \  ~ intelligent projects ~
+|_|  |_\__,_|\_/\___|_||_|  v. 1.0.2
+
+....
+
+    [javac] Compiling 3 source files to C:\kohsuke\My Projects\dalma\newapp\target\classes
+
+dalma:dar:
+    [jar] Building jar: C:\kohsuke\My Projects\dalma\newapp\target\newapp.dar
+BUILD SUCCESSFUL
+</source>
+    <p>
+      This produces <a href="container/dar.html">a dalma archive (.dar)</a> file in the <tt>target</tt> directory.
+    </p>
+  </subsection>
+  <subsection name="Deploy a workflow application">
+    <p>
+      Now let's deploy this new workflow application into the WebUI. Open your web browser and go to the dalma WebUI page. The URL depends on the location of your web container and the name you used to install the WebUI war file, but it's usually something like <tt>http://localhost/dalma</tt>.
+    </p><p>
+      Then click "Deploy New App" and fill in the form. Name the application whatever you want, select our newly created dar file, and then click "OK." Once the deployment is complete, you'll be taken back to the top page, where you now see a newly deployed workflow.
+    </p>
+  </subsection>
+  <subsection name="Monitoring a workflow application">
+    <p>
+      Since this application launches workflows immediately after started, when you come back to the top page, you'll see some activities. Click various links to watch how workflows start, run, and end.
+    </p>
+    <div align="center">
+      <img src="webui/workflow-view.png" />
+    </div>
+    <p>
+      Eventually all the conversations will die off. If so, you can stop the application and then restart it to re-launch workflows. (Most real workflow applications are started from some external trigger, but this sample workflow uses the start of the application as a trigger for demonstration.)
+    </p>
+  </subsection>
+  <subsection name="Configuring a workflow application">
+    <p>
+      Click a "configure" link to see the configuration page of a workflow application. If you compare this with the generated source code, you'll see that fields marked as <tt>@Resource</tt> shows up in the configuration screen. This is how you configure workflow applications; your program indicates what need to be configured through <tt>@Resource</tt>, and then the user configures it through this UI.
+    </p><p>
+      <b>TODO: log rotation configuration</b>
+    </p>
+  </subsection>
+  <subsection name="Conclusion">
+    <p>
+      This concludes a 10 minutes guide to Dalma.
+    </p>
+    <ul>
+      <li>More about the tool support in developing a workflow engine</li>
+      <li>More about how to embed the dalma engine to your application
+          (instead of hosting it in a contaier.)</li>
+      <li>Take a look at more substantial workflow application</li>
+      <li>More about resource injection and configuration</li>
+      <!--
+      <li></li>
+      -->
+    </ul>
+  </subsection>
+</section>
+</body>
+</document>

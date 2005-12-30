@@ -5,7 +5,7 @@
   <body>
     <section name="Overview">
       <p>
-        Dalma engine ships with the hangman example that implements <a href="http://en.wikipedia.org/wiki/Hangman">the hangman game</a> by using <a href="dalma-endpoint-email/">the e-mail endpoint</a>.
+        Dalma engine ships with the hangman example that implements <a href="http://en.wikipedia.org/wiki/Hangman">the hangman game</a> by using <a href="dalma-endpoint-email/">the e-mail endpoint</a>. This is a non-trivial yet small workflow application suitable for learning.
       </p>
       <subsection name="How to run">
         <p>
@@ -14,7 +14,7 @@
 <source>
 $ cd /paht/to/the/distribution/dir
 $ cd samples/hangman
-$ ant
+$ maven jar
 </source>
         <p>
           To run this sample, type the following command:
@@ -68,6 +68,15 @@ Sun Microsystems                   kohsuke.kawaguchi@sun.com
         <source><![CDATA[Received a reply from Kohsuke Kawaguchi <kohsuke.kawaguchi@sun.com>]]></source>
         <p>
           The conversation logic is implemented in the <a href="/source/browse/dalma/dalma/samples/hangman/src/java/dalma/sample/hangman/HangmanWorkflow.java?view=markup"><tt>HangmanWorkflow</tt></a> class, and it should be straight-forward to follow.
+        </p>
+      </subsection>
+      <subsection name="Deploying hangman in WebUI">
+        <p>
+          Hangman example can be deploye into <a href="webui/index.html">Dalma WebUI</a>. Install <a href="maven-dalma-plugin/index.html">Maven dalma plugin</a>, and run the following goal to get the dar file.
+        </p>
+<source>maven dalma:dar</source>
+        <p>
+          See <a href="10minutes-guide.html">10 mintues guide</a> for more information about how to deploy this into the WebUI.
         </p>
       </subsection>
       <subsection name="More about this game">

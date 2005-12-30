@@ -3,83 +3,44 @@
   <title>Tutorial</title>
 </properties>
 <body>
-<p>
-  This document explains how you can write a workflow application quickly by using Dalma.
-</p>
+<section name="Writing a workflow application">
+  <p>
+    This document explains how you can write a workflow application quickly by using Dalma. This document is a follow-up to <a href="10minutes-guide.html">10 minutes guide</a>.
+  </p><p>
+    First, use the <tt>dalma:genapp</tt> goal of <a href="maven-dalma-plugin/index.html">Maven Dalma plugin</a> to set up a new workspace. If you'd like to use Ant instead of Maven, see <a href="develop-with-ant.html">this document</a>.
+  </p>
+</section>
+<section name="Closer look at the entry point code">
+  <p>
+    The entry point of a workflow application can look like the following:
+  </p>
+<source><![CDATA[
+package com.example;
 
-<section name="Set up a workspace">
-  <p>
-    First, <a href="https://dalma.dev.java.net/servlets/ProjectDocumentList">download a binary distribution</a> and then copy all the jars in the top-directory to your workspace. Those jar files are necessary to run Dalma engine.
-  </p>
-  <p>
-    A workflow engine isn't very interesting unless it can talk to other systems. In Dalma, they are called "endpoints" (<a href="endpoint.html">more details</a>), and Dalma ships with several of them. In this tutorial, we'll be using the e-mail endpoint (<a href="dalma-endpoint-email/index.html">more details</a>), so let's also copy all the jars from the <tt>email</tt> directory as well.
-  </p>
-  <p>
-    To complete the set up step, we'll create an empty entry routine like this:
-  </p>
-<source>
-package foo;
+import dalma.Description;
+import dalma.Engine;
+import dalma.Program;
+import dalma.Resource;
 
-public class Main {
-  public static void main(String[] args) {
-    // nothing yet
-  }
+@Description("This is a dummy workflow")
+public class Main extends Program {
+    @Override
+    public void main(Engine engine) throws Exception {
+        getLogger().log("Started");
+    }
 }
-</source>
-</section>
-<section name="Create workflow engine">
+]]></source>
   <p>
-    The next thing we'll do is to set up a workflow engine. First, we create a new <tt>Engine</tt> instance like this:
-  </p>
-<source>
-Engine engine = EngineFactory.newEngine("foo.workflow.");
-</source>
-  <p>
-    <tt>Engine</tt> object represents a running workflow engine instance. It creates "./dalma" directory and uses it to persist the state of the running "conversations", which are the programs running inside the engine. If you already have persisted conversations in this directory (for example you've stopped the VM while running conversations and restarted it later), then those conversations will be automatically picked up by the new engine instance.
-  </p>
-  <p>
-    The parameter "foo.workflow." indicates the package name that we'll be using to write conversations. To transparently suspend and persist running conversations, Dalma relies on bytecode instrumentation (<a href="instrumentation.html">more details</a>.) For now, we'll isolate the conversation code into one package and use runtime instrumentation.
-  </p>
-  <p>
-    This instantiation is the simplest possible way you can construct an engine. If you need more control, check <a href="apidocs/index.html?dalma/EngineFactory.html">EngineFactory documentation</a>.
+    The <a href="dalma-container/apidocs/index.html?dalma/Program.html">Program</a> class serves as the entry point for Dalmacon. Dalmacon finds this class through the <a href="container/dar.html">Dalma-Main-Class manifest entry</a>, and instanciate this class. The <tt>main</tt> method is called after everything is ready. In the above code, I'm just recording the fact that the code run.
+  </p><p>
+    <a href="dalma-container/apidocs/index.html?dalma/Description.html">@Description</a> provides a human-readable description of this workflow application. The WebUI uses this information for display.
   </p>
 </section>
-<section name="Set up endpoints">
+<section name="Adding an endpoint">
   <p>
-    Next, we'll add endpoints to an engine, like this:
-  </p>
-<source>
-EmailEndPoint eep = (EmailEndPoint)engine.addEndPoint(
-  "endPoint1","smtp://hangman@kohsuke.org!pop3://username:password@mail.kohsuke.org");
-</source>
-  <p>
-    The first parameter is the name of a newly added endpoint. Endpoints are identified by their name inside an engine. Persisted conversations use names to connect back to endpoints when they are resumed.
+    A workflow program isn't very interesting unless it talks to other systems. In Dalma, they are called <a href="endpoint.html">"endpoints"</a>, and Dalma ships with several of them. In this tutorial, we'll use the <a href="dalma-endpoint-email/index.html">e-mail endpoint</a> to write an e-mail based workflow program.
   </p><p>
-    The second parameter is an endpoint URL (<a href="endpoint.html#Endpoint_URL">more info</a>) that captures the configuration of an endpoint in one string. This somewhat ugly string is convenient because in most cases endpoint configurations are highly environment-dependent and therefore you don't want to hard-code them in your program.
-  </p><p>
-    You can also choose to create endpoints programatically, or you can use Spring, Groovy, and etc to configure endpoints. See <a href="configure.html">this document</a> for more details.
-  </p><p>
-    For e-mail endpoint, we need one more configuration; we need to tell it what we want to do when the endpoint sees a new incoming e-mail that is not related to any of the running conversations. We do this by the following code. We'll fill this part later:
-  </p>
-<source>
-eep.setNewMailHandler(new NewMailHandler() {
-  public void onNewMail(MimeMessage mail) {
-    ;
-  }
-});
-</source>
-</section>
-<section name="Start engine">
-  <p>
-    We are done with the configuration, so let's start the engine.
-  </p>
-<source>
-engine.start();
-</source>
-  <p>
-    Engine doesn't run and endpoints won't accept incoming messages until you invoke the <tt>start</tt> method. This prevents the synchronization problem --- you don't want a part of the engine to start accepting incoming messages before you prepare the other part of the engine.
-  </p><p>
-    Engine runs asynchronously by using other threads, so this method call returns immediately. The main thread can do anything it wants at this point, but in this tutorial I just let the main thread exit by returning from the main method. Since engine has its own thread, the JVM will keep running in this way (if you really wanted to shut down the JVM, you can invoke <tt>Engine.stop()</tt> method.
+    First, we have to add a new endpoint to our project.
   </p>
 </section>
 <section name="Write a simple workflow">
@@ -129,6 +90,16 @@ public class MyWorkflow implements Runnable, Serializable {
     When a reply is received, your conversation is resumed, and execution returns normally from the <tt>waitForReply</tt> method with a non-null return value. The conversation sends out another reply, and waits for a further reply.
   </p><p>
     Eventually time elapses, and when one day passes, the <tt>waitForReply</tt> method will return with null. At this point the run method exits, and the conversation is considered complete.
+  </p>
+</section>
+
+
+  <p>
+    A workflow engine isn't very interesting unless it can talk to other systems. In Dalma, they are called <a href="endpoint.html">"endpoints"</a>, and Dalma ships with several of them. In this tutorial, we'll be using the <a href="dalma-endpoint-email/index.html">e-mail endpoint</a>, so let's also copy all the jars from the <tt>email</tt> directory as well.
+  </p>
+  </subsection>
+<source>
+
   </p>
 </section>
 <section name="New mail handler">

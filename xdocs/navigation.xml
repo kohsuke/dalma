@@ -9,12 +9,14 @@
     <menu name="Dalma">
       <item name="Home"                         href="/index.html"/>
       <item name="Download"                     href="https://dalma.dev.java.net/servlets/ProjectDocumentList" />
-      <item name="Tutorial"                     href="/tutorial.html" />
-      <item name="Hangman example"              href="/hangman.html" />
+      <item name="10 minutes guide"             href="/10minutes-guide.html" />
     </menu>
 
-    <menu name="Basic Concepts">
+    <menu name="Writing Workflow App">
+      <item name="Hangman example"              href="/hangman.html" />
+      <item name="Writing workflow app"         href="/tutorial.html" />
       <item name="Endpoint"                     href="/endpoint.html" />
+      <item name="Develop with Ant"             href="/develop-with-ant.html" />
     </menu>
 
     <menu name="Dalmacon">
@@ -26,6 +28,7 @@
     </menu>
 
     <menu name="Components">
+      <item name="Dalma WebUI"                  href="/webui/index.html"/>
       <item name="Engine (core)"                href="/dalma/index.html"/>
       <item name="E-mail endpoint"              href="/dalma-endpoint-email/index.html"/>
       <item name="JMS endpoint"                 href="/dalma-endpoint-jms/index.html"/>
@@ -35,6 +38,7 @@
 
     <menu name="Advanced Topics">
       <item name="Configuring Engine"           href="/configure.html" />
+      <item name="Embedding engine"             href="/embed-engine.html" /><!-- TODO: needs rewrite -->
       <item name="Bytecode Instrumentation"     href="/instrumentation.html" />
     </menu>
   </body>

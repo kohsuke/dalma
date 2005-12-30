@@ -3,15 +3,19 @@
   <title>Dalma WebUI</title>
 </properties>
 <body>
-  <section name="Overview">
+  <section name="Dalma WebUI Overview">
     <p>
+      <img src="screenshot.png" style="float:right" />
       Dalma WebUI is an HTML-based UI on top of <a href="../dalmacon">Dalmacon</a>. It allows you to run the whole workflow engine inside a web container, and provides configuration, monitoring, and management capabilities.
     </p>
-    <subsection name="Installation">
+    <subsection name="System Requirements">
       <p>
         Dalma WebUI requires a servlet container that supports Servlet 2.4 / JSP 2.0 running on Java 5 or later. This includes <a href="http://tomcat.apache.org/">Tomcat 5</a>, <a href="http://jetty.mortbay.org/">Jetty 5</a>, or any of the J2EE 1.4 (or later) application servers, including <a href="https://glassfish.dev.java.net/">Glassfish</a>, <a href="http://geronimo.apache.org/">Apache Geronimo 1.x</a>, and <a href="http://www.jboss.org/">JBoss 4.x</a>.
-      </p><p>
-        To install Dalm WebUI to the web container, simply <a href="https://dalma.dev.java.net/servlets/ProjectDocumentList">download the war file</a> and deploy it.
+      </p>
+    </subsection>
+    <subsection name="Installation">
+      <p>
+        To install Dalm WebUI to the web container, simply <a href="https://dalma.dev.java.net/servlets/ProjectDocumentList">download the war file</a> and deploy it. You might want to change the name of the war file to something like <tt>dalma.war</tt> so that you can use URLs like <tt>http://yourmachine/dalma/</tt> to access the Web UI.
       </p>
     </subsection>
   </section>
