@@ -24,6 +24,7 @@ James integration
 Container Version
 ==============
 - more documentation. 10 minutes test drive
+  - log rotation
 - install it on other containers as a test before release
 - define a place to put modules
 - define module installer screen
