@@ -8,6 +8,15 @@
 
   <j:include file="maven.dependency-ex.xml" />
   
+  <postGoal name="xdoc">
+    <!-- run keyword substitution -->
+    <replace dir="target/docs">
+      <replacefilter 
+        token="@@VERSION@@" 
+        value="${pom.currentVersion}" />
+    </replace>
+  </postGoal>
+  
   <goal name="site:generate">
     <attainGoal name="multiproject:site" />
   </goal>
