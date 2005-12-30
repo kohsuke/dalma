@@ -13,8 +13,8 @@
     </menu>
 
     <menu name="Writing Workflow App">
-      <item name="Hangman example"              href="/hangman.html" />
       <item name="Writing workflow app"         href="/tutorial.html" />
+      <item name="Hangman example"              href="/hangman.html" />
       <item name="Endpoint"                     href="/endpoint.html" />
       <item name="Develop with Ant"             href="/develop-with-ant.html" />
     </menu>
