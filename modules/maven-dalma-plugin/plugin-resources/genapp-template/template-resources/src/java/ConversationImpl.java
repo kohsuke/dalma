@@ -1,7 +1,10 @@
 package @PACKAGE@;
 
-import dalma.Description;
-import dalma.Program;
+import dalma.Workflow;
+import static dalma.TimeUnit.SECONDS;
+
+import java.io.IOException;
+import java.util.Random;
 
 /**
  * A sample workflow.
