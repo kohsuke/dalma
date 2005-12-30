@@ -12,6 +12,7 @@
       <id>dalma</id>
       <version>${pom.currentVersion}</version>
       <properties>
+        <belongsTo>${pom.artifactId}</belongsTo>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
     </dependency>
@@ -20,6 +21,7 @@
       <version>1.0</version>
       <jar>jbi.jar</jar>
       <properties>
+        <belongsTo>${pom.artifactId}</belongsTo>
         <jar.manifest.classpath>true</jar.manifest.classpath>
         <dist>endpoint</dist>
       </properties>

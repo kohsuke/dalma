@@ -18,6 +18,9 @@
     <dependency>
       <id>jms</id>
       <version>1.1</version>
+      <properties>
+        <belongsTo>${pom.artifactId}</belongsTo>
+      </properties>
     </dependency>
     <!-- test dependency -->
     <dependency>

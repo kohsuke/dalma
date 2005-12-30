@@ -21,6 +21,7 @@
       <version>1.3.3</version>
       <jar>mail.jar</jar>
       <properties>
+        <belongsTo>${pom.artifactId}</belongsTo>
         <jar.manifest.classpath>true</jar.manifest.classpath>
         <dist>endpoint</dist>
       </properties>
@@ -30,6 +31,7 @@
       <version>1.0.3</version>
       <jar>activation.jar</jar>
       <properties>
+        <belongsTo>${pom.artifactId}</belongsTo>
         <jar.manifest.classpath>true</jar.manifest.classpath>
         <dist>endpoint</dist>
       </properties>
