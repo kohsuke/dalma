@@ -30,7 +30,6 @@
     <body>
       <section name="Dependencies">
         <p>
-          ${pom.artifactId}
           The following is a list of dependencies for this project.  These
           dependencies are required to compile and run the application:
         </p>
@@ -45,20 +44,18 @@
           </thead>
           <tbody>
             <j:forEach var="dep" items="${pom.dependencies}">
-              <j:if test="${dep.getProperty('belongsTo')!=null}">
-                <j:if test="${dep.getProperty('belongsTo').indexOf($pom.artifactId) &gt;= 0}">
+                <j:if test="${dep.getProperty('belongsTo').contains(pom.artifactId)}">
                   <tr>
                     <td>${dep.ArtifactId}</td>
                     <td>${dep.Type}</td>
                     <td>${dep.Version}</td>
                     <td>
-                      <j:if test="${!empty(dep.url)}">
+                      <j:if test="${dep.Url}">
                         <a href="${dep.Url}">${dep.Url}</a>
                       </j:if>
                     </td>
                   </tr>
                 </j:if>
-              </j:if>
             </j:forEach>
           </tbody>
         </table>
