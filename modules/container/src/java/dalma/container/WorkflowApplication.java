@@ -219,6 +219,8 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
                     return;
                 }
                 program = (Program)main;
+                // TODO: replace with a real logger
+                program.setLogger(logger);
             } catch (InstantiationException e) {
                 throw new FailedOperationException("Failed to load the main class from application",e);
             } catch (IllegalAccessException e) {

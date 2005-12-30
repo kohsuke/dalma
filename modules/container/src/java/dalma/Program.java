@@ -1,5 +1,7 @@
 package dalma;
 
+import java.util.logging.Logger;
+
 /**
  * Entry point of the user-implemented workflow application.
  *
@@ -50,9 +52,13 @@ public abstract class Program {
      * and populated with the configured endpoints.
      *
      * <p>
+     * This callback can be used to further configure endpoints,
+     * for example by installing listeners and etc.
+     *
+     * <p>
      * In rare case, when a {@link Program} doesn't know statically
      * what endpoints it wants to use,
-     * this callback can be used to add additional endpoints
+     * this callback can be also used to add additional endpoints
      * programatically if desired.
      *
      * <p>
@@ -93,5 +99,28 @@ public abstract class Program {
      */
     public void cleanup(Engine engine) throws Exception {
 
+    }
+
+    // start with the default logger instance so that the user program
+    // can start using it even within the constructor.
+    // we'll replace this with a real logger at some later stage
+    // of initialization
+    private Logger logger = Logger.getLogger(Program.class.getName());
+
+    /**
+     * Gets the logger for this workflow application.
+     *
+     * @return
+     *      always non-null.
+     */
+    public Logger getLogger() {
+        return logger;
+    }
+
+    /**
+     * Reserved for the container. Do not invoke this method.
+     */
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 }
