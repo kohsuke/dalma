@@ -110,6 +110,10 @@ public abstract class Program {
     /**
      * Gets the logger for this workflow application.
      *
+     * <p>
+     * Logs recorded by this logger will be made available
+     * to the monitoring/management applications. 
+     *
      * @return
      *      always non-null.
      */
