@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Dalma">
+  <title>Dalma Engine</title>
+  <body>
+    <links>
+      <item name="Dalma" href="../index.html"/>
+      <item name="java.net" href="http://www.java.net"/>
+    </links>
+  </body>
+</project>
