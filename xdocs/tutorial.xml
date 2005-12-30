@@ -40,7 +40,49 @@ public class Main extends Program {
   <p>
     A workflow program isn't very interesting unless it talks to other systems. In Dalma, they are called <a href="endpoint.html">"endpoints"</a>, and Dalma ships with several of them. In this tutorial, we'll use the <a href="dalma-endpoint-email/index.html">e-mail endpoint</a> to write an e-mail based workflow program.
   </p><p>
-    First, we have to add a new endpoint to our project.
+    First, we have to add a new endpoint to our project. Put the followings into your <tt>project.xml</tt>:
+  </p>
+<source><![CDATA[
+<dependency>
+  <groupId>dalma</groupId>
+  <artifactId>dalma-endpoint-email</artifactId>
+  <version>@@VERSION@@</version>
+  <properties>
+    <dar.bundle>true</dar.bundle>
+  </properties>
+</dependency>
+<dependency>
+  <id>javamail</id>
+  <version>1.3.3</version>
+  <jar>mail.jar</jar>
+  <properties>
+    <dar.bundle>true</dar.bundle>
+  </properties>
+</dependency>
+<dependency>
+  <id>activation</id>
+  <version>1.0.3</version>
+  <jar>activation.jar</jar>
+  <properties>
+    <dar.bundle>true</dar.bundle>
+  </properties>
+</dependency>
+]]></source>
+  <p>
+    In general, consult the <a href="dalma-endpoint-email/dependencies.html">dependency list</a> for the list of required jar files for a given endpoint. Folks with Ant should just copy these jars into the lib directory.
+  </p><p>
+    Then add the following code to the <tt>Main</tt> class as follows:
+  </p>
+<source>
+public class Main extends Program {
+    <b>@Resource(description="this e-mail endpoint is used to communicate with the world")
+    EmailEndPoint email;</b>
+    
+    ...
+}
+</source>
+  <p>
+    <a href="dalma-container/apidocs/index.html?dalma/Resource.html">@Resource</a> annotation indicates to Dalmacon that the user needs to configure this endpoint before using this workflow. Dalmacon then instanciates the endpoint appropriately and set it on the field before the <tt>main</tt> method runs.
   </p>
 </section>
 <section name="Write a simple workflow">
@@ -48,10 +90,10 @@ public class Main extends Program {
     Now we are ready to write a workflow program. Let's write a simple one that just keep replying to the user's message.
   </p>
 <source>
-package foo.workflow;
+package com.example;
 import ...;
 
-public class MyWorkflow implements Runnable, Serializable {
+public class MyWorkflow extends Workflow {
   // initial message received
   private MimeMessage msg;
   
@@ -68,12 +110,12 @@ public class MyWorkflow implements Runnable, Serializable {
     cal.add(DATE,1);
     Date dt = cal.getTime();
     
-    int counter = 0; // pointless counter
+    int counter = 0;
     
     do {
         // create a reply message
         msg = msg.reply(false);
-        msg.setText(String.valueOf(counter));
+        msg.setText(String.valueOf(counter++));
         
         // send it and wait for a reply
         msg = eep.waitForReply(msg,dt);
@@ -82,48 +124,42 @@ public class MyWorkflow implements Runnable, Serializable {
 }
 </source>
   <p>
-    A workflow program is simply a <tt>Runnable</tt> object. The <tt>run</tt> method is invoked by the engine, and when this method returns the conversation ends. There will be one instance of this per one running workflow instance (which is called "conversation".)
-    It also needs to implement <tt>Serializable</tt>, because when a conversation is suspended, its state is persisted to a disk by using Java serialization.
+    A workflow program is really just a <tt>Runnable</tt> object, but deriving it from the <a href="dalma-container/apidocs/index.html?dalma/Workflow.html">Workflow</a> class allows you to use the convenience methods defined on it. Once a workflow instance is started, Dalma invokes the <tt>run</tt> method, and when this method returns the instance ends. There will be one instance of this per one running workflow instance (which is called "conversation".)
   </p><p>
-    We'll start this conversation when a fresh message is received, so the constructor takes the first message received. The workflow immediately replies to a received message, and waits for the sender to further reply. When your conversation blocks, the engine actually persists its state to disk, and remove your conversation from memory. The Java thread that run it will be used to run other conversations. But this all happens behind the scene, and except for the fact that your objects need to be serializable, this is largely transparent.
+    We'll start this conversation when a fresh message is received, so the constructor takes the first message received (so that we can figure out where to send a reply.) The workflow immediately replies to a received message, and waits for the sender to send us a further reply. When your conversation blocks like this, Dalma actually persists its state to disk, and remove your conversation from memory. The Java thread that run it will be used to run other conversations. This all happens behind the scene, and except for the fact that your objects need to be serializable, this is largely transparent (thanks to the magic of continuation!)
   </p><p>
-    When a reply is received, your conversation is resumed, and execution returns normally from the <tt>waitForReply</tt> method with a non-null return value. The conversation sends out another reply, and waits for a further reply.
+    When a reply is received, the endpoint implementation collaborates with the Dalma engine, and it resumes your suspended conversation, and execution returns normally from the <tt>waitForReply</tt> method with a non-null return value. The conversation sends out another reply, and waits for a further reply.
   </p><p>
     Eventually time elapses, and when one day passes, the <tt>waitForReply</tt> method will return with null. At this point the run method exits, and the conversation is considered complete.
   </p>
 </section>
 
-
-  <p>
-    A workflow engine isn't very interesting unless it can talk to other systems. In Dalma, they are called <a href="endpoint.html">"endpoints"</a>, and Dalma ships with several of them. In this tutorial, we'll be using the <a href="dalma-endpoint-email/index.html">e-mail endpoint</a>, so let's also copy all the jars from the <tt>email</tt> directory as well.
-  </p>
-  </subsection>
-<source>
-
-  </p>
-</section>
 <section name="New mail handler">
   <p>
-    Finally, we come back to the new mail handler. When an e-mail that is not a reply to any of the running conversations is received by an e-mail endpoint, it's passed to the new mail handler. In this tutorial, we'll simply create a new conversation into the engine.
+    The last piece to glue them together is the code that starts a new conversation. When an e-mail that is not a reply to any of the running conversations is received by an e-mail endpoint, it's passed to a <tt>NewMailHandler</tt> registered to the endpoint. This is where we'd like to start a new conversation.
+  </p><p>
+    Add the following code to the <tt>Main</tt> class as follows:
   </p>
 <source>
-eep.setNewMailHandler(new NewMailHandler() {
-  public void onNewMail(MimeMessage mail) {
-    engine.createConversation(MyWorkflow.class, eep, msg);
-  }
-});
+public class Main extends Program {
+    ....
+    
+    @Override
+    public void init(final Engine engine) {
+        email.setNewMailHandler(new NewMailHandler() {
+            public void onNewMail(MimeMessage mail) throws Exception {
+                engine.createConversation(new MyWorkflow(email,mail));
+            }
+        });
+    }
 </source>
   <p>
-    <b>TODO: this is a lie. we don't have this version of the <tt>createConversation</tt> method. What would be the easy-to-use API in this case? feedback appreciated.</b>
+    This installs a listener on the e-mail endpoint and starts a new conversation whenever it gets uncorrelated e-mails.
   </p>
 </section>
-<section name="Run">
+<section name="Conclusion">
   <p>
-    That's it. Run this program, and see for yourself that the workflow replies to your e-mail. You can even kill the JVM, restart it, and see that the engine still remembers your running conversations, as if nothing has happened.
-  </p><p>
-    You can also run this program under the debugger. You can set breakpoints, inspect variables, and pretty much everything works normally. Now you got your first working dalma workflow.
-  </p><p>
-    <b>TODO: complete source code in a zip file</b>
+    That's it. Deploy this program (with <tt>maven dalma:dar</tt>), configure it (see <a href="dalma-endpoint-email/endpointURL.html">this</a> for the format of the string), and see for yourself that the workflow replies to your e-mail. You can even stop the workflow application or even kill the web container, restart it, and see that Dalma still remembers your running conversations and counters, as if nothing has happened.
   </p>
 </section>
 </body>
