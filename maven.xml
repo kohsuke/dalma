@@ -2,14 +2,31 @@
          xmlns:j="jelly:core"
          xmlns:a="jelly:ant"
          xmlns:m="jelly:maven"
+         xmlns:u="jelly:util"
          xmlns:deploy="deploy"
          xmlns:define="jelly:define"
          xmlns:dalma="dalma">
 
-  <j:include file="maven.dependency-ex.xml" />
+  <!-- =========== Set root dir =========== -->
+  <j:set var="rootdir">${basedir}</j:set>
+  <j:while test="${true}">
+    <u:available file="${rootdir}/LICENSE.txt">
+      <j:break/>
+    </u:available>
+    <j:set var="rootdir">${rootdir}/..</j:set>
+  </j:while>
+  <a:dirname property="rootdirname" file="${rootdir}/project.xml"/>
+  <j:set var="rootdir">${rootdirname}</j:set>
+  <echo>Using root dir: ${rootdir}</echo>
+
+
+
+
+  <j:include file="${rootdir}/maven.dependency-ex.xml" />
   
   <postGoal name="xdoc">
     <!-- run keyword substitution -->
+    <echo>Replacing keywords</echo>
     <replace dir="target/docs">
       <replacefilter 
         token="@@VERSION@@" 
@@ -20,6 +37,20 @@
   <goal name="site:generate">
     <attainGoal name="multiproject:site" />
   </goal>
+  
+  <postGoal name="multiproject:site">
+    <!-- overwrite stylesheets -->
+    <attainGoal name="multiproject:projects-init" />
+    
+    <m:get var="multiprojects" plugin="maven-multiproject-plugin" property="multiprojects" />
+    
+    <j:forEach var="p" items="${multiprojects}">
+      <j:set var="directory" value="${maven.docs.dest}/${maven.multiproject.aggregateDir}${p.artifactId}"/>
+      <copy todir="${directory}/style">
+        <fileset dir="${maven.docs.dest}/style" />
+      </copy>
+    </j:forEach>
+  </postGoal>
 
   <define:taglib uri="dalma">
     <!--
@@ -54,18 +85,8 @@
        copy module files into ${out}/modules
     -->
     <define:tag name="deploy-modules">
-      <!-- this parses module POMs into 'multiprojects'. Somehow I need to do this twice -->
       <attainGoal name="multiproject:projects-init" />
-      <m:reactor
-        basedir="${maven.multiproject.basedir}"
-        banner="Gathering project list"
-        includes="${maven.multiproject.includes}"
-        excludes="${maven.multiproject.excludes}"
-        postProcessing="true"
-        collectOnly="true"
-        collectionVar="multiprojects"
-        ignoreFailures="${maven.multiproject.ignoreFailures}"
-      />
+      <m:get var="multiprojects" plugin="maven-multiproject-plugin" property="multiprojects" />
 
       <j:forEach var="p" items="${multiprojects}">
         <a:echo>Processing ${p.artifactId}</a:echo>
@@ -87,8 +108,6 @@
   <goal name="dist:build"
         description="creates a distribution image">
     <!-- build all modules -->
-    <!--j:set var="goal" value="jar:install"/>
-    <attainGoal name="multiproject:goal"/-->
 
     <j:set var="out" value="target/dist" />
 
@@ -182,8 +201,8 @@
   </postGoal>
   
   <goal name="javanet:deploy"
-        description="deploy each module into java.net">
-    <attainGoal name="multiproject:projects-init" />
+        description="deploy each module into java.net"
+        prereqs="multiproject:projects-init">
     <m:reactor
       basedir="${maven.multiproject.basedir}"
       includes="${maven.multiproject.includes}"
