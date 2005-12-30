@@ -1,14 +1,14 @@
 <!--
   These goals generate a better dependency list that only list 'public' dependencies.
 -->
-<included xmlns:doc="doc">
+<included xmlns:doc="doc" xmlns:j="jelly:core">
   <goal name="dependency-ex:register">
     <echo>registered</echo>
     <doc:registerReport
       name="Dependencies" 
       pluginName="dependency-ex"
-      link="dependencies"
       description="Project Dependencies"/>
+<!--      link="dependencies" -->
   </goal>
   <goal name="dependency-ex:deregister">
     <echo>deregistered</echo>
@@ -16,9 +16,12 @@
   </goal>
   
   <goal name="dependency-ex:report" prereqs="xdoc:init">
+    <j:if test="${!pom.artifactId.equals('dalma-site')}">
+      <j:set var="home" value="../../"/>
+    </j:if>
     <doc:jslFile
       output="${maven.gen.docs}/dependencies.xml"
-      stylesheet="${basedir}/dependencies.jelly"
+      stylesheet="${basedir}/${home}dependencies.jelly"
       outputMode="xml"
       prettyPrint="true"/>
   </goal>
