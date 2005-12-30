@@ -5,6 +5,9 @@
          xmlns:deploy="deploy"
          xmlns:define="jelly:define"
          xmlns:dalma="dalma">
+
+  <j:include file="maven.dependency-ex.xml" />
+  
   <goal name="site:generate">
     <attainGoal name="multiproject:site" />
   </goal>
@@ -144,7 +147,7 @@
   </goal>
 
   <preGoal name="javanet:dist">
-    <j:set var="maven.javanet.release.folder" value="/nightly" />
+    <j:set var="maven.javanet.release.folder" value="/main${maven.javanet.base.folder}" />
     <j:set var="maven.final.name" value="dalma-${pom.currentVersion}" />
     <attainGoal name="dist:container" />
     <m:reactor basedir="modules" includes="webui/project.xml" goals="war" />
@@ -153,7 +156,7 @@
   <postGoal name="javanet:dist">
     <!-- upload container -->
     <javaNetUpload projectName="${maven.javanet.project}"
-      toFile="${maven.javanet.release.folder}/dalmacon-${pom.currentVersion}.zip"
+      toFile="/dalmacon${maven.javanet.base.folder}/dalmacon-${pom.currentVersion}.zip"
       fromFile="target/distributions/dalmacon-${pom.currentVersion}.zip"
       description="Dalma container ver.${pom.currentVersion}"
       overwrite="yes"
@@ -161,7 +164,7 @@
     />
     <!-- upload war -->
     <javaNetUpload projectName="${maven.javanet.project}"
-      toFile="${maven.javanet.release.folder}/dalma-webui-${pom.currentVersion}.war"
+      toFile="/webui${maven.javanet.base.folder}/dalma-webui-${pom.currentVersion}.war"
       fromFile="modules/webui/target/dalma.war"
       description="Dalma Web UI ver.${pom.currentVersion}"
       overwrite="yes"
@@ -233,5 +236,6 @@
       <a:tarfileset prefix="${prefix}" dir="target/dist-container" />
     </a:tar>
   </goal>
-
+  
+  
 </project>
