@@ -10,7 +10,7 @@
     <subsection name="Copying jars to your workspace">
       <!-- TODO: create a workspace template image to start with. -->
       <p>
-        First, <a href="https://dalma.dev.java.net/servlets/ProjectDocumentList?folderID=4629&amp;expandFolder=4629">download a main binary distribution (dalma-<i>[version]</i>.zip)</a> and then copy <tt>dalma-<i>[version]</i>.jar</tt> and <tt>container/dalma-container-<i>[version]</i>.jar</tt> to your workspace. You'll need those two jars for compiling your workflow applications.
+        First, <a href="https://dalma.dev.java.net/servlets/ProjectDocumentList?folderID=4629&amp;expandFolder=4629">download a main binary distribution (dalma-@@VERSION$$.zip)</a> and then copy <tt>dalma-@@VERSION$$.jar</tt> and <tt>container/dalma-container-@@VERSION$$.jar</tt> to your workspace. You'll need those two jars for compiling your workflow applications.
       </p><p>
         Note that as long as you are deploying into the WebUI or the container, you won't have to redistribute these jars.
       </p><p>
