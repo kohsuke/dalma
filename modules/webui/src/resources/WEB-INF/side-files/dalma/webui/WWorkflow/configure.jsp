@@ -9,6 +9,11 @@
     <s:entry title="Application Name">
       ${it.name}
     </s:entry>
+    <s:entry title="Days to keep log records"
+      description="if not empty, completed conversations are only kept up to this number of days">
+      <input class="setting-input" name="logrotate_days"
+        type="text" value="${it.logRotationDays}">
+    </s:entry>
     <s:section title="Application Configuration">
       <c:set var="config" value="${it.configProperties}" />
       <c:forEach var="prop" items="${it.model.parts}">

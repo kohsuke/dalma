@@ -77,19 +77,15 @@ final class CompletedConversationList extends Observable {
      */
     public void setPolicy(LogRotationPolicy policy) {
         this.policy = policy;
+        scheduleReload();
     }
 
     public void add(Conversation _conv) {
         CompletedConversation conv = new CompletedConversation(_conv);
 
         synchronized(convs) {
-            // apply log policy and trim the entries
-            for (Iterator<Map.Entry<Integer,CompletedConversation>> itr = convs.entrySet().iterator(); itr.hasNext();) {
-                CompletedConversation c = itr.next().getValue();
-                if(!policy.keep(c))
-                    itr.remove();
-            }
             convs.put(conv.getId(),conv);
+            applyLogRotation(convs);
         }
 
         File dt = getDataFile(conv);
@@ -115,20 +111,21 @@ final class CompletedConversationList extends Observable {
      */
     public Map<Integer,Conversation> getList() {
         assert convs!=null;
-        if(nextUpdate<System.currentTimeMillis() && !reloadingInProgress) {
-            synchronized(this) {
-                if(!reloadingInProgress) {
-                    // avoid scheduling the task twice
-                    reloadingInProgress = true;
-                    // schedule a new reloading operation.
-                    // we don't want to block the current thread,
-                    // so reloading is done asynchronously.
-                    reloader.execute(reloadTask);
-                }
-            }
-        }
+        if(nextUpdate<System.currentTimeMillis() && !reloadingInProgress)
+            scheduleReload();
         // return a new copy to avoid synchronization issue
         return new HashMap<Integer,Conversation>(convs);
+    }
+
+    private synchronized void scheduleReload() {
+        if(!reloadingInProgress) {
+            // avoid scheduling the task twice
+            reloadingInProgress = true;
+            // schedule a new reloading operation.
+            // we don't want to block the current thread,
+            // so reloading is done asynchronously.
+            reloader.execute(reloadTask);
+        }
     }
 
 
@@ -154,11 +151,22 @@ final class CompletedConversationList extends Observable {
                 }
             }
 
+            applyLogRotation(convs);
+
             CompletedConversationList.this.convs = convs;
             reloadingInProgress = false;
             nextUpdate = System.currentTimeMillis()+5000;
         }
     };
+
+    private void applyLogRotation(Map<Integer, CompletedConversation> convs) {
+        // apply log policy and trim the entries
+        for (Iterator<Map.Entry<Integer,CompletedConversation>> itr = convs.entrySet().iterator(); itr.hasNext();) {
+            CompletedConversation c = itr.next().getValue();
+            if(!policy.keep(c))
+                itr.remove();
+        }
+    }
 
     private static final Executor reloader = Executors.newSingleThreadExecutor(new ThreadFactory() {
         public Thread newThread(Runnable r) {

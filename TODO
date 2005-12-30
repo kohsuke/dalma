@@ -24,7 +24,6 @@ James integration
 Container Version
 ==============
 - javadoc link among modules
-- log rotation
 - install it on other containers as a test before release
 - define a place to put modules
 - define module installer screen

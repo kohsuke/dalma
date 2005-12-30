@@ -92,6 +92,12 @@ public class WWorkflow extends UIObject {
         return WConversation.wrap(this,core.getCompletedConversations().get(id));
     }
 
+    public String getLogRotationDays() {
+        int d = core.getLogRotationDays();
+        if(d==-1)       return "";
+        return String.valueOf(d);
+    }
+
     public Collection<Conversation> getConversations() {
         Engine e = core.getEngine();
         if(e==null) return Collections.emptyList();
@@ -125,7 +131,7 @@ public class WWorkflow extends UIObject {
     /**
      * Accepts the configuration page submission.
      */
-    public void doPostConfigure(StaplerRequest req, StaplerResponse resp) throws IOException {
+    public void doPostConfigure(StaplerRequest req, StaplerResponse resp) throws IOException, ServletException {
         // TODO: report failed start operation correctly
         Properties props = core.loadConfigProperties();
         for( Map.Entry<String,String[]> e : ((Map<String,String[]>)req.getParameterMap()).entrySet() ) {
@@ -136,6 +142,14 @@ public class WWorkflow extends UIObject {
             props.put(name,e.getValue()[0]);
         }
         core.saveConfigProperties(props);
+
+        String logRotateDays = req.getParameter("logrotate_days");
+        if(logRotateDays==null) logRotateDays = "-1";
+        try {
+            core.setLogRotationDays(Integer.valueOf(logRotateDays));
+        } catch(NumberFormatException e) {
+            sendError(req,logRotateDays+" is not an integer",resp);
+        }
 
         resp.sendRedirect(".");
     }

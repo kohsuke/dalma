@@ -27,6 +27,8 @@ import java.text.ParseException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,6 +105,20 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
     private WorkflowState state;
 
+    private int logRotationDays = -1;
+    private final LogRotationPolicy logPolicy = new LogRotationPolicy() {
+        public boolean keep(Conversation conv) {
+            if(logRotationDays==-1)
+                return true;    // no rotation
+
+            Calendar cal = new GregorianCalendar();
+            cal.add(Calendar.DAY_OF_YEAR, -logRotationDays);
+
+            return conv.getCompletionDate().getTime() > cal.getTimeInMillis();
+        }
+    };
+
+
     private final CompletedConversationList ccList;
 
     public WorkflowApplication(Container owner,File appDir) throws FailedOperationException {
@@ -114,8 +130,16 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         this.state = UNLOADED;
 
         File clog = new File(workDir, "completed-logs");
-        clog.mkdir();
+        clog.mkdirs();
         this.ccList = new CompletedConversationList(clog);
+        this.ccList.setPolicy(logPolicy);
+
+        try {
+            Properties props = loadConfigProperties();
+            this.logRotationDays = Integer.parseInt(props.getProperty(LOG_ROTATION_KEY,"-1"));
+        } catch (IOException e) {
+            throw new FailedOperationException("Failed to load configuration "+confFile,e);
+        }
 
         try {
             objectName = new ObjectName("dalma:container=" + ObjectName.quote(owner.getHomeDir().toString()) + ",name=" + name);
@@ -127,6 +151,29 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         }
 
         load();
+    }
+
+    /**
+     * Sets the # of days the completed conversation logs are kept.
+     *
+     * @param d
+     *      -1 to keep indefinitely.
+     */
+    public void setLogRotationDays( int d ) throws IOException {
+        logRotationDays = d;
+        Properties props = loadConfigProperties();
+        props.setProperty(LOG_ROTATION_KEY,String.valueOf(d));
+        saveConfigProperties(props);
+        ccList.setPolicy(logPolicy);
+    }
+
+    /**
+     * Gets the # of days the completed conversation logs are kept.
+     *
+     * Defaults to -1 (keep indefinitely)
+     */
+    public int getLogRotationDays() {
+        return logRotationDays;
     }
 
     /**
@@ -483,4 +530,6 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      * True when this workflow is already undeployed.
      */
     private boolean undeployed = false;
+
+    private static final String LOG_ROTATION_KEY = "!log-rotation-days";
 }
