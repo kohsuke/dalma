@@ -144,7 +144,7 @@ public class WWorkflow extends UIObject {
         core.saveConfigProperties(props);
 
         String logRotateDays = req.getParameter("logrotate_days");
-        if(logRotateDays==null) logRotateDays = "-1";
+        if(logRotateDays==null || logRotateDays.length()==0) logRotateDays = "-1";
         try {
             core.setLogRotationDays(Integer.valueOf(logRotateDays));
         } catch(NumberFormatException e) {
