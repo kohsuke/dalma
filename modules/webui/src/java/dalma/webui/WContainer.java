@@ -1,8 +1,8 @@
 package dalma.webui;
 
 import dalma.container.Container;
-import dalma.container.WorkflowApplication;
 import dalma.container.FailedOperationException;
+import dalma.container.WorkflowApplication;
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -72,9 +72,8 @@ public class WContainer extends UIObject {
         }
 
         try {
-            core.deploy(appName,contents);
-            // success
-            resp.sendRedirect(req.getContextPath());
+            WorkflowApplication wa = core.deploy(appName, contents);
+            resp.sendRedirect(req.getContextPath()+'/'+WWorkflow.wrap(wa).getUrl());
         } catch (FailedOperationException e) {
             sendError(req, e, resp);
         } catch (InterruptedException e) {

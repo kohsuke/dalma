@@ -87,7 +87,8 @@ public final class Container implements ContainerMBean {
 
         for (WorkflowApplication app : applications.values()) {
             try {
-                app.start();
+                if(app.isConfigured())
+                    app.start();
             } catch (FailedOperationException e) {
                 logger.log(Level.WARNING,"Failed to start "+app.getName(),e);
             }
@@ -174,8 +175,9 @@ public final class Container implements ContainerMBean {
     protected WorkflowApplication deploy(File appsubdir) throws FailedOperationException {
         WorkflowApplication wa = new WorkflowApplication(this, appsubdir);
         applications.put(wa.getName(),wa);
-        // TODO: check if it can be started
-        wa.start();
+        if(wa.isConfigured())
+            wa.start(); // looks like it's configured enough to start
+        // otherwise leave it in the loaded state
         return wa;
     }
 
