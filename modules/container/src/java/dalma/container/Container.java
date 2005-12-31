@@ -135,7 +135,7 @@ public final class Container implements ContainerMBean {
             app.stop();
     }
 
-    public synchronized void deploy(String name, byte[] data) throws FailedOperationException, InterruptedException {
+    public synchronized WorkflowApplication deploy(String name, byte[] data) throws FailedOperationException, InterruptedException {
         logger.info("Accepting application '"+name+"'");
         // use a temp file first to hide from auto redeployer
         File tmpFile = new File(appsDir,name+".tmp");
@@ -150,7 +150,7 @@ public final class Container implements ContainerMBean {
             throw new FailedOperationException("Failed to write to a file",e);
         }
 
-        Future<FailedOperationException> ft = redeployer.getFuture(new File(appsDir, name));
+        Future<WorkflowApplication> ft = redeployer.getFuture(new File(appsDir, name));
 
         File darFile = new File(appsDir,name+".dar");
         if(darFile.exists())
@@ -159,12 +159,9 @@ public final class Container implements ContainerMBean {
         // the rest is up to redeployer to pick up
 
         try {
-            FailedOperationException err = ft.get(15, TimeUnit.SECONDS);
-            if(err!=null)
-                // wrap to a new exception to get a stack trace that makes sense
-                throw new FailedOperationException("Deployment failed",err);
+            return ft.get(15, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
-            throw new AssertionError(e);    // impossible
+            throw new FailedOperationException("Deployment failed",e.getCause());
         } catch (TimeoutException e) {
             throw new FailedOperationException("Operation timed out",e);
         }

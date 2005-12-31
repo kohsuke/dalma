@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,9 +42,17 @@ final class Redeployer extends FileChangeMonitor {
             run();
         }
 
+        public void abortWith(Exception e) {
+            this.callable.e = e;
+            run();
+        }
+
         static class NoopCallable<V> implements Callable<V> {
             private V v;
+            private Exception e;
             public V call() throws Exception {
+                if(e!=null)
+                    throw e;
                 return v;
             }
         }
@@ -54,8 +63,8 @@ final class Redeployer extends FileChangeMonitor {
      *
      * Access is synchronized.
      */
-    private final Map<File,PassiveFutureTask<FailedOperationException>> futures
-        = new Hashtable<File,PassiveFutureTask<FailedOperationException>>();
+    private final Map<File,PassiveFutureTask<WorkflowApplication>> futures
+        = new Hashtable<File,PassiveFutureTask<WorkflowApplication>>();
 
     Redeployer(Container container) {
         super(container.appsDir);
@@ -71,15 +80,16 @@ final class Redeployer extends FileChangeMonitor {
      *      under the redeployer's supervision.
      *
      * @return
-     *      always non-null. This future object receives a null value
-     *      if the operation is successful, or otherwise an exception that
-     *      indicates a failure.
+     *      always non-null. This future object receives a {@link WorkflowApplication} object
+     *      if the update/installation is successful, or else
+     *      {@link ExecutionException} that wraps {@link FailedOperationException},
+     *      indicating a failure.
      */
-    public Future<FailedOperationException> getFuture(File dirName) {
+    public Future<WorkflowApplication> getFuture(File dirName) {
         synchronized(futures) {
-            PassiveFutureTask<FailedOperationException> ft = futures.get(dirName);
+            PassiveFutureTask<WorkflowApplication> ft = futures.get(dirName);
             if(ft==null) {
-                ft = new PassiveFutureTask<FailedOperationException>();
+                ft = new PassiveFutureTask<WorkflowApplication>();
                 futures.put(dirName,ft);
             }
             return ft;
@@ -92,14 +102,13 @@ final class Redeployer extends FileChangeMonitor {
             Container.explode(file);
         if(file.isDirectory()) {
             logger.info("New application '"+file.getName()+"' detected. Deploying.");
-            FailedOperationException ex = null;
             try {
-                container.deploy(file);
+                WorkflowApplication wa = container.deploy(file);
+                notifyFutures(file,wa);
             } catch (FailedOperationException e) {
-                ex = e;
                 logger.log(Level.SEVERE, "Unable to deploy", e );
+                notifyFutures(file,e);
             }
-            notifyFutures(file,ex);
         }
     }
 
@@ -108,7 +117,6 @@ final class Redeployer extends FileChangeMonitor {
         if(isDar(file))
             Container.explode(file);
         if(file.isDirectory()) {
-            FailedOperationException ex = null;
             try {
                 WorkflowApplication wa = container.getApplication(file.getName());
                 if(wa!=null) {
@@ -116,11 +124,11 @@ final class Redeployer extends FileChangeMonitor {
                     wa.unload();
                     wa.start();
                 }
+                notifyFutures(file,wa);
             } catch (FailedOperationException e) {
-                ex = e;
                 logger.log(Level.SEVERE, "Unable to redeploy", e );
+                notifyFutures(file,e);
             }
-            notifyFutures(file,ex);
         }
     }
 
@@ -129,7 +137,7 @@ final class Redeployer extends FileChangeMonitor {
         if(wa!=null) {
             logger.info("Application '"+file.getName()+"' is removed. Undeploying.");
             wa.remove();
-            notifyFutures(file,null);
+            notifyFutures(file,(WorkflowApplication)null);
         }
     }
 
@@ -137,9 +145,16 @@ final class Redeployer extends FileChangeMonitor {
      * Updates {@link Future} objects blocking on a directory.
      */
     private void notifyFutures(File file, FailedOperationException e) {
-        PassiveFutureTask<FailedOperationException> ft = futures.remove(file);
+        PassiveFutureTask<WorkflowApplication> ft = futures.remove(file);
         if(ft!=null) {
-            ft.completeWith(e);
+            ft.abortWith(e);
+        }
+    }
+
+    private void notifyFutures(File file, WorkflowApplication wa) {
+        PassiveFutureTask<WorkflowApplication> ft = futures.remove(file);
+        if(ft!=null) {
+            ft.completeWith(wa);
         }
     }
 

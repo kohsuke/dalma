@@ -23,14 +23,26 @@ public interface ContainerMBean {
     /**
      * Deploys a new application.
      *
+     * <p>
+     * This method blocks until the application is installed.
+     * If an application of the same name has been already installed,
+     * this method re-deploys it.
+     *
      * @param name
      *      name of the new application, such as "foo."
      *      A directory of this name will be created.
      *
-     * @throws InterruptedException
-     *      
+     * @throws FailedOperationException
+     *      If for some reason the operation failed, such as an I/O error.
+     *
+     * @return
+     *      A {@link WorkflowApplication} object that represents the deployed application.
+     *      It maybe in the {@link WorkflowState#RUNNING running} state or in
+     *      the {@link WorkflowState#STOPPED stopped} state, depending on various factors,
+     *      such as whether the application is configured enough or whether it was running
+     *      before (in case of update.)
      */
-    void deploy(String name,byte[] data) throws InterruptedException, FailedOperationException;
+    WorkflowApplication deploy(String name,byte[] data) throws InterruptedException, FailedOperationException;
 
     ///**
     // * Enables the auto-redeployment feature.
