@@ -54,6 +54,10 @@ public class WWorkflow extends UIObject {
         return core.getModel();
     }
 
+    public boolean isConfigured() {
+        return core.isConfigured();
+    }
+
     public String getConversationSize() {
         Engine engine = core.getEngine();
         return engine!=null ? String.valueOf(engine.getConversationsSize()) : "N/A";
