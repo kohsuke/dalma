@@ -174,6 +174,7 @@ public final class Container implements ContainerMBean {
     protected WorkflowApplication deploy(File appsubdir) throws FailedOperationException {
         WorkflowApplication wa = new WorkflowApplication(this, appsubdir);
         applications.put(wa.getName(),wa);
+        // TODO: check if it can be started
         wa.start();
         return wa;
     }

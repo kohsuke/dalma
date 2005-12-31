@@ -74,6 +74,10 @@ public final class Model<T> {
         public String getDescription() {
             return description;
         }
+
+        public boolean checkConfiguration(Properties props) {
+            return optional || props.getProperty(name)!=null;
+        }
     }
 
     /**
@@ -107,6 +111,17 @@ public final class Model<T> {
     public void inject(Engine engine, T target, Properties prop ) throws InjectionException, ParseException {
         for (Part<?> res : parts)
             res.inject(engine,target,prop);
+    }
+
+    /**
+     * Checks if the given properties have enough configuration
+     * for all mandatory parameters.
+     */
+    public boolean checkConfiguration(Properties props) {
+        for (Part<?> res : parts)
+            if(!res.checkConfiguration(props))
+                return false;
+        return true;
     }
 
     public List<Part> getParts() {

@@ -118,8 +118,9 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         }
     };
 
-
     private final CompletedConversationList ccList;
+
+
 
     public WorkflowApplication(Container owner,File appDir) throws FailedOperationException {
         this.owner = owner;
@@ -176,9 +177,16 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         return logRotationDays;
     }
 
-    /**
-     * Moves the state to {@link WorkflowState#STOPPED}.
-     */
+    public boolean isConfigured() {
+        if(state==UNLOADED)     return false;
+        try {
+            return model.checkConfiguration(loadConfigProperties());
+        } catch (IOException e) {
+            log("Failed to check the configuration",e);
+            return false;
+        }
+    }
+
     public synchronized void load() throws FailedOperationException {
         if(state!=UNLOADED) return; // nothing to do
 
