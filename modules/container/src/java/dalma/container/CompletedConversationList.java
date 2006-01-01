@@ -61,8 +61,7 @@ final class CompletedConversationList extends Observable {
 
     public CompletedConversationList(File dir) {
         this.dir = dir;
-        // load the first list now
-        reloadTask.run();
+        scheduleReload();
     }
 
     /**
@@ -81,6 +80,7 @@ final class CompletedConversationList extends Observable {
     }
 
     public void add(Conversation _conv) {
+        loadSync();
         CompletedConversation conv = new CompletedConversation(_conv);
 
         synchronized(convs) {
@@ -97,6 +97,7 @@ final class CompletedConversationList extends Observable {
     }
 
     public void remove(Conversation conv) {
+        loadSync();
         if(convs.remove(conv.getId())==null)
             throw new IllegalArgumentException();
         // delete from disk, too
@@ -110,7 +111,7 @@ final class CompletedConversationList extends Observable {
      *      always non-null, possibly empty. Map is keyed by ID.
      */
     public Map<Integer,Conversation> getList() {
-        assert convs!=null;
+        loadSync();
         if(nextUpdate<System.currentTimeMillis() && !reloadingInProgress)
             scheduleReload();
         // return a new copy to avoid synchronization issue
@@ -126,6 +127,11 @@ final class CompletedConversationList extends Observable {
             // so reloading is done asynchronously.
             reloader.execute(reloadTask);
         }
+    }
+
+    private void loadSync() {
+        if(convs==null)
+            reloadTask.run();
     }
 
 
