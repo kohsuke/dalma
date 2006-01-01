@@ -19,6 +19,8 @@ import java.util.Properties;
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -105,11 +107,17 @@ public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
     public Collection<Conversation> getConversations() {
         Engine e = core.getEngine();
         if(e==null) return Collections.emptyList();
-        return e.getConversations();
+        return toSortedList(e.getConversations());
     }
 
     public Collection<Conversation> getCompletedConversations() {
-        return core.getCompletedConversations().values();
+        return toSortedList(core.getCompletedConversations().values());
+    }
+
+    private List<Conversation> toSortedList(Collection<Conversation> c) {
+        List<Conversation> r = new ArrayList<Conversation>(c);
+        Collections.sort(r,REVERSE_CONVERSATION_SORTER);
+        return r;
     }
 
     public void doStop(StaplerRequest req, StaplerResponse resp) throws IOException {
@@ -190,4 +198,11 @@ public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
     public int compareTo(WWorkflow that) {
         return this.getName().compareTo(that.getName());
     }
+
+    private static final Comparator<Conversation> REVERSE_CONVERSATION_SORTER =
+        new Comparator<Conversation>() {
+            public int compare(Conversation lhs, Conversation rhs) {
+                return rhs.getId()-lhs.getId();
+            }
+        };
 }
