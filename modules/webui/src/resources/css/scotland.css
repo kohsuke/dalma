@@ -1,0 +1,131 @@
+/*----------------------------- footer positioning CSS -----------------------------*/
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+}
+
+#nonFooter {
+  position: relative;
+  min-height: 100%;
+}
+
+* html #nonFooter {
+  height: 100%;
+}
+
+#footer {
+  position: relative;
+  margin-top: -4em;
+}
+
+/* to avoid the footer from colliding with body */
+#footerPadding {
+  clear: both; /* so that it won't overlap with left bar */
+  height: 4em;
+}
+
+
+
+
+
+/*----------------------------- navbar and main content page positioning -----------------------------*/
+#leftbar {
+  position: relative;
+  float: left;
+  width: 15em;
+}
+#content {
+  width:100%;
+  float: right;
+  margin-left: -15em;
+}
+#contentBody {
+  margin-left: 15em;
+  margin-right: 1em;
+}
+
+
+
+
+
+/*----------------------------- navigation bar layouts -----------------------------*/
+#leftbar ul {
+  margin: 0px;
+  margin-left: 5px;
+  padding-left: 1em;
+  padding-top: 1em;
+  padding-right: 1em;
+  list-style: none;
+}
+#leftbar ul li {
+  /* create space for icon */
+  text-indent: -25px;
+  margin-left: 25px;
+}
+#leftbar ul li img {
+  padding-right: 5px;
+  vertical-align: middle;
+}
+
+
+
+
+
+/*----------------------------- general layout control -----------------------------*/
+body {
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  border: 0;
+}
+
+
+
+
+
+/*----------------------------- data table -----------------------------*/
+table.datatable {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px #bbb solid;
+}
+
+table.datatable tr {
+  border: 1px solid #bbb;
+  padding: 3px 4px 3px 4px;
+}
+
+table.datatable tr td {
+  padding: 3px 4px 3px 4px;
+  vertical-align: middle;
+}
+
+table.datatable tr th {
+  font-weight: bold;
+  background-color: #f0f0f0;
+  padding: 3px 4px 3px 4px;
+}
+
+
+
+
+
+/*----------------------------- dialog page -----------------------------*/
+.setting-name {
+}
+
+.setting-input {
+  width: 100%;
+}
+
+.setting-description {
+  font-size: 0.8em;
+  margin-top: 0;
+  padding-top: 0;
+}
+

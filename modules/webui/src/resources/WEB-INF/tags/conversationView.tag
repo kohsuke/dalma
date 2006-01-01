@@ -10,7 +10,7 @@
 <c:if test="${fn:length(convs)!=0}">
   <h2>${title}</h2>
   <div class="dashboard">
-    <table id="projectstatus" class="pane">
+    <table class="datatable">
       <tr>
         <th width=10%>&nbsp;</th>
         <th width=20%>Started On</th>

@@ -8,15 +8,14 @@
 %>
 <jsp:include page="sidepanel.jsp" />
 <l:main-panel>
-  <div class="dashboard">
-    <table id="projectstatus" class="pane">
-      <tr>
-        <th>&nbsp;</th>
-        <th>Workflow</th>
-        <th># of Conversations</th>
-        <th>Last Activated</th>
-        <th>Status</th>
-      </tr>
+  <table class="datatable">
+    <tr>
+      <th>&nbsp;</th>
+      <th>Workflow</th>
+      <th># of Conversations</th>
+      <th>Last Activated</th>
+      <th>Status</th>
+    </tr>
 
     <c:forEach var="w" items="${app.workflows}">
       <tr>
