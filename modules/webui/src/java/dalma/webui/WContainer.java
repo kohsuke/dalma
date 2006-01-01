@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
@@ -84,8 +85,9 @@ public class WContainer extends UIObject {
     public List<WWorkflow> getWorkflows() {
         List<WWorkflow> r = new ArrayList<WWorkflow>();
         for (WorkflowApplication a : core.getApplications()) {
-            r.add(new WWorkflow(a));
+            r.add(WWorkflow.wrap(a));
         }
+        Collections.sort(r);
         return r;
     }
 

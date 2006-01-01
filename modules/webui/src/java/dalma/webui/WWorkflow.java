@@ -23,7 +23,7 @@ import java.util.Collections;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class WWorkflow extends UIObject {
+public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
     private final WorkflowApplication core;
 
     public WWorkflow(WorkflowApplication core) {
@@ -185,5 +185,9 @@ public class WWorkflow extends UIObject {
         } catch (InterruptedException e) {
             sendError(req, e, resp);
         }
+    }
+
+    public int compareTo(WWorkflow that) {
+        return this.getName().compareTo(that.getName());
     }
 }
