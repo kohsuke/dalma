@@ -23,6 +23,8 @@ James integration
 
 Container Version
 ==============
+- duck-typing delegation in Stapler
+  - how does it implement UIObject?
 - javadoc link among modules
 - install it on other containers as a test before release
 - define a place to put modules
@@ -51,4 +53,3 @@ Container Version
     currently, we only check directory timestamp
 
 - consider using commons-vfs. note that it was never released
-
