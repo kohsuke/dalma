@@ -21,7 +21,7 @@ public interface WorkflowApplicationMBean {
      */
     void load() throws FailedOperationException ;
 
-    void undeploy();
+    void undeploy() throws FailedOperationException;
 
     String getName();
     String getDescription();

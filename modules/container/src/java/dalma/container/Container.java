@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URL;
 
 /**
  * Root of Dalmacon.
@@ -376,6 +377,15 @@ public final class Container implements ContainerMBean {
             logger.log(Level.SEVERE,"Unable to extract "+dar,x);
             // leave the engine stopped,
             // so that if the user updates the file again, it will restart the engine
+        }
+    }
+
+    static {
+        try {
+            // avoid cache that causes jar leaks
+            new URL("http://dummy/").openConnection().setDefaultUseCaches(false);
+        } catch (IOException e) {
+            throw new Error(e);
         }
     }
 }
