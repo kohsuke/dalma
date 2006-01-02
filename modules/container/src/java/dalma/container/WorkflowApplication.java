@@ -58,7 +58,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      *
      * null if {@link WorkflowState#UNLOADED}.
      */
-    private ClassLoader classLoader;
+    private ClassLoaderImpl classLoader;
 
     /**
      * The Main class in the {@link #classLoader}.
@@ -192,7 +192,11 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
         logger.info("Loading "+name);
 
-        classLoader = createClassLoader();
+        try {
+            classLoader = createClassLoader();
+        } catch (IOException e) {
+            throw new FailedOperationException("Failed to set up a ClassLoader",e);
+        }
 
         try {
             mainClass = classLoader.loadClass(findMainClass());
@@ -367,12 +371,12 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
     /**
      * Creates a new {@link ClassLoader} that loads workflow application classes.
      */
-    private ClassLoader createClassLoader() {
-        ClassLoaderBuilder clb = new ClassLoaderBuilder(owner.appClassLoader);
-        clb.addJarFiles(appDir);
-        clb.addPathElement(appDir);
-
-        return clb.makeContinuable();
+    private ClassLoaderImpl createClassLoader() throws IOException {
+        ClassLoaderImpl cl = new ClassLoaderImpl(owner.appClassLoader);
+        cl.addJarFiles(appDir);
+        cl.addPathFile(appDir);
+        cl.makeContinuable();
+        return cl;
     }
 
     /**
@@ -414,6 +418,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         if(state==UNLOADED)
             return; // nothing to do
 
+        classLoader.cleanup();
         classLoader = null;
         mainClass = null;
         model = null;

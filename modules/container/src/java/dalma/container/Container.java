@@ -76,7 +76,15 @@ public final class Container implements ContainerMBean {
      */
     final ClassLoader appClassLoader;
 
-    public Container(File root, Executor executor) {
+    /**
+     * Creates a new container.
+     *
+     * @param root
+     *      Home directory to store data. Must exist.
+     * @param executor
+     *      used to execute workflow applications.
+     */
+    public Container(File root, Executor executor) throws IOException {
         this.homeDir = root.getAbsoluteFile();
         this.modules = findModules();
         this.appsDir = new File(homeDir, "apps");
@@ -118,17 +126,16 @@ public final class Container implements ContainerMBean {
     /**
      * Creates a {@link ClassLoader} that loads all lib/*.jar.
      */
-    private ClassLoader createClassLoader() {
-        ClassLoaderBuilder clb = new ClassLoaderBuilder(getClass().getClassLoader());
+    private ClassLoader createClassLoader() throws IOException {
+        ClassLoaderImpl cl = new ClassLoaderImpl(getClass().getClassLoader());
         // lib/*.jar
-        clb.addJarFiles(new File(homeDir,"lib"));
+        cl.addJarFiles(new File(homeDir,"lib"));
 
         // modules/*/*.jar
-        for (Module mod : modules) {
-            clb.addJarFiles(mod.dir);
-        }
+        for (Module mod : modules)
+            cl.addJarFiles(mod.dir);
 
-        return clb.make();
+        return cl;
     }
 
     public void stop() {

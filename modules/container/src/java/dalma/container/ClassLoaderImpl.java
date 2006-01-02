@@ -17,14 +17,19 @@
 package dalma.container;
 
 import org.apache.commons.javaflow.bytecode.transformation.ResourceTransformer;
+import org.apache.commons.javaflow.bytecode.transformation.bcel.BcelClassTransformer;
+import org.apache.commons.javaflow.ContinuationClassLoader;
+import org.apache.bcel.util.ClassLoaderRepository;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,11 +45,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * Used to load classes within ant with a different classpath from
- * that used to start ant. Note that it is possible to force a class
- * into this loader even when that class is on the system classpath by
- * using the forceLoadClass method. Any subsequent classes loaded by that
- * class will then use this loader rather than the system class loader.
+ * {@link URLClassLoader} replacement.
  *
  */
 final class ClassLoaderImpl extends ClassLoader {
@@ -188,8 +189,8 @@ final class ClassLoaderImpl extends ClassLoader {
     /**
      * Create an Ant Class Loader
      */
-    public ClassLoaderImpl() {
-        setParent(null);
+    public ClassLoaderImpl(ClassLoader cl) {
+        setParent(cl);
     }
 
     /**
@@ -210,6 +211,10 @@ final class ClassLoaderImpl extends ClassLoader {
         this.transformer = transformer;
     }
 
+    public void makeContinuable() {
+        setTransformer(new BcelClassTransformer(new ClassLoaderRepository(this)));
+    }
+
     /**
      * Control whether class lookup is delegated to the parent loader first
      * or after this loader. Use with extreme caution. Setting this to
@@ -224,17 +229,21 @@ final class ClassLoaderImpl extends ClassLoader {
 
 
     /**
-     * Adds an element to the classpath to be searched.
-     *
-     * @param pathElement The path element to add. Must not be
-     *                    <code>null</code>.
-     *
-     * @exception IOException if the given path element cannot be resolved
-     *                           against the project.
+     * Adds all the jar files in the given directory.
      */
-    public void addPathElement(String pathElement) throws IOException {
-        File pathComponent = new File(pathElement);
-        addPathFile(pathComponent);
+    public void addJarFiles(File dir) throws IOException {
+        // list up *.jar files in the appDir
+        File[] jarFiles = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".jar");
+            }
+        });
+
+        if(jarFiles==null)
+            return;     // no such dir
+
+        for (File jar : jarFiles)
+            addPathFile(jar);
     }
 
     /**
@@ -269,10 +278,8 @@ final class ClassLoaderImpl extends ClassLoader {
                 if (manifestStream == null) {
                     return;
                 }
-                Manifest manifest
-                    = new Manifest(manifestStream);
-                classpath
-                    = manifest.getMainAttributes().getValue("Class-Path");
+                Manifest manifest = new Manifest(manifestStream);
+                classpath = manifest.getMainAttributes().getValue("Class-Path");
 
             } finally {
                 if (manifestStream != null) {
@@ -662,9 +669,8 @@ final class ClassLoaderImpl extends ClassLoader {
      * @param name The resource name to search for.
      *             Must not be <code>null</code>.
      * @return an enumeration of URLs for the resources
-     * @exception IOException if I/O errors occurs (can't happen)
      */
-    protected Enumeration<URL> findResources(String name) throws IOException {
+    protected Enumeration<URL> findResources(String name) {
         return new ResourceEnumeration(name);
     }
 
