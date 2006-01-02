@@ -514,6 +514,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      * Completely removes this workflow application.
      */
     public void undeploy() {
+        unload();
         synchronized (undeployLock) {
             if(!undeployed) {
                 File dar = new File(owner.appsDir, name + ".dar");
