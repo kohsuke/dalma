@@ -513,27 +513,28 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
     /**
      * Completely removes this workflow application.
      */
-    public void undeploy() {
+    public void undeploy() throws FailedOperationException {
         unload();
         synchronized (undeployLock) {
             if(!undeployed) {
                 File dar = new File(owner.appsDir, name + ".dar");
                 if(dar.exists() && !dar.delete()) {
-                    logger.log(Level.WARNING, "failed to delete "+appDir);
+                    throw new FailedOperationException("failed to delete "+appDir);
                 }
 
                 try {
                     Util.deleteRecursive(appDir);
+                    Util.deleteRecursive(workDir);
                 } catch (IOException e) {
-                    logger.log(Level.WARNING, "failed to delete "+appDir,e);
-                    // this leaves the app dir in an inconsistent state,
-                    // but otherwise it's not a fatal error.
+                    throw new FailedOperationException("Unable to clean up the application directory "+appDir,e);
                 }
                 try {
-                    undeployLock.wait();
+                    undeployLock.wait(15*1000);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // process it later
                 }
+                if(!undeployed)
+                    throw new FailedOperationException("Operation timed out");
             }
         }
 

@@ -126,7 +126,6 @@ public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
     }
 
     public void doStart(StaplerRequest req, StaplerResponse resp) throws IOException, ServletException {
-        // TODO: report failed start operation correctly
         try {
             core.start();
             resp.sendRedirect(".");
@@ -135,9 +134,13 @@ public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
         }
     }
 
-    public void doDoDelete(StaplerRequest req, StaplerResponse resp) throws IOException {
-        core.undeploy();
-        resp.sendRedirect(req.getContextPath());
+    public void doDoDelete(StaplerRequest req, StaplerResponse resp) throws IOException, ServletException {
+        try {
+            core.undeploy();
+            resp.sendRedirect(req.getContextPath());
+        } catch (FailedOperationException e) {
+            sendError(req,e,resp);
+        }
     }
 
     /**
