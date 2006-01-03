@@ -356,6 +356,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      * Saves the given propertie sinto {@link #confFile}.
      */
     public void saveConfigProperties(Properties props) throws IOException {
+        confFile.getParentFile().mkdirs();
         OutputStream fos = new BufferedOutputStream(new FileOutputStream(confFile));
         try {
             props.store(fos,null);
