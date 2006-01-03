@@ -23,6 +23,7 @@ James integration
 
 Container Version
 ==============
+- valign 'must configure' warning text
 - duck-typing delegation in Stapler
   - how does it implement UIObject?
 - javadoc link among modules
