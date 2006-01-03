@@ -25,6 +25,7 @@ public class Main implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
         File home = getHomeDir(event);
         home.mkdirs();
+        new File(home,"apps").mkdir();
         System.out.println("dalma home directory: "+home);
 
         LogRecorder logRecorder = new LogRecorder();
@@ -71,7 +72,7 @@ public class Main implements ServletContextListener {
         }
 
         // look at the env var next
-        String env = EnvVars.masterEnvVars.get("HUDSON_HOME");
+        String env = EnvVars.masterEnvVars.get("DALMA_HOME");
         if(env!=null)
             return new File(env);
 
