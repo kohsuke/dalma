@@ -52,13 +52,6 @@
       </properties>
     </dependency>
     <dependency>
-      <id>ant</id>
-      <version>1.6.5</version>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
       <groupId>taglibs</groupId>
       <artifactId>request</artifactId>
       <version>1.0.1</version>
