@@ -2,4 +2,8 @@
   <goal name="javanet:-deploy-each">
     <!-- do not deploy -->
   </goal>
+  
+  <postGoal name="java:compile">
+    <echo file="target/classes/dalma/webui/version.properties">version=${pom.currentVersion}</echo>
+  </postGoal>
 </project>
