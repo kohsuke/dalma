@@ -6,7 +6,7 @@
   <artifactId>dalma-webui</artifactId>
   <description>Hosts dalma container (dalmacon) in a web server for easier management/monitoring</description>
   <shortDescription>Dalmacon as a web application</shortDescription>
-
+  
   <dependencies>
     <dependency>
       <id>dalma</id>
