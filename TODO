@@ -23,7 +23,6 @@ James integration
 
 Container Version
 ==============
-- valign 'must configure' warning text
 - create version.properties in Maven
 - duck-typing delegation in Stapler
   - how does it implement UIObject?
