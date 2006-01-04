@@ -7,7 +7,7 @@
   <h1>Workflow Application : ${it.name}</h1>
   <c:if test="${!it.configured}">
     <p class="error">
-      <img src="${rootURL}/images/caution.png"/>
+      <img src="${rootURL}/images/caution.png" style="vertical-align:middle;" alt="(!)"/>
       (This application needs to be <a href="configure">configured</a>)
     </p>
   </c:if>
