@@ -87,9 +87,14 @@ abstract class Converter<T> {
                 return Integer.class;
             }
 
-            public Integer load(Engine engine, String propertyName, String value) {
+            public Integer load(Engine engine, String propertyName, String value) throws ParseException {
                 if (value == null) return 0;
-                return Integer.valueOf(value);
+                try {
+                    return Integer.valueOf(value);
+                } catch (NumberFormatException e) {
+                    // not a string
+                    throw new ParseException(value,-1);
+                }
             }
 
             public String save(Integer value) {
