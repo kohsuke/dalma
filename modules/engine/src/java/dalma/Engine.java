@@ -243,16 +243,40 @@ public abstract class Engine {
     public abstract boolean isStarted();
 
     /**
-     * Sets the logger that this engine uses.
+     * Gets the logger that only receives engine-level log.
      *
      * <p>
-     * The default logger, if this method is not invoked,
-     * is "dalma.impl.....".
+     * This logger receives engine-level logs, but not
+     * logs that are recorded from {@link Conversation}s.
      *
-     * @param logger
-     *      if null, the engine will stop logging.
+     * <p>
+     * This logger uses {@link #getAggregateLogger()} as its
+     * parent.
+     *
+     * @return
+     *      always the same non-null object.
      */
-    public abstract void setLogger(Logger logger);
+    public abstract Logger getLogger();
+
+    /**
+     * Gets the logger that receives all logs that happen
+     * inside this engine instance.
+     *
+     * <p>
+     * As the parent, this logger receives all the logs
+     * that {@link #getLogger()} receives, plus it receives
+     * all logs recorded by the {@link Conversation#getLogger()}
+     * and {@link Workflow#getLogger()}.
+     *
+     * <p>
+     * This logger initially uses the class default logger as the parent,
+     * but you can change it by calling {@link Logger#setParent(Logger)}
+     * to control where it goes.
+     *
+     * @return
+     *      always the same non-null object.
+     */
+    public abstract Logger getAggregateLogger();
 
     /**
      * Waits until all the conversation in the engine exits.

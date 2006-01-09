@@ -2,6 +2,7 @@ package dalma;
 
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.logging.Handler;
 import java.util.List;
 import java.util.Date;
 
@@ -88,4 +89,16 @@ public interface Conversation {
      *      null if the conversation is not finished yet.
      */
     Date getCompletionDate();
+
+    /**
+     * Gets the logger that receives all logs recorded
+     * inside this conversation.
+     *
+     * <p>
+     * This hook allows you to register your own {@link Handler}.
+     *
+     * @return
+     *      the same non-null object.
+     */
+    Logger getLogger();
 }

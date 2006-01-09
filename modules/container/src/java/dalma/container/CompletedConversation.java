@@ -84,6 +84,10 @@ final class CompletedConversation implements Conversation, Serializable {
         return new Date(endDate);
     }
 
+    public Logger getLogger() {
+        return LogUtil.NULL_LOGGER;
+    }
+
     private UnsupportedOperationException uoe() {
         return new UnsupportedOperationException("This operation is not available on the completed conversation");
     }

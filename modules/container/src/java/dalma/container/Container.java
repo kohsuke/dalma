@@ -1,41 +1,41 @@
 package dalma.container;
 
 import dalma.Executor;
-import dalma.impl.Util;
 import dalma.helpers.Java5Executor;
+import dalma.impl.Util;
 
 import javax.management.JMException;
-import javax.management.ObjectName;
 import javax.management.MBeanServer;
-import javax.management.remote.JMXServiceURL;
+import javax.management.ObjectName;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.jar.JarFile;
-import java.util.jar.JarEntry;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.net.URL;
 
 /**
  * Root of Dalmacon.
@@ -43,8 +43,6 @@ import java.net.URL;
  * @author Kohsuke Kawaguchi
  */
 public final class Container implements ContainerMBean {
-    private static final Logger logger = Logger.getLogger(Container.class.getName());
-
     /**
      * The root directory of the dalma installation. The value of DALMA_HOME.
      * We want the absolute version since we send this across JMX.
@@ -76,6 +74,21 @@ public final class Container implements ContainerMBean {
      * {@link ClassLoader} that can load lib/*.jar
      */
     final ClassLoader appClassLoader;
+
+    /**
+     * {@link Logger} for static methods.
+     */
+    private static final Logger DEFAULT_LOGGER = Logger.getLogger(Container.class.getName());
+
+    /**
+     * {@link Logger} that receives all logs from the whole dalmacon.
+     */
+    /*package*/ final Logger loggerAggregate = LogUtil.newAnonymousLogger(DEFAULT_LOGGER);
+
+    /**
+     * {@link Logger} that just receives container-level events.
+     */
+    private final Logger logger = LogUtil.newAnonymousLogger(loggerAggregate);
 
     /**
      * Creates a new container.
@@ -275,8 +288,9 @@ public final class Container implements ContainerMBean {
 
         Container container = new Container(home, new Java5Executor(
             Executors.newFixedThreadPool(readProperty(conf,"thread.count",5))));
+        Logger logger = container.logger;
 
-        int jmxPort = readProperty(conf, "jmx.port", -1);
+        int jmxPort = container.readProperty(conf, "jmx.port", -1);
         if(jmxPort>=0) {
             logger.info("Initializing JMXMP connector at port "+jmxPort);
             JMXServiceURL url = new JMXServiceURL("jmxmp", null, jmxPort);
@@ -298,7 +312,7 @@ public final class Container implements ContainerMBean {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            logger.severe("Configuration value for "+key+" must be int, but found \""+value+"\"");
+            DEFAULT_LOGGER.severe("Configuration value for "+key+" must be int, but found \""+value+"\"");
             return defaultValue;
         }
     }
@@ -319,7 +333,7 @@ public final class Container implements ContainerMBean {
                     in.close();
                 }
             } catch (IOException e) {
-                logger.log(Level.SEVERE,"Failed to read "+config,e);
+                DEFAULT_LOGGER.log(Level.SEVERE,"Failed to read "+config,e);
             }
         }
         return props;
@@ -328,7 +342,7 @@ public final class Container implements ContainerMBean {
     /**
      * Extracts the given dar file into the same directory.
      */
-    static void explode(File dar) {
+    void explode(File dar) {
         try {
             String name = dar.getName();
             File exploded = new File(dar.getParentFile(),name.substring(0,name.length()-4));
@@ -387,5 +401,6 @@ public final class Container implements ContainerMBean {
         } catch (IOException e) {
             throw new Error(e);
         }
+
     }
 }

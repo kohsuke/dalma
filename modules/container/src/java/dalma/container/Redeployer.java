@@ -99,7 +99,7 @@ final class Redeployer extends FileChangeMonitor {
     @Override
     protected void onAdded(File file) {
         if(isDar(file))
-            Container.explode(file);
+            container.explode(file);
         if(file.isDirectory()) {
             logger.info("New application '"+file.getName()+"' detected. Deploying.");
             try {
@@ -115,7 +115,7 @@ final class Redeployer extends FileChangeMonitor {
     @Override
     protected void onUpdated(File file) {
         if(isDar(file))
-            Container.explode(file);
+            container.explode(file);
         if(file.isDirectory()) {
             try {
                 WorkflowApplication wa = container.getApplication(file.getName());

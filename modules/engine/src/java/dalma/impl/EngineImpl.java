@@ -45,9 +45,14 @@ import java.util.logging.Level;
 public final class EngineImpl extends EngineSPI implements Serializable {
 
     /**
-     * Logger that logs events.
+     * Logger for this engine.
      */
-    private transient Logger logger = Logger.getLogger(EngineImpl.class.getName());
+    private final transient Logger logger;
+
+    /**
+     * Logger for the whole tree.
+     */
+    /*package*/ final transient Logger loggerAggregate;
 
     /**
      * Executes conversations that can be run.
@@ -119,7 +124,11 @@ public final class EngineImpl extends EngineSPI implements Serializable {
         this.rootDir = rootDir;
         this.executor = executor;
         this.classLoader = classLoader;
-        setLogger(Logger.getLogger(getClass().getName()));
+        this.loggerAggregate = Logger.getAnonymousLogger();
+        this.loggerAggregate.setParent(
+            Logger.getLogger(EngineImpl.class.getName()));
+        this.logger = Logger.getAnonymousLogger();
+        this.logger.setParent(loggerAggregate);
         load();
 
         addEndPoint(new TimerEndPoint());
@@ -369,13 +378,12 @@ public final class EngineImpl extends EngineSPI implements Serializable {
         }
     }
 
-    public void setLogger(Logger logger) {
-        if(logger==null) {
-            // use unconnected anonymous logger to ignore log
-            logger = Logger.getAnonymousLogger();
-            logger.setUseParentHandlers(false);
-        }
-        this.logger = logger;
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public Logger getAggregateLogger() {
+        return loggerAggregate;
     }
 
     public void waitForCompletion() throws InterruptedException {

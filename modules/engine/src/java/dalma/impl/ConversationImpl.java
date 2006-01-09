@@ -13,14 +13,15 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -28,10 +29,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
-import java.util.Date;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * Represents a running conversation.
@@ -141,12 +141,10 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     private long endDate = -1;
 
     /**
-     * This logger is connected to {@link #masterLogger}, and also to the log recorder
+     * This logger is connected to {@link EngineImpl#logger}, and also to the log recorder
      * of this conversation.
      */
     private transient Logger logger;
-
-    private static final Logger masterLogger = Logger.getLogger(ConversationImpl.class.getName());
 
 
     /**
@@ -190,7 +188,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         this.runningCounts = new Counter();
         this.removeLock = new Object();
         this.logger = Logger.getAnonymousLogger();
-        this.logger.setParent(masterLogger);
+        this.logger.setParent(engine.loggerAggregate);
         this.logger.addHandler(logRecorder);
         this.logger.setLevel(Level.ALL);
     }

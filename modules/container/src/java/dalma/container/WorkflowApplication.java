@@ -24,11 +24,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,7 +42,6 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  */
 public final class WorkflowApplication implements WorkflowApplicationMBean {
-    private static final Logger logger = Logger.getLogger(WorkflowApplication.class.getName());
 
     private final String name;
 
@@ -105,6 +104,16 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
     private WorkflowState state;
 
+    /**
+     * {@link Logger} that receives all logs from the whole application.
+     */
+    /*package*/ final Logger loggerAggregate;
+
+    /**
+     * {@link Logger} that just receives workflow-level events.
+     */
+    private final Logger logger;
+
     private int logRotationDays = -1;
     private final LogRotationPolicy logPolicy = new LogRotationPolicy() {
         public boolean keep(Conversation conv) {
@@ -129,6 +138,8 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         this.confFile = new File(new File(new File(owner.getHomeDir(), "conf"), "apps"), name+".properties");
         this.appDir  = appDir;
         this.state = UNLOADED;
+        this.loggerAggregate = LogUtil.newAnonymousLogger(owner.loggerAggregate);
+        this.logger = LogUtil.newAnonymousLogger(loggerAggregate);
 
         File clog = new File(workDir, "completed-logs");
         clog.mkdirs();
@@ -270,6 +281,8 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
             } catch (IOException e) {
                 throw new FailedOperationException("Failed to start engine",e);
             }
+            
+            engine.getLogger().setParent(loggerAggregate);
 
             try {
                 Object main = mainClass.newInstance();
@@ -365,7 +378,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         }
     }
 
-    private static void log(String msg, Throwable t) {
+    private void log(String msg, Throwable t) {
         logger.log(Level.SEVERE, msg, t );
     }
 
