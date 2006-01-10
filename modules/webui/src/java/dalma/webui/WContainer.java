@@ -36,8 +36,6 @@ public class WContainer extends UIObject {
     }
 
     public WContainer(File homeDir) throws IOException {
-        this.inclusiveLogRecorder = new TransientLogRecorder();
-        this.exclusiveLogRecorder = new TransientLogRecorder();
         // need to register listeners first to get events during start-up
         Logger defaultLogger = Logger.getLogger("dalma");
         defaultLogger.addHandler(inclusiveLogRecorder);
