@@ -18,14 +18,24 @@
       }
     }
   </script>
-  <table width="100%">
+  <l:tabBar>
+    <l:tab name="Inclusive" active="true" href="#" />
+    <l:tab name="Exclusive" active="fase" href="#" />
+  </l:tabBar>
+  <table width="100%" class="datatable" style="border-top:none;">
+    <tr style="border-top: none;">
+      <th>
+        Log Records
+      </th>
+    </tr>
     <c:forEach var="log" items="${it.logs}" varStatus="loop">
-      <tr class="log-preamble">
-        <td><fmt:formatDate value="${d:createDate(log.millis)}" type="both" timeStyle="short" dateStyle="short" /></td>
-        <td>${log.loggerName}</td>
-      </tr>
-      <tr class="log-text">
-        <td colspan="2">
+      <tr><td class="log-row">
+        <div class="log-preamble">
+          <div><fmt:formatDate value="${d:createDate(log.millis)}" type="both" timeStyle="short" dateStyle="short" /></div>
+          <div style="float:right">${log.loggerName}</div>
+        </div>
+        <div style="clear:both"></div>
+        <div class="log-text">
           <div>
             <c:if test="${log.thrown!=null}">
               <div style="float:right">
@@ -43,9 +53,8 @@
               ><c:out value="${d:getExceptionDetail(log.thrown)}" escapeXml="true"
             /></pre>
           </c:if>
-          <hr />
-        </td>
-      </tr>
+        </div>
+      </td></tr>
     </c:forEach>
   </table>
 </l:main-panel>

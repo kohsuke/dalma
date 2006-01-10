@@ -82,6 +82,7 @@ body {
 
 img {
   border: 0;
+  vertical-align: middle;
 }
 
 
@@ -129,3 +130,47 @@ table.datatable tr th {
   padding-top: 0;
 }
 
+
+
+
+
+/* ====================== project view tab bar ===================================== */
+#tabBar {
+    border: none;
+    margin-bottom: 0px;
+    width: 100%;
+}
+#tabBar td {
+    padding: 0.5em;
+    white-space: nowrap;
+}
+#tabBar td.inactive {
+    border: solid 1px #ccc;
+    border-bottom-color: #bbb;
+}
+#tabBar td.inactive:hover {
+    background-color: #777;
+}
+#tabBar td.inactive a {
+    text-decoration: none;
+    color: #444
+}
+#tabBar td.noLeft {
+    border-left: none;
+}
+#tabBar td.noRight {
+    border-right: none;
+}
+#tabBar td.active {
+    border: solid 1px #bbb;
+    border-bottom: none;
+    vertical-align:middle;
+    background-color: rgb(240,240,240);
+    font-weight: bold;
+}
+#tabBar td.filler {
+    border: none;
+    border-bottom: solid 1px #bbb;
+    width: 100%;
+    text-align: right;
+}

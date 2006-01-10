@@ -52,3 +52,8 @@ body {
 .log-detail {
     font-weight: normal;
 }
+
+.log-row {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}

@@ -50,7 +50,7 @@ public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
 
     public String getUrl() {
         return "workflow/"+getName()+'/';
-    }
+    }    
 
     public Model getModel() {
         return core.getModel();
