@@ -11,6 +11,7 @@ import org.kohsuke.stapler.StaplerResponse;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
@@ -25,11 +26,31 @@ import java.util.logging.Logger;
 public class WContainer extends UIObject {
     public final Container core;
 
-    private final LogRecorder logRecorder;
+    private final TransientLogRecorder inclusiveLogRecorder = new TransientLogRecorder();
+    private final TransientLogRecorder exclusiveLogRecorder = new TransientLogRecorder();
 
-    public WContainer(Container core, LogRecorder logRecorder) {
+    public WContainer(Container core) {
         this.core = core;
-        this.logRecorder = logRecorder;
+        core.getLogger().addHandler(exclusiveLogRecorder);
+        core.getAggregateLogger().addHandler(inclusiveLogRecorder);
+    }
+
+    public WContainer(File homeDir) throws IOException {
+        this.inclusiveLogRecorder = new TransientLogRecorder();
+        this.exclusiveLogRecorder = new TransientLogRecorder();
+        // need to register listeners first to get events during start-up
+        Logger defaultLogger = Logger.getLogger("dalma");
+        defaultLogger.addHandler(inclusiveLogRecorder);
+        defaultLogger.addHandler(exclusiveLogRecorder);
+
+        this.core = Container.create(homeDir);
+
+        // but once done re-register them
+        defaultLogger.removeHandler(exclusiveLogRecorder);
+        defaultLogger.removeHandler(inclusiveLogRecorder);
+
+        core.getLogger().addHandler(exclusiveLogRecorder);
+        core.getAggregateLogger().addHandler(inclusiveLogRecorder);
     }
 
     public String getDisplayName() {
@@ -44,8 +65,8 @@ public class WContainer extends UIObject {
         return false; // TODO
     }
 
-    public List<LogRecord> getLogs() {
-        return logRecorder.getLogRecords();
+    public List<LogRecord> getLogs(boolean inclusive) {
+        return (inclusive?inclusiveLogRecorder:exclusiveLogRecorder).getLogRecords();
     }
 
     public void doCreateApp(StaplerRequest req, StaplerResponse resp ) throws IOException, ServletException {
@@ -96,7 +117,7 @@ public class WContainer extends UIObject {
     }
 
     public void shutdown() {
-        Logger.getLogger("dalma").removeHandler(logRecorder);
+        Logger.getLogger("dalma").removeHandler(inclusiveLogRecorder);
         core.stop();
     }
 }

@@ -11,7 +11,7 @@ import java.util.logging.LogRecord;
  *
  * @author Kohsuke Kawaguchi
  */
-public class LogRecorder extends Handler {
+public class TransientLogRecorder extends Handler {
     private final List<LogRecord> buf = new LinkedList<LogRecord>();
     private static final int MAX = 100;
 

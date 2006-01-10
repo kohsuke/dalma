@@ -25,8 +25,9 @@ public abstract class UIObject {
 
     /**
      * Optional method to return log entries associated with this object, if any.
+     * @param inclusive
      */
-    public List<LogRecord> getLogs() {
+    public List<LogRecord> getLogs(boolean inclusive) {
         return Collections.emptyList();
     }
 

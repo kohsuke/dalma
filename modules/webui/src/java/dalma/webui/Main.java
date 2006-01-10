@@ -1,7 +1,5 @@
 package dalma.webui;
 
-import dalma.container.Container;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -11,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * Entry point.
@@ -28,11 +25,8 @@ public class Main implements ServletContextListener {
         new File(home,"apps").mkdir();
         System.out.println("dalma home directory: "+home);
 
-        LogRecorder logRecorder = new LogRecorder();
-        Logger.getLogger("dalma").addHandler(logRecorder);
-
         try {
-            container = new WContainer(Container.create(home), logRecorder);
+            container = new WContainer(home);
             event.getServletContext().setAttribute("app",container);
         } catch (IOException e) {
             throw new Error(e);

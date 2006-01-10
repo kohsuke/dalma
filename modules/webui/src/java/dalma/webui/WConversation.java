@@ -47,7 +47,7 @@ public class WConversation extends UIObject {
         return core.getStartDate();
     }
 
-    public List<LogRecord> getLogs() {
+    public List<LogRecord> getLogs(boolean inclusive) {
         return core.getLog();
     }
 }
