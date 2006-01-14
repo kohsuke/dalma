@@ -19,8 +19,8 @@
     }
   </script>
   <l:tabBar>
-    <l:tab name="Inclusive" active="true" href="#" />
-    <l:tab name="Exclusive" active="fase" href="#" />
+    <l:tab name="Inclusive" active="${param.mode!='exclusive'}" href="?mode=inclusive" />
+    <l:tab name="Exclusive" active="${param.mode=='exclusive'}" href="?mode=exclusive" />
   </l:tabBar>
   <table width="100%" class="datatable" style="border-top:none;">
     <tr style="border-top: none;">
@@ -28,7 +28,15 @@
         Log Records
       </th>
     </tr>
-    <c:forEach var="log" items="${it.logs}" varStatus="loop">
+    <c:choose>
+      <c:when test="${param.mode=='exclusive'}">
+        <c:set var="logs" value="${it.exclusiveLogs}" />
+      </c:when>
+      <c:otherwise>
+        <c:set var="logs" value="${it.inclusiveLogs}" />
+      </c:otherwise>
+    </c:choose>
+    <c:forEach var="log" items="${logs}" varStatus="loop">
       <tr><td class="log-row">
         <div class="log-preamble">
           <div><fmt:formatDate value="${d:createDate(log.millis)}" type="both" timeStyle="short" dateStyle="short" /></div>

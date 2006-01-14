@@ -31,6 +31,13 @@ public abstract class UIObject {
         return Collections.emptyList();
     }
 
+    public final List<LogRecord> getExclusiveLogs() {
+        return getLogs(false);
+    }
+    public final List<LogRecord> getInclusiveLogs() {
+        return getLogs(true);
+    }
+
     protected final void sendError(StaplerRequest req, String msg, StaplerResponse resp) throws ServletException, IOException {
         req.setAttribute("message",msg);
         resp.forward(this,"error",req);
