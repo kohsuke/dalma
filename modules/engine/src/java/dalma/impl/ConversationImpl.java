@@ -106,7 +106,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
      * Set to true if the {@link #remove()} operation is in progress.
      * When true, {@link Fiber}s are prevented from being executed.
      */
-    /*package*/ transient boolean isRemoving;
+    /*package*/ transient boolean isRemoved;
 
     /**
      * Synchronization for handling multiple concurrent {@link #remove()} method invocation.
@@ -255,6 +255,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     public ConversationState getState() {
         if(runningCounts.get()!=0)
             return ConversationState.RUNNING;
+        if(isRemoved)
+            return ConversationState.ABORTED;
 
         ConversationState r = ConversationState.ENDED;
 
@@ -277,7 +279,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     }
 
     synchronized void onFiberStartedRunning(FiberImpl fiber) {
-        if(isRemoving)
+        if(isRemoved)
             // this conversation is going to be removed now
             // no further execution is allowed
             throw new FiberDeath();
@@ -379,11 +381,11 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         synchronized(removeLock) {
             // the first thing we have to do is to wait for all the executing fibers
             // to complete. when we are doing that, we don't want new fibers to
-            // start executing. We use isRemoving==true for this purpose.
-            if(isRemoving)
+            // start executing. We use isRemoved==true for this purpose.
+            if(isRemoved)
                 return; // already removed.
 
-            isRemoving = true;
+            isRemoved = true;
 
             try {
                 runningCounts.waitForZero();

@@ -28,9 +28,14 @@ public final class ConversationState {
     public static final ConversationState SUSPENDED = new ConversationState("suspended",true);
 
     /**
-     * {@link Conversation} has finished its execution.
+     * {@link Conversation} has finished its execution normally.
      */
     public static final ConversationState ENDED = new ConversationState("ended",false);
+
+    /**
+     * {@link Conversation} has been terminated with the {@link Conversation#remove()} method.
+     */
+    public static final ConversationState ABORTED = new ConversationState("aborted",false);
 
 
     private ConversationState(String value,boolean removable) {
