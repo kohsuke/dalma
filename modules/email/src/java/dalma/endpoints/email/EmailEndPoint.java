@@ -314,4 +314,28 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
     public MimeMessage waitForReply(MimeMessage outgoing,Date timeoutDate) {
         return super.waitForReply(outgoing,timeoutDate);
     }
+
+    /**
+     * Creates a new empty e-mail to be sent to the given address.
+     *
+     * <p>
+     * The newly created e-mail has:
+     * <ol>
+     *  <li>The <tt>To</tt> header set to the given recipient.
+     *  <li>The <tt>Subject</tt> header set to the given string.
+     *  <li>The <tt>From</tt> header set to the e-mail address associated with this endpoint.
+     * </ol>
+     *
+     * @param to
+     *      The recipient of the newly created e-mail.
+     * @param subject
+     *      The subject of the e-mail.
+     */
+    public MimeMessageEx createTextMessage( InternetAddress to, String subject ) throws MessagingException {
+        MimeMessageEx msg = new MimeMessageEx(session);
+        msg.setFrom(getAddress());
+        msg.setRecipient(Message.RecipientType.TO,to);
+        msg.setSubject(subject);
+        return msg;
+    }
 }
