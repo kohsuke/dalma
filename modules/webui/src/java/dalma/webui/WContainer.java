@@ -116,6 +116,6 @@ public class WContainer extends UIObject {
 
     public void shutdown() {
         Logger.getLogger("dalma").removeHandler(inclusiveLogRecorder);
-        core.stop();
+        core.unload();
     }
 }

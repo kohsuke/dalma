@@ -21,6 +21,11 @@ public interface ContainerMBean {
     void stop();
 
     /**
+     * Unloads all the applications in the container.
+     */
+    void unload();
+
+    /**
      * Deploys a new application.
      *
      * <p>

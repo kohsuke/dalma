@@ -129,6 +129,26 @@ public final class Container implements ContainerMBean {
         logger.info("Auto-redeployment activated");
     }
 
+    /**
+     * Returns the {@link Logger} that receives all the events recorded in this container.
+     *
+     * @return
+     *      always the same non-null object.
+     */
+    public Logger getAggregateLogger() {
+        return loggerAggregate;
+    }
+
+    /**
+     * Returns the {@link Logger} that receives container-level events.
+     *
+     * @return
+     *      always the same non-null object.
+     */
+    public Logger getLogger() {
+        return logger;
+    }
+
     //private void disableAutoRedeploy() {
     //    if(redeployer!=null) {
     //        redeployer.cancel();
@@ -155,6 +175,12 @@ public final class Container implements ContainerMBean {
     public void stop() {
         for (WorkflowApplication app : applications.values())
             app.stop();
+    }
+
+    public void unload() {
+        for (WorkflowApplication app : applications.values()) {
+            app.unload();
+        }
     }
 
     public synchronized WorkflowApplication deploy(String name, byte[] data) throws FailedOperationException, InterruptedException {
