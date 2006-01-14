@@ -10,7 +10,7 @@
   <dependencies>
     <dependency>
       <groupId>dalma</groupId>
-      <artifactId>dalma-container</artifactId>
+      <artifactId>dalma</artifactId>
       <version>@DALMA_VERSION@</version>
     </dependency>
     <dependency>
