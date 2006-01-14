@@ -204,6 +204,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         logger.info("Loading "+name);
 
         try {
+            assert classLoader==null;
             classLoader = createClassLoader();
         } catch (IOException e) {
             throw new FailedOperationException("Failed to set up a ClassLoader",e);
