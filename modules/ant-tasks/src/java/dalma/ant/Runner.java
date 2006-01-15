@@ -94,6 +94,14 @@ public class Runner extends Task {
     }
 
     public void execute() {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            doExecute();
+        } finally {
+            Thread.currentThread().setContextClassLoader(cl);
+        }
+    }
+    private void doExecute() {
         // Container con = Container.create(getWorkDir());
         System.out.println(getWorkDir());
 
@@ -107,6 +115,7 @@ public class Runner extends Task {
             for( String pathElement : classpath.list() ) {
                 loader.addPathFile(getProject().resolveFile(pathElement));
             }
+            Thread.currentThread().setContextClassLoader(loader);
 
             engine = EngineFactory.newEngine(getWorkDir(),loader,
                 new ThreadPoolExecutor(1,true));
@@ -149,7 +158,7 @@ public class Runner extends Task {
         }
 
         try {
-            Model model = new Model(mainClass);
+            Model<Object> model = new Model<Object>(mainClass);
             model.inject(engine,program,props.toProperties());
         } catch (InjectionException e) {
             throw new BuildException("Failed to configure program: "+e.getMessage(),e);
