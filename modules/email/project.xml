@@ -11,9 +11,6 @@
     <dependency>
       <id>dalma</id>
       <version>${pom.currentVersion}</version>
-      <properties>
-        <jar.manifest.classpath>true</jar.manifest.classpath>
-      </properties>
     </dependency>
     <!-- javamail -->
     <dependency>
