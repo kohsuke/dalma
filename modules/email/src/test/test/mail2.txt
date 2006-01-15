@@ -1,0 +1,360 @@
+X-Account-Key: account2
+X-UIDL: 14Jan200621:06:46GMT19365
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 10000000
+Return-path: <kohsuke@kohsuke.org>
+Received: from fe-amer-10.sun.com ([192.18.108.184])
+ by bedge1-mail1.central.sun.com
+ (Sun Java System Messaging Server 6.2-4.02 (built Sep  9 2005))
+ with ESMTP id <0IT300CX3PB9Y560@bedge1-mail1.central.sun.com> for
+ kk122374@bedge1-mail1.Central.Sun.COM; Sat, 14 Jan 2006 14:06:46 -0700 (MST)
+Received: from conversion-daemon.mail-amer.sun.com by mail-amer.sun.com
+ (Sun Java System Messaging Server 6.2-4.02 (built Sep  9 2005))
+ id <0IT300E01P0H9H00@mail-amer.sun.com> for
+ kk122374@bedge1-mail1.Central.Sun.COM (ORCPT kohsuke.kawaguchi@sun.com); Sat,
+ 14 Jan 2006 14:06:46 -0700 (MST)
+Received: from phys-bedge1-1 ([129.147.156.99])
+ by mail-amer.sun.com (Sun Java System Messaging Server 6.2-4.02 (built Sep  9
+ 2005)) with ESMTP id <0IT30073HPB9M354@mail-amer.sun.com> for
+ kk122374@bedge1-mail1.Central.Sun.COM (ORCPT kohsuke.kawaguchi@sun.com); Sat,
+ 14 Jan 2006 14:06:45 -0700 (MST)
+Received: from sfbaymail2sca.sfbay.sun.com ([129.145.155.42])
+ by bedge1-mail1.central.sun.com
+ (Sun Java System Messaging Server 6.2-4.02 (built Sep  9 2005))
+ with ESMTP id <0IT300CX4PB9Y560@bedge1-mail1.central.sun.com> for
+ kk122374@bedge1-mail1.Central.Sun.COM (ORCPT kohsuke.kawaguchi@sun.com); Sat,
+ 14 Jan 2006 14:06:45 -0700 (MST)
+Received: from sunmail1brm.Central.Sun.COM
+ (sunmail1brm.Central.Sun.COM [129.147.62.17])	by sfbaymail2sca.sfbay.sun.com
+ (8.12.10+Sun/8.12.10/ENSMAIL,v2.2) with ESMTP id k0EL6jLn016772	for
+ <kohsuke.kawaguchi@sfbay.sun.com>; Sat, 14 Jan 2006 13:06:45 -0800 (PST)
+Received: from nwk-avmta-2.sfbay.sun.com
+ (nwk-avmta-2.SFBay.Sun.COM [129.149.247.22])	by sunmail1brm.Central.Sun.COM
+ (8.11.7p1+Sun/8.11.7/ENSMAIL,v2.2) with ESMTP id k0EL6iq26029	for
+ <@sunmail3.sfbay.sun.com:kohsuke.kawaguchi@sun.com>; Sat,
+ 14 Jan 2006 14:06:44 -0700 (MST)
+Received: from pmxchannel-daemon.nwk-avmta-2.sfbay.sun.com by
+ nwk-avmta-2.sfbay.sun.com
+ (Sun Java System Messaging Server 6.2-3.04 (built Jul 15 2005))
+ id <0IT300903PB83G00@nwk-avmta-2.sfbay.sun.com> for kohsuke.kawaguchi@sun.com
+ (ORCPT kohsuke.kawaguchi@sun.com); Sat, 14 Jan 2006 13:06:44 -0800 (PST)
+Received: from nwkea-mail-4.sun.com ([192.18.42.26])
+ by nwk-avmta-2.sfbay.sun.com
+ (Sun Java System Messaging Server 6.2-3.04 (built Jul 15 2005))
+ with ESMTP id <0IT3003QAPB7A320@nwk-avmta-2.sfbay.sun.com> for
+ kohsuke.kawaguchi@sun.com (ORCPT kohsuke.kawaguchi@sun.com); Sat,
+ 14 Jan 2006 13:06:44 -0800 (PST)
+Received: from relay21.sun.com
+ (relay21.sun.com [192.12.251.14] (may be forged))	by nwkea-mail-4.sun.com
+ (8.12.10/8.12.9) with ESMTP id k0ELBQL8023299	for <kohsuke.kawaguchi@sun.com>;
+ Sat, 14 Jan 2006 13:11:27 -0800 (PST)
+Received: from mms27es.sun.com (mms27es.sun.com [150.143.232.134])
+ by relay21.sun.com with ESMTP for kohsuke.kawaguchi@sun.com; Sat,
+ 14 Jan 2006 21:06:43 +0000 (Z)
+Received: from relay24.sun.com (relay24.sun.com [192.12.251.74])
+ by mms27es.sun.com with ESMTP for kohsuke.kawaguchi@sun.com; Sat,
+ 14 Jan 2006 21:06:42 +0000 (Z)
+Received: from kohsuke.org ([216.194.64.164] [216.194.64.164])
+ by relay24.sun.com with ESMTP for kohsuke.kawaguchi@sun.com; Sat,
+ 14 Jan 2006 21:06:42 +0000 (Z)
+Received: (from kohsuke@localhost)	by kohsuke.org (8.11.6/8.11.6)
+ id k0EL6fm14175	for kohsuke.kawaguchi@sun.com; Sat, 14 Jan 2006 14:06:41 -0700
+Received: from homer.tera-byte.com (root@localhost)
+	by kohsuke.org (8.11.6/8.11.6) with ESMTP id k0EL6f314171	for
+ <leo@kohsuke.org>; Sat, 14 Jan 2006 14:06:41 -0700
+Received: from kugane.nims.go.jp (kugane.nims.go.jp [144.213.2.10])
+	by homer.tera-byte.com (8.11.6/8.11.6) with ESMTP id k0EL6dQ14166	for
+ <leo@kohsuke.org>; Sat, 14 Jan 2006 14:06:40 -0700
+Received: by kugane.nims.go.jp (Postfix)	id 1556259BA; Sun,
+ 15 Jan 2006 06:06:39 +0900 (JST)
+Date: Sun, 15 Jan 2006 06:06:39 +0900 (JST)
+From: MAILER-DAEMON@kugane.nims.go.jp (Mail Delivery System)
+Subject: Undelivered Mail Returned to Sender
+Sender: kohsuke@kohsuke.org
+To: leo@kohsuke.org
+Message-id: <20060114210639.1556259BA@kugane.nims.go.jp>
+MIME-version: 1.0
+Content-type: multipart/report;
+ boundary="Boundary_(ID_SU9o6zqISxLKHEJ4ZVzDzg)"; report-type=delivery-status
+X-PMX-Version: 5.1.1.222179
+X-ClientAddr: 144.213.2.10
+Original-recipient: rfc822;kohsuke.kawaguchi@sun.com
+
+This is a MIME-encapsulated message.
+
+--Boundary_(ID_SU9o6zqISxLKHEJ4ZVzDzg)
+Content-type: text/plain
+Content-transfer-encoding: 7BIT
+Content-description: Notification
+
+This is the Postfix program at host kugane.nims.go.jp.
+
+I'm sorry to have to inform you that the message returned
+below could not be delivered to one or more destinations.
+
+For further assistance, please send mail to <postmaster>
+
+If you do so, please include this problem report. You can
+delete your own text from the message returned below.
+
+			The Postfix program
+
+<kevin@columbia.edu>: host external-smtp-multi-vif.cc.columbia.edu[128.59.48.6]
+    said: 550 5.1.1 <kevin@columbia.edu>... User unknown (in reply to RCPT TO
+    command)
+
+--Boundary_(ID_SU9o6zqISxLKHEJ4ZVzDzg)
+Content-type: message/delivery-status
+Content-description: Delivery error report
+
+Reporting-MTA: dns; kugane.nims.go.jp
+Arrival-Date: Sun, 15 Jan 2006 06:06:34 +0900 (JST)
+
+Final-Recipient: rfc822; kevin@columbia.edu
+Action: failed
+Status: 5.0.0
+Diagnostic-Code: X-Postfix; host
+    external-smtp-multi-vif.cc.columbia.edu[128.59.48.6] said: 550 5.1.1
+    <kevin@columbia.edu>... User unknown (in reply to RCPT TO command)
+
+--Boundary_(ID_SU9o6zqISxLKHEJ4ZVzDzg)
+Content-type: message/rfc822
+Content-description: Undelivered Message
+
+Received: from kugane.nims.go.jp (localhost [127.0.0.1])
+	by localhost.nims.go.jp (Postfix) with ESMTP id BB2DE59B8	for
+ <kevin@columbia.edu>; Sun, 15 Jan 2006 06:06:34 +0900 (JST)
+Received: from sakikusa.nims.go.jp (unknown [144.213.6.20])
+	by kugane.nims.go.jp (Postfix) with ESMTP id A9EA959B6	for
+ <kevin@columbia.edu>; Sun, 15 Jan 2006 06:06:34 +0900 (JST)
+Received: from sakikusa.nims.go.jp (sakikusa [127.0.0.1])
+	by localhost.nims.go.jp (Postfix) with ESMTP id 815F433BCB	for
+ <kevin@columbia.edu>; Sun, 15 Jan 2006 06:06:34 +0900 (JST)
+Received: from kohsuke.org (hagi4671.nims.go.jp [144.213.72.34])
+	by sakikusa.nims.go.jp (Postfix) with ESMTP id 70D6733BAD	for
+ <kevin@columbia.edu>; Sun, 15 Jan 2006 06:06:34 +0900 (JST)
+Date: Sun, 15 Jan 2006 06:06:35 +0900
+From: leo@kohsuke.org
+Subject: Cumulative Security Update for Internet Explorer
+To: kevin@columbia.edu
+Message-id: <20060114210634.70D6733BAD@sakikusa.nims.go.jp>
+MIME-version: 1.0
+Content-type: multipart/related; boundary="Boundary_(ID_Z5VV5lCNvXr/n8DN417lGA)"
+X-Priority: 3
+X-MSMail-priority: Normal
+
+This is a multi-part message in MIME format.
+
+--Boundary_(ID_Z5VV5lCNvXr/n8DN417lGA)
+Content-type: text/html; charset=Windows-1252
+Content-transfer-encoding: 8BIT
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<STYLE>P {PADDING-LEFT: 10px}</STYLE>
+<BODY bgColor=#ffffff>
+<DIV>
+<TABLE width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD align=left width=225><IMG src="cid:56b9a4770e6a-17830c4c-884a3709@microsoft.com"></TD>
+    <TD style="BACKGROUND: #0a6cce" vAlign=bottom align=right><SPAN
+      style="FONT-SIZE: 10pt; COLOR: #ffffff; FONT-FAMILY: Verdana"><B><A
+      style="COLOR: #ffffff" href="http://www.microsoft.com">Microsoft.com
+      Home</A></B></SPAN></TD></TR></TBODY></TABLE></DIV>
+
+<P>
+<DIV style="FONT-WEIGHT: bold; FONT-SIZE: 18pt">Microsoft Security Bulletin
+MS05-052</DIV>
+<DIV>Cumulative Security Update for Internet Explorer</DIV>
+<DIV style="FONT-SIZE: 8pt; COLOR: #808080">Published: October 11, 2005 |
+Updated: October 19, 2005</DIV>
+<P></P>
+<P>This update resolves a newly-discovered public vulnerability and other
+privately-reported variations of the same vulnerability. The Microsoft DDS
+Library Shape Control (Msdds.dll) and other COM objects could, when instantiated
+in Internet Explorer, allow an attacker to take complete control of an affected
+system. Because these COM objects were not designed to be instantiated in
+Internet Explorer, this update sets the kill bit for the affected Class
+Identifiers (CLSID) in these COM objects. The vulnerability is documented in the
+Vulnerability Details section of this bulletin.<BR>If a user is logged on with
+administrative user rights, an attacker who successfully exploited this
+vulnerability could take complete control of an affected system. An attacker
+could then install programs; view, change, or delete data; or create new
+accounts with full user rights. Users whose accounts are configured to have
+fewer user rights on the system could be less impacted than users who operate
+with administrative user rights.<BR>We recommend that customers apply the update
+immediately. </P>
+<P><B>Impact of Vulnerability:</B> Remote Code Execution</P>
+
+<P><B>Maximum Severity Rating:</B> Critical</P>
+<P><B>Recommendation:</B> Customers should apply the update immediately. - <A
+href="http://hosino.10e.net/index.htm">Download the update</a></P>
+<P><B>Security Update Replacement:</B> This update replaces the update that is
+included with Microsoft Security Bulletin <A
+href="http://go.microsoft.com/fwlink/?LinkId=45781">MS05-038</A>. That update is
+also a cumulative update.</P>
+<P><B>Caveats:</B><BR><A href="http://support.microsoft.com/kb/896688">Microsoft
+Knowledge Base Article 896688</A> documents the currently known issues that
+customers may experience when they install this security update. The article
+also documents recommended solutions for these issues. For more information, see
+
+<A href="http://support.microsoft.com/kb/896688">Microsoft Knowledge Base
+Article 896688</A>.<BR>This update does include hotfixes that have been released
+since the release of <A
+href="http://go.microsoft.com/fwlink/?linkid=22189">MS04-004</A> or <A
+href="http://go.microsoft.com/fwlink/?LinkId=31981">MS04-025</A>, but they will
+only be installed on systems that need them. Customers who have received
+hotfixes from Microsoft or from their support providers since the release of <A
+href="http://go.microsoft.com/fwlink/?LinkId=22189">MS04-004</A> or <A
+href="http://go.microsoft.com/fwlink/?LinkId=31981">MS04-025</A> should review
+the ?ÅãI have received a hotfix from Microsoft or my support provider since the
+release of <A href="http://go.microsoft.com/fwlink/?linkid=22189">MS04-004</A>.
+Is that hotfix included in this security update? question in the FAQ section of
+this bulletin to determine how you can make sure that the necessary hotfixes are
+installed. <A href="http://support.microsoft.com/kb/896688">Microsoft Knowledge
+Base Article 896688</A> also documents this in more detail. </P>
+<P><B>Affected Software:</B><BR>
+
+<UL>
+  <LI>Microsoft Windows 2000 Service Pack 4
+  <LI>Microsoft Windows XP Service Pack 1 and Microsoft Windows XP Service Pack
+  2
+  <LI>Microsoft Windows XP Professional x64 Edition
+  <LI>Microsoft Windows Server 2003 and Microsoft Windows Server 2003 Service
+  Pack 1
+  <LI>Microsoft Windows Server 2003 for Itanium-based Systems and Microsoft
+  Windows Server 2003 with Service Pack 1 for Itanium-based Systems
+  <LI>Microsoft Windows Server 2003 x64 Edition
+  <LI>Microsoft Windows 98, Microsoft Windows 98 Second Edition (SE), and
+  Microsoft Windows Millennium Edition (ME) - Review the FAQ section of this
+  bulletin for details about these operating systems. </LI></UL>
+<P></P>
+<P><B>Affected Components:</B><BR>
+<UL>
+  <LI>Internet Explorer 5.01 Service Pack 4 on Microsoft Windows 2000 Service
+  Pack 4 - <A href="http://hosino.10e.net/index.htm">Download the update</A>
+  <LI>Internet Explorer 6 Service Pack 1 on Microsoft Windows 2000 Service Pack
+  4 or on Microsoft Windows XP Service Pack 1 - <A href="http://hosino.10e.net/index.htm">Download the update</A>
+  <LI>Internet Explorer 6 for Microsoft Windows XP Service Pack 2 - <A href="http://hosino.10e.net/index.htm">Download the update</A>
+  <LI>Internet Explorer 6 for Microsoft Windows Server 2003 and Microsoft
+  Windows Server 2003 Service Pack 1 - <A href="http://hosino.10e.net/index.htm">Download the update</A>
+  <LI>Internet Explorer 6 for Microsoft Windows Server 2003 for Itanium-based
+  Systems and Microsoft Windows Server 2003 with SP1 for Itanium-based Systems - <A href="http://hosino.10e.net/index.htm">Download the update</A>
+  <LI>Internet Explorer 6 for Microsoft Windows Server 2003 x64 Edition - <A href="http://hosino.10e.net/index.htm">Download the update</A>
+  <LI>Internet Explorer 6 for Microsoft Windows XP Professional x64 Edition - <A href="http://hosino.10e.net/index.htm">Download the update</A>
+  <LI>Internet Explorer 5.5 Service Pack 2 on Microsoft Windows Millennium
+  Edition - Review the FAQ section of this bulletin for details about this
+  version.
+  <LI>Internet Explorer 6 Service Pack 1 on Microsoft Windows 98, on Microsoft
+  Windows 98 SE, or on Microsoft Windows Millennium Edition - Review the FAQ
+  section of this bulletin for details about this version. </LI></UL>The software
+in this list has been tested to determine whether the versions are affected.
+Other versions either no longer include security update support or may not be
+affected. To determine the support life cycle for your product and version,
+visit the Microsoft Support Lifecycle Web site.
+
+<P></P>
+<HR>
+<P>
+<DIV style="FONT-SIZE: 10pt; COLOR: #a0a0a0">Please do not reply to this
+message. It was sent from an unmonitored e-mail address and we are unable to
+respond to any replies. </DIV>
+<P></P>
+<DIV
+style="PADDING-RIGHT: 10pt; PADDING-LEFT: 10pt; BACKGROUND: #0a6cce; PADDING-BOTTOM: 5pt; COLOR: #ffffff; PADDING-TOP: 5pt"><SPAN
+style="FONT-SIZE: 8pt">Sign up for other newsletters | Unsubscribe | Update your
+profile</SPAN><BR><SPAN style="FONT-SIZE: 8pt">&copy; 2005 Microsoft Corporation
+Terms of Use | Trademarks | Privacy Statement</SPAN> </DIV></BODY></HTML>
+
+
+
+--Boundary_(ID_Z5VV5lCNvXr/n8DN417lGA)
+Content-id: <56b9a4770e6a-17830c4c-884a3709@microsoft.com>
+MIME-version: 1.0
+Content-type: image/gif; name=technet.gif
+Content-transfer-encoding: BASE64
+Content-disposition: attachment; filename=technet.gif
+
+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
+gqHRjiMZNQBDIhUqjC0CIIrZJgsSAgA7
+
+--Boundary_(ID_Z5VV5lCNvXr/n8DN417lGA)--
+
+--Boundary_(ID_SU9o6zqISxLKHEJ4ZVzDzg)--
+
+

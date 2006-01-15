@@ -1,0 +1,237 @@
+X-Account-Key: account2
+X-UIDL: 14Jan200620:04:36GMT12225
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+Return-path: <kohsuke@kohsuke.org>
+Received: from fe-amer-10.sun.com ([192.18.108.184])
+ by bedge1-mail1.central.sun.com
+ (Sun Java System Messaging Server 6.2-4.02 (built Sep  9 2005))
+ with ESMTP id <0IT300C4ZMFOY550@bedge1-mail1.central.sun.com> for
+ kk122374@bedge1-mail1.Central.Sun.COM; Sat, 14 Jan 2006 13:04:36 -0700 (MST)
+Received: from conversion-daemon.mail-amer.sun.com by mail-amer.sun.com
+ (Sun Java System Messaging Server 6.2-4.02 (built Sep  9 2005))
+ id <0IT300501MAWWR00@mail-amer.sun.com> for
+ kk122374@bedge1-mail1.Central.Sun.COM (ORCPT kohsuke.kawaguchi@sun.com); Sat,
+ 14 Jan 2006 13:04:36 -0700 (MST)
+Received: from phys-bedge1-1 ([129.147.156.99])
+ by mail-amer.sun.com (Sun Java System Messaging Server 6.2-4.02 (built Sep  9
+ 2005)) with ESMTP id <0IT3007ABMFNM314@mail-amer.sun.com> for
+ kk122374@bedge1-mail1.Central.Sun.COM (ORCPT kohsuke.kawaguchi@sun.com); Sat,
+ 14 Jan 2006 13:04:36 -0700 (MST)
+Received: from sfbaymail1sca.SFBay.Sun.COM ([129.145.154.35])
+ by bedge1-mail1.central.sun.com
+ (Sun Java System Messaging Server 6.2-4.02 (built Sep  9 2005))
+ with ESMTP id <0IT300C4XMFNY550@bedge1-mail1.central.sun.com> for
+ kk122374@bedge1-mail1.Central.Sun.COM (ORCPT kohsuke.kawaguchi@sun.com); Sat,
+ 14 Jan 2006 13:04:35 -0700 (MST)
+Received: from sunmail1brm.Central.Sun.COM
+ (sunmail1brm.Central.Sun.COM [129.147.62.17])	by sfbaymail1sca.SFBay.Sun.COM
+ (8.12.10+Sun/8.12.10/ENSMAIL,v2.2) with ESMTP id k0EK4STe014512	for
+ <kohsuke.kawaguchi@sfbay.sun.com>; Sat, 14 Jan 2006 12:04:28 -0800 (PST)
+Received: from nwk-avmta-2.sfbay.sun.com
+ (nwk-avmta-2.SFBay.Sun.COM [129.149.247.22])	by sunmail1brm.Central.Sun.COM
+ (8.11.7p1+Sun/8.11.7/ENSMAIL,v2.2) with ESMTP id k0EK4Sq16887	for
+ <@sunmail3.sfbay.sun.com:kohsuke.kawaguchi@sun.com>; Sat,
+ 14 Jan 2006 13:04:28 -0700 (MST)
+Received: from pmxchannel-daemon.nwk-avmta-2.sfbay.sun.com by
+ nwk-avmta-2.sfbay.sun.com
+ (Sun Java System Messaging Server 6.2-3.04 (built Jul 15 2005))
+ id <0IT300701MFF2J00@nwk-avmta-2.sfbay.sun.com> for kohsuke.kawaguchi@sun.com
+ (ORCPT kohsuke.kawaguchi@sun.com); Sat, 14 Jan 2006 12:04:27 -0800 (PST)
+Received: from brmea-mail-3.sun.com ([192.18.98.34])
+ by nwk-avmta-2.sfbay.sun.com
+ (Sun Java System Messaging Server 6.2-3.04 (built Jul 15 2005))
+ with ESMTP id <0IT3003MCMDR9V10@nwk-avmta-2.sfbay.sun.com> for
+ kohsuke.kawaguchi@sun.com (ORCPT kohsuke.kawaguchi@sun.com); Sat,
+ 14 Jan 2006 12:04:27 -0800 (PST)
+Received: from relay4.sun.com (relay4.sun.com [150.143.103.74] (may be forged))
+	by brmea-mail-3.sun.com (8.12.10/8.12.9) with ESMTP id k0EK3Q3F008274	for
+ <kohsuke.kawaguchi@sun.com>; Sat, 14 Jan 2006 13:03:26 -0700 (MST)
+Received: from mms01es.sun.com (mms01es.sun.com [150.143.104.14])
+ by relay4.sun.com with ESMTP for kohsuke.kawaguchi@sun.com; Sat,
+ 14 Jan 2006 20:03:26 +0000 (Z)
+Received: from mms02bas.mms.us.syntegra.com
+ (mms02bas.mms.us.syntegra.com [150.143.103.20]) by mms01es.sun.com with ESMTP
+ for kohsuke.kawaguchi@sun.com; Sat, 14 Jan 2006 20:03:25 +0000 (Z)
+Received: from kohsuke.org ([216.194.64.164] [216.194.64.164])
+ by relay2.sun.com with ESMTP for kohsuke.kawaguchi@sun.com; Sat,
+ 14 Jan 2006 20:03:24 +0000 (Z)
+Received: (from kohsuke@localhost)	by kohsuke.org (8.11.6/8.11.6)
+ id k0EK3MU02105	for kohsuke.kawaguchi@sun.com; Sat, 14 Jan 2006 13:03:22 -0700
+Received: from homer.tera-byte.com (root@localhost)
+	by kohsuke.org (8.11.6/8.11.6) with ESMTP id k0EK3HP02093	for
+ <kk@kohsuke.org>; Sat, 14 Jan 2006 13:03:17 -0700
+Received: from dev.java.net (s006.sfo.collab.net [64.125.133.206])
+	by homer.tera-byte.com (8.11.6/8.11.6) with SMTP id k0EK3DQ02083	for
+ <kk@kohsuke.org>; Sat, 14 Jan 2006 13:03:13 -0700
+Received: (qmail 1684 invoked by uid 5000); Sat, 14 Jan 2006 20:03:08 +0000
+Received: (qmail 1606 invoked from network); Sat, 14 Jan 2006 20:03:04 +0000
+Date: Sat, 14 Jan 2006 12:03:01 -0800
+From: Kohsuke Kawaguchi <Kohsuke.Kawaguchi@Sun.COM>
+Subject: Re: Optional arguments
+In-reply-to: <E1EwJcH-00033u-00@sites.networkaholics.de>
+Sender: kohsuke@kohsuke.org
+To: Christian Ullenboom <C.Ullenboom@java-tutor.com>, users@com4j.dev.java.net
+Reply-to: users@com4j.dev.java.net
+Message-id: <43C958F5.902@sun.com>
+MIME-version: 1.0
+Content-type: multipart/signed;
+ boundary=------------ms060503010002030609090005; micalg=sha1;
+ protocol="application/x-pkcs7-signature"
+Precedence: bulk
+Delivered-to: mailing list users@com4j.dev.java.net
+X-PMX-Version: 5.1.1.222179
+X-ClientAddr: 64.125.133.206
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: AI8CAKTnyEOCFA
+X-IronPort-AV: i="3.99,367,1131350400";   d="p7s'?scan'208";
+ a="1009507:sNHT116059538"
+X-IRONPORT: SCANNED
+References: <E1EwJcH-00033u-00@sites.networkaholics.de>
+Mailing-List: contact users-help@com4j.dev.java.net; run by ezmlm
+List-Post: <mailto:users@com4j.dev.java.net>
+List-Unsubscribe: <mailto:users-unsubscribe@com4j.dev.java.net>
+List-Help: <mailto:users-help@com4j.dev.java.net>
+X-No-Archive: yes
+User-Agent: Thunderbird 1.5 (Windows/20051201)
+Original-recipient: rfc822;kohsuke.kawaguchi@sun.com
+
+
+--------------ms060503010002030609090005
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Christian Ullenboom wrote:
+> Hello.
+>
+> With the new CLSCTX.LOCAL_SERVER the first contact is made. It works!
+
+Good.
+
+> I started to convert my PPT tools based an Jawin to com4j and observed one
+> problem: There are optional arguments, com4j does not yet support. For
+> example the paste() method on a Slides object
+> (http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vbapp11/ht
+> ml/ppmthPaste1_HV05193222.asp). com4j generates only a method paste(int),
+> but not a method without parameter paste()!
+
+I see. I filed issue #20 for this. I have to think about how to capture
+this in the annotation. It's bit tricky to get this right.
+
+>
+>>> special slide you must first get the slides()and then use item():
+>>>
+>>> Slides slides = presentation.slides();
+>>> Slide slide = slide.item(3);
+>>>
+>>> In VBA you can write
+>>>
+>>> Slide slide = presentation.slides(3);
+>>>
+>>> It would be nice to have an overloaded method slides() in Java too.
+>
+>>Ah, that's true. I think there's some metadata to do this. I'll check.
+>
+> Some explanation is given here:
+>
+> http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vbapp11/htm
+> l/pphowReturningAnObject1_HV05193520.asp
+
+I implemented this and posted a new version.
+
+> A lot of methods are missing in TextFrame
+> (http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vbapp11/ht
+> ml/ppobjTextFrame1_HV05193890.asp): AutoSize, HasText, TextRange, ... Now it
+> is:
+
+Turns out this is because PowerPoint refers to other type libraries, and
+they have interfaces of the same name.
+
+The new version contains a PowerPoint example, and I think it generates
+all the expected properties and so on.
+
+
+> With a new version I will give an example of your library in my German book
+> "Java ist auch eine Insel". Currently there is only a link to com4j
+> http://www.galileocomputing.de/openbook/javainsel5/javainsel24_004.htm#Rxx74
+> 7java240040400098F1F033100
+> but in the next edition in autumn (based on Java 6) I will replace jawin and
+> include an example with com4j.
+
+Thanks! Any plan to translate this book in English?
+
+
+--
+Kohsuke Kawaguchi
+Sun Microsystems                   kohsuke.kawaguchi@sun.com
+
+--------------ms060503010002030609090005
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIJCTCC
+At8wggJIoAMCAQICAw4iOjANBgkqhkiG9w0BAQQFADBiMQswCQYDVQQGEwJaQTElMCMGA1UE
+ChMcVGhhd3RlIENvbnN1bHRpbmcgKFB0eSkgTHRkLjEsMCoGA1UEAxMjVGhhd3RlIFBlcnNv
+bmFsIEZyZWVtYWlsIElzc3VpbmcgQ0EwHhcNMDUwMjI1MjExMDU1WhcNMDYwMjI1MjExMDU1
+WjBLMR8wHQYDVQQDExZUaGF3dGUgRnJlZW1haWwgTWVtYmVyMSgwJgYJKoZIhvcNAQkBFhlr
+b2hzdWtlLmthd2FndWNoaUBzdW4uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAue+q73f3e/qjbY7xWIgXcHDXcAWC95Ro7yThphqayK9UwtoIfS4UIioM6NMIhIN0rsdh
+R4PtWgAvRjAa4yxGhsTE3U7p+1YWwlEVQeEptdgJ6YLjLxF7sZg86ZWU/+W5ukXNm7J8zNYT
+49ov7Nxy5TNPKGB28HySTPnaCdw8W6HFzpHqLwhSpgAe29nMdp7kK5BzQNcM9MDkPv2xG+Ui
+M8XFzHlDT84phlAYmBwDg4ux7i+qJdO5EFuH7GPwlSFDjoK4rCgxyhOaOJJ6Bb2VZmpul+dk
+pITOtDgNE82jqsgTKzWUziSnJKjTrKEdzUDBhIzV+Xf5kjSB6cgNmTFcVQIDAQABozYwNDAk
+BgNVHREEHTAbgRlrb2hzdWtlLmthd2FndWNoaUBzdW4uY29tMAwGA1UdEwEB/wQCMAAwDQYJ
+KoZIhvcNAQEEBQADgYEAIkau/cXwRmSzb9nC4/g2fslr/VKWQY2n1IN9vQ8xe8YYc/VJdedY
+NyYTVAmwubU6o/1bVLkl7erieJWBt50Oq4Kc83apFpMZ1DRLmY4X5oYFLh58ScQ+RBB8WJMx
+wK+s50mRcLbDvzy0GfTunwl3G5PxFBsU7t1p/xDSG2p0YCAwggLfMIICSKADAgECAgMOIjow
+DQYJKoZIhvcNAQEEBQAwYjELMAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0
+aW5nIChQdHkpIEx0ZC4xLDAqBgNVBAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBJc3N1
+aW5nIENBMB4XDTA1MDIyNTIxMTA1NVoXDTA2MDIyNTIxMTA1NVowSzEfMB0GA1UEAxMWVGhh
+d3RlIEZyZWVtYWlsIE1lbWJlcjEoMCYGCSqGSIb3DQEJARYZa29oc3VrZS5rYXdhZ3VjaGlA
+c3VuLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALnvqu9393v6o22O8ViI
+F3Bw13AFgveUaO8k4aYamsivVMLaCH0uFCIqDOjTCISDdK7HYUeD7VoAL0YwGuMsRobExN1O
+6ftWFsJRFUHhKbXYCemC4y8Re7GYPOmVlP/lubpFzZuyfMzWE+PaL+zccuUzTyhgdvB8kkz5
+2gncPFuhxc6R6i8IUqYAHtvZzHae5CuQc0DXDPTA5D79sRvlIjPFxcx5Q0/OKYZQGJgcA4OL
+se4vqiXTuRBbh+xj8JUhQ46CuKwoMcoTmjiSegW9lWZqbpfnZKSEzrQ4DRPNo6rIEys1lM4k
+pySo06yhHc1AwYSM1fl3+ZI0genIDZkxXFUCAwEAAaM2MDQwJAYDVR0RBB0wG4EZa29oc3Vr
+ZS5rYXdhZ3VjaGlAc3VuLmNvbTAMBgNVHRMBAf8EAjAAMA0GCSqGSIb3DQEBBAUAA4GBACJG
+rv3F8EZks2/ZwuP4Nn7Ja/1SlkGNp9SDfb0PMXvGGHP1SXXnWDcmE1QJsLm1OqP9W1S5Je3q
+4niVgbedDquCnPN2qRaTGdQ0S5mOF+aGBS4efEnEPkQQfFiTMcCvrOdJkXC2w788tBn07p8J
+dxuT8RQbFO7daf8Q0htqdGAgMIIDPzCCAqigAwIBAgIBDTANBgkqhkiG9w0BAQUFADCB0TEL
+MAkGA1UEBhMCWkExFTATBgNVBAgTDFdlc3Rlcm4gQ2FwZTESMBAGA1UEBxMJQ2FwZSBUb3du
+MRowGAYDVQQKExFUaGF3dGUgQ29uc3VsdGluZzEoMCYGA1UECxMfQ2VydGlmaWNhdGlvbiBT
+ZXJ2aWNlcyBEaXZpc2lvbjEkMCIGA1UEAxMbVGhhd3RlIFBlcnNvbmFsIEZyZWVtYWlsIENB
+MSswKQYJKoZIhvcNAQkBFhxwZXJzb25hbC1mcmVlbWFpbEB0aGF3dGUuY29tMB4XDTAzMDcx
+NzAwMDAwMFoXDTEzMDcxNjIzNTk1OVowYjELMAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0
+ZSBDb25zdWx0aW5nIChQdHkpIEx0ZC4xLDAqBgNVBAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVl
+bWFpbCBJc3N1aW5nIENBMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDEpjxVc1X7TrnK
+mVoeaMB1BHCd3+n/ox7svc31W/Iadr1/DDph8r9RzgHU5VAKMNcCY1osiRVwjt3J8CuFWqo/
+cVbLrzwLB+fxH5E2JCoTzyvV84J3PQO+K/67GD4Hv0CAAmTXp6a7n2XRxSpUhQ9IBH+nttE8
+YQRAHmQZcmC3+wIDAQABo4GUMIGRMBIGA1UdEwEB/wQIMAYBAf8CAQAwQwYDVR0fBDwwOjA4
+oDagNIYyaHR0cDovL2NybC50aGF3dGUuY29tL1RoYXd0ZVBlcnNvbmFsRnJlZW1haWxDQS5j
+cmwwCwYDVR0PBAQDAgEGMCkGA1UdEQQiMCCkHjAcMRowGAYDVQQDExFQcml2YXRlTGFiZWwy
+LTEzODANBgkqhkiG9w0BAQUFAAOBgQBIjNFQg+oLLswNo2asZw9/r6y+whehQ5aUnX9MIbj4
+Nh+qLZ82L8D0HFAgk3A8/a3hYWLD2ToZfoSxmRsAxRoLgnSeJVCUYsfbJ3FXJY3dqZw5jowg
+T2Vfldr394fWxghOrvbqNOUQGls1TXfjViF4gtwhGTXeJLHTHUb/XV9lTzGCAzswggM3AgEB
+MGkwYjELMAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQdHkpIEx0
+ZC4xLDAqBgNVBAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENBAgMOIjow
+CQYFKw4DAhoFAKCCAacwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMDYwMTE0MjAwMzAxWjAjBgkqhkiG9w0BCQQxFgQUJp845+75oXuXL6GLuWJQqxMWP70w
+UgYJKoZIhvcNAQkPMUUwQzAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcN
+AwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgweAYJKwYBBAGCNxAEMWswaTBiMQswCQYD
+VQQGEwJaQTElMCMGA1UEChMcVGhhd3RlIENvbnN1bHRpbmcgKFB0eSkgTHRkLjEsMCoGA1UE
+AxMjVGhhd3RlIFBlcnNvbmFsIEZyZWVtYWlsIElzc3VpbmcgQ0ECAw4iOjB6BgsqhkiG9w0B
+CRACCzFroGkwYjELMAkGA1UEBhMCWkExJTAjBgNVBAoTHFRoYXd0ZSBDb25zdWx0aW5nIChQ
+dHkpIEx0ZC4xLDAqBgNVBAMTI1RoYXd0ZSBQZXJzb25hbCBGcmVlbWFpbCBJc3N1aW5nIENB
+AgMOIjowDQYJKoZIhvcNAQEBBQAEggEAKHoJMFym7rphN7L/+jGTj07uiMmBkDNJm3OYRlzf
+Qv9hq1TxxRN99qate1rt3nBq5Loyz66d+u4Ts/z8Lnk8o7NIcUi9t9GNYFf4bCT3fowmqjo5
+XK/1+/Zjr7HZkrYnfwdKKywoBG4G0pH7C2Ib+v0Tv6FalQHy+MmKv/LXRfBXyX1qs4tx83U4
+6byyBSObGhERbykBjHd9jmIIWwoN+eyUbVTIVnYxeuHY76d0woDfV9ApIgKCAVrlyuKVmG1Z
+H41livbuUg20x53L0mKbeXxxB+sRpVTMARscd1I69XSGGXNjgbnZFJ+RiU8dccxYg5hgxR++
+EQFJq8HBs5UzjAAAAAAAAA==
+--------------ms060503010002030609090005--
+
+
+

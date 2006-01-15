@@ -4,7 +4,9 @@ import javax.activation.DataHandler;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.BodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -68,6 +70,21 @@ public class MimeMessageEx extends MimeMessage implements Serializable {
         saveChanges();
     }
 
+    public String getMainContent() throws MessagingException, IOException {
+        Object data = getContent();
+        while(true) {
+            if (data instanceof MimeMultipart) {
+                MimeMultipart mul = (MimeMultipart) data;
+                BodyPart bodyPart = mul.getBodyPart(0);
+                data = bodyPart.getContent();
+                continue;
+            }
+            if (data instanceof String)
+                return (String)data;
+            // unknown format
+            throw new MessagingException("Unable to convert "+data+" to string");
+        }
+    }
     private Object writeReplace() throws IOException, MessagingException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         writeTo(baos);
@@ -91,4 +108,10 @@ public class MimeMessageEx extends MimeMessage implements Serializable {
     }
 
     private static final long serialVersionUID = 1L;
+
+
+    public static void main(String[] args) throws Exception {
+        System.out.println(new MimeMessageEx(
+            Session.getInstance(System.getProperties()),System.in).getMainContent());
+    }
 }
