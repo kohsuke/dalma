@@ -13,11 +13,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../ant-task/lib/ant-1.6.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/ant-1.6.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../ant-task/lib/apache-ant-1.6.5-src.zip!/apache-ant-1.6.5/src/main" />
+          <root url="jar://$MODULE_DIR$/lib/apache-ant-1.6.5-src.zip!/apache-ant-1.6.5/src/main" />
         </SOURCES>
       </library>
     </orderEntry>
