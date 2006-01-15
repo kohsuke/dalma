@@ -114,6 +114,16 @@ public class Runner extends Task {
             throw new BuildException("Unable to initialize engine: "+e.getMessage(),e);
         }
 
+        // test that class loader is set up correctly
+        try {
+            if(loader.loadClass("java.lang.String")!=String.class)
+                throw new BuildException("ClassLoader set up error. Can't load java.lang.String correctly");
+            if(loader.loadClass(Engine.class.getName())!=Engine.class)
+                throw new BuildException("ClassLoader set up error. Can't load the Engine class correctly");
+        } catch( ClassNotFoundException e ) {
+            throw new BuildException(e);
+        }
+
         Class<?> mainClass;
         Program program;
 
