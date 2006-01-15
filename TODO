@@ -21,17 +21,27 @@ James integration
   ComponentManager compMgr = (ComponentManager)getMailetContext().getAttribute(Constants.AVALON_COMPONENT_MANAGER);
   UsersStore usersStore = (UsersStore) compMgr.lookup("org.apache.james.services.UsersStore");
 
+Logger Hierarchy
+================
+
+it's not enough to just expose Logger. More likely you'll just need recorded log records.
+(I mean, would you really subscribe to the flow of logs!?)
+
+Aggregated logging makes logging redundant if copies are kept on separate directory.
+some kind of database would be nice, or just index, maybe. In such a way that
+log entries can be deleted at will. How?
+
+
 Container Version
-==============
-- create version.properties in Maven
+=================
+- allow maven-dalma-plugin to run container in it
+
 - duck-typing delegation in Stapler
   - how does it implement UIObject?
 - javadoc link among modules
 - install it on other containers as a test before release
 - define a place to put modules
 - define module installer screen
-- autoredeploy jar update issue.
-  jar files seem to be locked and can't be re-written.
 
 - don't send workflow application logs to the system log.
 
