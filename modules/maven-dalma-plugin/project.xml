@@ -32,6 +32,11 @@
       <artifactId>dalma-container</artifactId>
       <version>${pom.currentVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>dalma</groupId>
+      <artifactId>dalma-ant-tasks</artifactId>
+      <version>${pom.currentVersion}</version>
+    </dependency>
   </dependencies>
 </project>
 

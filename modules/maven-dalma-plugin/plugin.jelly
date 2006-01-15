@@ -7,11 +7,6 @@
          xmlns:g="genapp">
 
   <define:taglib uri="dalma">
-    <define:jellybean
-      name="runner"
-      className="dalma.maven.Runner"
-    />
-
     <define:tag name="copy-artifacts">
       <!-- include dependency jars -->
       <j:forEach var="lib" items="${pom.artifacts}">
@@ -63,11 +58,38 @@
     <j:set var="base" value="${maven.build.dir}/dalma-test/apps/${pom.artifactId}" />
     <mkdir dir="${base}" />
     <copy todir="${base}">
-      <!-- class files -->
-      <fileset dir="${maven.build.dest}" />
       <dalma:copy-artifacts />
     </copy>
 
-    <dalma:runner workDir="${maven.build.dir}/dalma-test" />
+    <taskdef name="dalmaRunner" classname="dalma.ant.Runner">
+      <classpath>
+        <j:forEach var="lib" items="${plugin.artifacts}">
+          <pathelement path="${lib.path}" />
+        </j:forEach>
+      </classpath>
+    </taskdef>
+
+    <!--
+      run the application in the test harness.
+      it's important to use @parentfirst='false' because many users
+      set CLASSPATH to include build artifacts, and running Ant on
+      such a shell would load those classes in the main ant classloader,
+      which won't be instrumented.
+    -->
+    <dalmaRunner
+        mainClass="${maven.dalma.mainclass}"
+        workdir="${maven.build.dir}/dalma-test"
+        parentfirst="false">
+
+      <classpath>
+        <pathelement path="${maven.build.dest}" />
+        <j:forEach var="lib" items="${pom.artifacts}">
+          <j:set var="dep" value="${lib.dependency}"/>
+          <j:if test="${dep.getProperty('dar.bundle')=='true'}">
+            <fileset file="${lib.path}" />
+          </j:if>
+        </j:forEach>
+      </classpath>
+    </dalmaRunner>
   </goal>
 </project>
