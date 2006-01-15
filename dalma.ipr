@@ -243,6 +243,7 @@
       <module fileurl="file://$PROJECT_DIR$/samples/hangman/hangman.iml" filepath="$PROJECT_DIR$/samples/hangman/hangman.iml" group="samples" />
       <module fileurl="file://$PROJECT_DIR$/modules/irc/irc.iml" filepath="$PROJECT_DIR$/modules/irc/irc.iml" group="modules" />
       <module fileurl="file://$PROJECT_DIR$/modules/james/james.iml" filepath="$PROJECT_DIR$/modules/james/james.iml" group="experiments" />
+      <module fileurl="file://$PROJECT_DIR$/samples/java.net-role-process/java.net-role-process.iml" filepath="$PROJECT_DIR$/samples/java.net-role-process/java.net-role-process.iml" group="samples" />
       <module fileurl="file://$PROJECT_DIR$/modules/jbi/jbi.iml" filepath="$PROJECT_DIR$/modules/jbi/jbi.iml" group="modules" />
       <module fileurl="file://$PROJECT_DIR$/modules/jms/jms.iml" filepath="$PROJECT_DIR$/modules/jms/jms.iml" group="modules" />
       <module fileurl="file://$PROJECT_DIR$/modules/maven-dalma-plugin/maven-dalma-plugin.iml" filepath="$PROJECT_DIR$/modules/maven-dalma-plugin/maven-dalma-plugin.iml" />

@@ -268,4 +268,11 @@
   </goal>
   
   
+  <goal name="fill-libs"
+        description="fill the lib directory with dependency jar files">
+    <j:forEach var="lib" items="${pom.artifacts}">
+      <a:copy todir="lib" file="${lib.path}" />
+    </j:forEach>
+  </goal>
+  
 </project>
