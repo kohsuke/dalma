@@ -7,7 +7,6 @@
   <shortDescription>Maven plugin for developing dalma applications</shortDescription>
 
   <build>
-    <sourceDirectory>src/java</sourceDirectory>
     <resources>
       <resource>
         <directory>${basedir}/plugin-resources</directory>
