@@ -4,7 +4,7 @@
   <name>Dalma Workflow Engine</name>
   <groupId>dalma</groupId>
   <artifactId>dalma-site</artifactId>
-  <currentVersion>0.1</currentVersion>
+  <currentVersion>0.2-SNAPSHOT</currentVersion>
   <package>dalma</package>
 
   <organization>
