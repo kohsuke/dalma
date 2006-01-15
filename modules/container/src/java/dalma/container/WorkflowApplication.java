@@ -22,14 +22,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.Calendar;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.Properties;
-import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -211,7 +208,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         }
 
         try {
-            mainClass = classLoader.loadClass(findMainClass());
+            mainClass = classLoader.loadMainClass();
         } catch (ClassNotFoundException e) {
             throw new FailedOperationException("Failed to load the main class from application",e);
         } catch (IOException e) {
@@ -231,28 +228,6 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         state = STOPPED;
 
         logger.info("Loaded "+name);
-    }
-
-    private String findMainClass() throws IOException {
-        // determine the Main class name
-        Enumeration<URL> res = classLoader.getResources("META-INF/MANIFEST.MF");
-        while(res.hasMoreElements()) {
-            URL url = res.nextElement();
-            InputStream is = new BufferedInputStream(url.openStream());
-            try {
-                Manifest mf = new Manifest(is);
-                String value = mf.getMainAttributes().getValue("Dalma-Main-Class");
-                if(value!=null) {
-                    logger.info("Found Dalma-Main-Class="+value+" in "+url);
-                    return value;
-                }
-            } finally {
-                is.close();
-            }
-        }
-
-        // default location
-        return "Main";
     }
 
     /**

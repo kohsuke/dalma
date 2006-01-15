@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FilenameFilter;
+import java.io.BufferedInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -48,7 +49,7 @@ import java.util.zip.ZipFile;
  * {@link URLClassLoader} replacement.
  *
  */
-final class ClassLoaderImpl extends ClassLoader {
+public final class ClassLoaderImpl extends ClassLoader {
 
     private static final Logger logger = Logger.getLogger(ClassLoaderImpl.class.getName());
 
@@ -256,7 +257,7 @@ final class ClassLoaderImpl extends ClassLoader {
      *
      * @throws IOException if data needed from the file cannot be read.
      */
-    protected void addPathFile(File pathComponent) throws IOException {
+    public void addPathFile(File pathComponent) throws IOException {
         pathComponents.addElement(pathComponent);
 
         if (pathComponent.isDirectory()) {
@@ -1107,6 +1108,35 @@ final class ClassLoaderImpl extends ClassLoader {
             }
         }
         zipFiles = new Hashtable<File,ZipFile>();
+    }
+
+    /**
+     * Locates the Main class through {@code META-INF/MANIFEST.MF} and
+     * returns it.
+     *
+     * @return
+     *      always non-null.
+     */
+    public Class loadMainClass() throws IOException, ClassNotFoundException {
+        // determine the Main class name
+        Enumeration<URL> res = getResources("META-INF/MANIFEST.MF");
+        while(res.hasMoreElements()) {
+            URL url = res.nextElement();
+            InputStream is = new BufferedInputStream(url.openStream());
+            try {
+                Manifest mf = new Manifest(is);
+                String value = mf.getMainAttributes().getValue("Dalma-Main-Class");
+                if(value!=null) {
+                    logger.info("Found Dalma-Main-Class="+value+" in "+url);
+                    return loadClass(value);
+                }
+            } finally {
+                is.close();
+            }
+        }
+
+        // default location
+        return loadClass("Main");
     }
 
     /** Static map of jar file/time to manifiest class-path entries */
