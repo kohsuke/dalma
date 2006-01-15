@@ -25,7 +25,7 @@ public final class Model<T> {
     /**
      * This object represents the resource injection model for this class.
      */
-    public final Class<T> clazz;
+    public final Class<? extends T> clazz;
 
     /**
      * List of resoures that constitute a model.
@@ -86,7 +86,7 @@ public final class Model<T> {
      * @throws IllegalResourceException
      *      if there's incorrect use of {@link Resource}.
      */
-    public Model( Class<T> clazz ) throws IllegalResourceException {
+    public Model( Class<? extends T> clazz ) throws IllegalResourceException {
         this.clazz = clazz;
 
         List<Part> parts = new ArrayList<Part>();
