@@ -15,6 +15,8 @@ import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 
 /**
@@ -181,5 +183,21 @@ public class Runner extends Task {
         } catch (Throwable e) {
             throw new BuildException(mainClass.getName()+".main() method reported an exception",e);
         }
+
+        System.out.println("Press ENTER to quit");
+        try {
+            new BufferedReader(new InputStreamReader(System.in)).readLine();
+        } catch (IOException e) {
+            throw new Error(e); // impossible
+        }
+
+        try {
+            program.cleanup(engine);
+        } catch (Throwable e) {
+            throw new BuildException(mainClass.getName()+".cleanup() method reported an exception",e);
+        }
+
+        engine.stop();
+        loader.cleanup();
     }
 }
