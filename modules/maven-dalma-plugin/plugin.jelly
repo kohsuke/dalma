@@ -57,9 +57,6 @@
     <!-- copy files -->
     <j:set var="base" value="${maven.build.dir}/dalma-test/apps/${pom.artifactId}" />
     <mkdir dir="${base}" />
-    <copy todir="${base}">
-      <dalma:copy-artifacts />
-    </copy>
 
     <taskdef name="dalmaRunner" classname="dalma.ant.Runner">
       <classpath>
