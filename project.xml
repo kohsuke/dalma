@@ -62,8 +62,9 @@
 
   <dependencies>
     <dependency>
-      <id>commons-javaflow</id>
-      <version>1.0-SNAPSHOT</version>
+      <groupId>dalma-lib</groupId>
+      <artifactId>commons-javaflow</artifactId>
+      <version>20060101</version>
       <properties>
         <dist>engine</dist>
         <belongsTo>dalma</belongsTo>
@@ -72,8 +73,8 @@
       </properties>
     </dependency>
     <dependency>
-      <groupId>bcel</groupId>
-      <artifactId>bcel</artifactId>
+      <groupId>dalma-lib</groupId>
+      <artifactId>jakarta-bcel</artifactId>
       <version>20050813</version>
       <type>jar</type>
       <properties>
