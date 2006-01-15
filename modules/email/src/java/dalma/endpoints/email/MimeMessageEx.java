@@ -70,6 +70,31 @@ public class MimeMessageEx extends MimeMessage implements Serializable {
         saveChanges();
     }
 
+    /**
+     * Returns the real meat of the e-mail in text.
+     *
+     * <p>
+     * The "real meat" is defined to be the primary text portion of the e-mail.
+     * This method allows you to forget about such details like attachments,
+     * SMIME, or HTML mails, and let you access the core part of the message.
+     *
+     * <p>
+     * For example, if the e-mail is simply "text/plain", this method returns
+     * the same string as {@link MimeMessage#getContent()}. If the e-mail is
+     * a signed message where the primary part is "text/plain", this method
+     * returns the string content of that "text/plain" part.
+     *
+     * <p>
+     * This method correctly handles nesting of such elements (for example,
+     * a signed HTML mail with attachments.)
+     *
+     * @return
+     *      always non-null
+     * @throws MessagingException
+     *      if the e-mail fails to parse.
+     * @throws IOException
+     *      thrown by {@link DataHandler}. See {@link MimeMessage#getContent()}.
+     */
     public String getMainContent() throws MessagingException, IOException {
         Object data = getContent();
         while(true) {
