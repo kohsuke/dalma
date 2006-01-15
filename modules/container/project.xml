@@ -16,7 +16,9 @@
       </properties>
     </dependency>
     <dependency>
-      <id>jmxremote_optional</id>
+      <groupId>dalma-lib</groupId>
+      <artifactId>jmxremote_optional</artifactId>
+      <version>1.0.1_03</version>
       <properties>
         <jar.manifest.classpath>true</jar.manifest.classpath>
       </properties>
