@@ -232,8 +232,8 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      *      a message that represents the received reply.
      *      always a non-null valid message.
      */
-    public MimeMessage waitForReply(MimeMessage outgoing) {
-        return super.waitForReply(outgoing);
+    public MimeMessageEx waitForReply(MimeMessage outgoing) {
+        return (MimeMessageEx)super.waitForReply(outgoing);
     }
 
     /**
@@ -254,8 +254,8 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      *      always non-null.
      * @see ReplyIterator
      */
-    public ReplyIterator<MimeMessage> waitForMultipleReplies(MimeMessage outgoing, Date expirationDate ) {
-        return super.waitForMultipleReplies(outgoing,expirationDate);
+    public ReplyIterator<MimeMessageEx> waitForMultipleReplies(MimeMessage outgoing, Date expirationDate ) {
+        return (ReplyIterator<MimeMessageEx>)super.waitForMultipleReplies(outgoing,expirationDate);
     }
 
     /**
@@ -268,7 +268,7 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      * within 1 week from now. See {@link #waitForMultipleReplies(MimeMessage, long, TimeUnit)} for
      * details.
      */
-    public ReplyIterator<MimeMessage> waitForMultipleReplies(MimeMessage outgoing, long timeout, TimeUnit unit ) {
+    public ReplyIterator<MimeMessageEx> waitForMultipleReplies(MimeMessage outgoing, long timeout, TimeUnit unit ) {
         return waitForMultipleReplies(outgoing,unit.fromNow(timeout));
     }
 
@@ -279,7 +279,7 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      * This overloaded version returns a {@link ReplyIterator} that never expires.
      * See {@link #waitForMultipleReplies(MimeMessage, long, TimeUnit)} for details.
      */
-    public ReplyIterator<MimeMessage> waitForMultipleReplies(MimeMessage outgoing) {
+    public ReplyIterator<MimeMessageEx> waitForMultipleReplies(MimeMessage outgoing) {
         return waitForMultipleReplies(outgoing,null);
     }
 
@@ -294,8 +294,8 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      *      if a response was not received within the specified timeout period,
      *      null is returned.
      */
-    public MimeMessage waitForReply(MimeMessage outgoing,long timeout, TimeUnit unit) {
-        return super.waitForReply(outgoing, unit.fromNow(timeout));
+    public MimeMessageEx waitForReply(MimeMessage outgoing,long timeout, TimeUnit unit) {
+        return (MimeMessageEx)super.waitForReply(outgoing, unit.fromNow(timeout));
     }
 
     /**
@@ -311,8 +311,8 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      *      if a response was not received within the specified timeout period,
      *      null is returned.
      */
-    public MimeMessage waitForReply(MimeMessage outgoing,Date timeoutDate) {
-        return super.waitForReply(outgoing,timeoutDate);
+    public MimeMessageEx waitForReply(MimeMessage outgoing,Date timeoutDate) {
+        return (MimeMessageEx)super.waitForReply(outgoing,timeoutDate);
     }
 
     /**

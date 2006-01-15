@@ -116,7 +116,7 @@ public class EmailTest extends WorkflowTestProgram {
                 msg = (MimeMessage) msg.reply(false);
                 msg.setText("welcome");
 
-                ReplyIterator<MimeMessage> itr = ep.waitForMultipleReplies(msg);
+                ReplyIterator<MimeMessageEx> itr = ep.waitForMultipleReplies(msg);
                 while(itr.hasNext()) {
                     MimeMessage in = itr.next();
                     if(in.getContent().toString().contains("bye"))

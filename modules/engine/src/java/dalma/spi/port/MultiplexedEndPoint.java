@@ -56,7 +56,7 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
      *
      * TODO:javadoc
      */
-    protected ReplyIterator<Msg> waitForMultipleReplies(Msg outgoing, Date expirationDate ) {
+    protected ReplyIterator<? extends Msg> waitForMultipleReplies(Msg outgoing, Date expirationDate ) {
         return new ReplyIteratorImpl<Key,Msg>(this,outgoing,expirationDate);
     }
 
