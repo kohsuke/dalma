@@ -94,6 +94,7 @@
         <j:set var="moduleOut" value="${out}/${moduleDir.name}" />
 
         <a:mkdir dir="${moduleOut}" />
+        <a:mkdir dir="${moduleDir}/target" /> <!-- create this directory in case it doesn't exist -->
         <a:copy todir="${moduleOut}">
           <a:fileset dir="${moduleDir}/target" includes="*.jar" />
         </a:copy>
@@ -224,6 +225,7 @@
       excludes="${maven.multiproject.excludes}"
       goals="clean"
     />
+    <delete dir="${rootdir}/target" />
   </goal>
 
   <goal name="dist:container"
