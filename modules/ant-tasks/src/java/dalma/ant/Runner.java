@@ -111,7 +111,7 @@ public class Runner extends Task {
             engine = EngineFactory.newEngine(getWorkDir(),loader,
                 new ThreadPoolExecutor(1,true));
         } catch (IOException e) {
-            throw new BuildException("Unable to initialize engine",e);
+            throw new BuildException("Unable to initialize engine: "+e.getMessage(),e);
         }
 
         Class<?> mainClass;
@@ -129,24 +129,24 @@ public class Runner extends Task {
 
             program = (Program) _program;
         } catch (ClassNotFoundException e) {
-            throw new BuildException("Failed to load the main class",e);
+            throw new BuildException("Failed to load the main class: "+e.getMessage(),e);
         } catch (IOException e) {
-            throw new BuildException("Failed to load the main class",e);
+            throw new BuildException("Failed to load the main class: "+e.getMessage(),e);
         } catch (IllegalAccessException e) {
-            throw new BuildException("Failed to load the main class",e);
+            throw new BuildException("Failed to load the main class: "+e.getMessage(),e);
         } catch (InstantiationException e) {
-            throw new BuildException("Failed to load the main class",e);
+            throw new BuildException("Failed to load the main class: "+e.getMessage(),e);
         }
 
         try {
             Model model = new Model(mainClass);
             model.inject(engine,program,props.toProperties());
         } catch (InjectionException e) {
-            throw new BuildException("Failed to configure program",e);
+            throw new BuildException("Failed to configure program: "+e.getMessage(),e);
         } catch (IllegalResourceException e) {
-            throw new BuildException("Failed to configure program",e);
+            throw new BuildException("Failed to configure program: "+e.getMessage(),e);
         } catch (ParseException e) {
-            throw new BuildException("Failed to configure program",e);
+            throw new BuildException("Failed to configure program: "+e.getMessage(),e);
         }
 
         try {
