@@ -7,7 +7,7 @@
   <target name="instrument">
     <taskdef resource="org/apache/commons/javaflow/ant/tasks.properties">
       <classpath>
-        <fileset dir="../../lib/redist" includes="*.jar" />
+        <fileset dir="../../lib" includes="*.jar" />
       </classpath>
     </taskdef>
 
