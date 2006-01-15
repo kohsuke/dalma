@@ -7,6 +7,7 @@
   <shortDescription>Maven plugin for developing dalma applications</shortDescription>
 
   <build>
+    <sourceDirectory>src/java</sourceDirectory>
     <resources>
       <resource>
         <directory>${basedir}/plugin-resources</directory>
@@ -25,5 +26,12 @@
       </resource>
     </resources>
   </build>
+  <dependencies>
+    <dependency>
+      <groupId>dalma</groupId>
+      <artifactId>dalma-container</artifactId>
+      <version>${pom.currentVersion}</version>
+    </dependency>
+  </dependencies>
 </project>
 

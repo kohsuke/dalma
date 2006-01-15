@@ -3,8 +3,31 @@
          xmlns:util="jelly:util"
          xmlns:maven="jelly:maven"
          xmlns:define="jelly:define"
+         xmlns:dalma="dalma"
          xmlns:g="genapp">
-  
+
+  <define:taglib uri="dalma">
+    <define:jellybean
+      name="runner"
+      className="dalma.maven.Runner"
+    />
+
+    <define:tag name="copy-artifacts">
+      <!-- include dependency jars -->
+      <j:forEach var="lib" items="${pom.artifacts}">
+        <j:set var="dep" value="${lib.dependency}"/>
+        <j:if test="${dep.getProperty('dar.bundle')=='true'}">
+          <fileset file="${lib.path}" />
+        </j:if>
+      </j:forEach>
+      <!-- additional files given -->
+      <j:if test="${context.getVariable('maven.jar.includes') != null}">
+        <setProperty name="includes" value="${maven.jar.includes}" />
+      </j:if>
+    </define:tag>
+  </define:taglib>
+
+
   <!-- =============================
        PLUG-IN GOALS
        ============================= -->
@@ -24,22 +47,27 @@
       <manifest>
         <attribute name="Dalma-Main-Class" value="${maven.dalma.mainclass}" />
       </manifest>
-      <!-- include dependency jars -->
-      <j:forEach var="lib" items="${pom.artifacts}">
-        <j:set var="dep" value="${lib.dependency}"/>
-        <j:if test="${dep.getProperty('dar.bundle')=='true'}">
-          <fileset file="${lib.path}" />
-        </j:if>
-      </j:forEach>
-      <!-- additional jar files given -->
-      <j:if test="${context.getVariable('maven.jar.includes') != null}">
-        <setProperty name="includes" value="${maven.jar.includes}" />
-      </j:if>
+      <dalma:copy-artifacts />
     </jar>
   </goal>
 
   <goal name="dalma:genapp"
         description="Generate a new dalma workflow application (like 'genapp' goal)">
     <g:generate maven.genapp.template.dir="${plugin.resources}/genapp-template" />
+  </goal>
+
+  <goal name="dalma:run"
+        prereqs="java:compile"
+        description="run this workflow application">
+    <!-- copy files -->
+    <j:set var="base" value="${maven.build.dir}/dalma-test/apps/${pom.artifactId}" />
+    <mkdir dir="${base}" />
+    <copy todir="${base}">
+      <!-- class files -->
+      <fileset dir="${maven.build.dest}" />
+      <dalma:copy-artifacts />
+    </copy>
+
+    <dalma:runner workDir="${maven.build.dir}/dalma-test" />
   </goal>
 </project>
