@@ -243,6 +243,6 @@ public class JMSEndPoint extends MultiplexedEndPoint<String,Message> implements 
     }
 
     public ReplyIterator<Message> waitForMultipleReplies(Message outgoing, Date expirationDate) {
-        return super.waitForMultipleReplies(outgoing, expirationDate);
+        return (ReplyIterator)super.waitForMultipleReplies(outgoing, expirationDate);
     }
 }
