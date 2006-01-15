@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <pomVersion>3</pomVersion>
+  <extend>../../project.xml</extend>
+  <name>Dalma Ant tasks</name>
+  <artifactId>dalma-ant-tasks</artifactId>
+  <shortDescription>Ant tasks for developing dalma applications</shortDescription>
+
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>dalma</groupId>
+      <artifactId>dalma-container</artifactId>
+      <version>${pom.currentVersion}</version>
+    </dependency>
+    <dependency><!-- any version would do -->
+      <id>ant</id>
+      <version>1.6.5</version>
+    </dependency>
+  </dependencies>
+</project>
+
