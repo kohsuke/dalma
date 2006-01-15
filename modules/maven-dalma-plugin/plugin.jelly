@@ -7,6 +7,10 @@
          xmlns:g="genapp">
 
   <define:taglib uri="dalma">
+    <define:jellybean name="find-properties"
+                      varAttribute="${null}"
+                      className="dalma.maven.PropertySetFinder" />
+
     <define:tag name="copy-artifacts">
       <!-- include dependency jars -->
       <j:forEach var="lib" items="${pom.artifacts}">
@@ -66,6 +70,8 @@
       </classpath>
     </taskdef>
 
+    <dalma:find-properties var="testProps" prefix="dalma.test." />
+
     <!--
       run the application in the test harness.
       it's important to use @parentfirst='false' because many users
@@ -78,6 +84,10 @@
         workdir="${maven.build.dir}/dalma-test"
         parentfirst="false">
 
+      <j:forEach var="prop" items="${testProps}">
+        <j:set var="propKey" value="${prop.key}" />
+        <property key="${propKey.substring(11)}" value="${prop.value}" />
+      </j:forEach>
       <classpath>
         <pathelement path="${maven.build.dest}" />
         <j:forEach var="lib" items="${pom.artifacts}">

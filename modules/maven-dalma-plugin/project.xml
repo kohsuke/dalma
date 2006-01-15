@@ -7,6 +7,7 @@
   <shortDescription>Maven plugin for developing dalma applications</shortDescription>
 
   <build>
+    <sourceDirectory>src/java</sourceDirectory>
     <resources>
       <resource>
         <directory>${basedir}/plugin-resources</directory>
@@ -35,6 +36,10 @@
       <groupId>dalma</groupId>
       <artifactId>dalma-ant-tasks</artifactId>
       <version>${pom.currentVersion}</version>
+    </dependency>
+    <dependency>
+      <id>commons-jelly</id>
+      <version>1.0</version>
     </dependency>
   </dependencies>
 </project>
