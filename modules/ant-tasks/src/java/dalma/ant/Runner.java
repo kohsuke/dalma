@@ -3,6 +3,7 @@ package dalma.ant;
 import dalma.Engine;
 import dalma.EngineFactory;
 import dalma.Program;
+import dalma.impl.Util;
 import dalma.container.ClassLoaderImpl;
 import dalma.container.model.IllegalResourceException;
 import dalma.container.model.InjectionException;
@@ -80,6 +81,15 @@ public class Runner extends Task {
                 // very unlikely
                 throw new Error("Unable to allocate a temporary directory");
             }
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    try {
+                        Util.deleteRecursive(workDir);
+                    } catch (IOException e) {
+                        e.printStackTrace(System.err);
+                    }
+                }
+            });
         }
         return workDir;
     }
