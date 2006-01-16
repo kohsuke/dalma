@@ -1,0 +1,96 @@
+<document>
+<properties>
+  <title>DalmaRunner task</title>
+</properties>
+<body>
+<section name="DalmaRunner task">
+  <p>
+    The <tt>dalmaRunner</tt> task allows you to run a workflow program from within Ant quickly, without using <a href="../container/index.html">dalmacon</a>. This is designed to help the debugging experience by:
+  </p>
+  <ol>
+    <li>Reducing the time and overhead of edit/build/debug cycle.</li>
+    <li>Allowing the debugger to be attached easily for tracing through code.</li>
+  </ol>
+</section>
+<section name="Synposis">
+  <table>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+      <th>Required</th>
+    </tr>
+    <tr>
+      <td>workDir</td>
+      <td>
+        Specifies the directory where the persisted conversations are stored.
+        If specified, this directory must exist. If not specified, one-time temporary
+        directory is created and used (and therefore, conversations will be thrown away
+        each time you run.)
+      </td>
+      <td>
+        No
+      </td>
+    </tr>
+    <tr>
+      <td>propertyFile</td>
+      <td>
+        Specifies a property file used to configure <tt>@Resource</tt>s.
+        See the description of the nested &lt;property> element for details.
+      </td>
+      <td>
+        No
+      </td>
+    </tr>
+    <tr>
+      <td>parentFirst</td>
+      <td>
+        The <tt>dalmaRunner</tt> task creates a class loader to load workflow applications (so that it can perform bytecode instrumentations on the fly.) If this attribute is "true", this class loader follows the normal Java class loader delegation model. The consequence is that if you run Ant from a shell that has <tt>CLASSPATH</tt> set to include workflow applications, then those classes will be loaded by Ant's class loader, and therefore won't be instrumented.<br/>
+        If this attribute is "false", then the said class loader will try to locate classes first (from the locations given in the nested &lt;classpath> elements) before delegating to its parent.
+      </td>
+      <td>
+        No. Defaults to "true"
+      </td>
+    </tr>
+    <tr>
+      <td>mainClass</td>
+      <td>
+        Specifies the fully-qualified name of the class that extends <a href="../dalma-container/apidocs/index.html?dalma/Program.html"><tt>Program</tt></a>. If not specified, the class is located through <a href="../container/dar.html">the Dalma-Main-Class manifest entry</a>.
+      </td>
+      <td>
+        No
+      </td>
+    </tr>
+    <!--
+    <tr>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+    </tr>
+    -->
+  </table>
+</section>
+<section name="Nested Elements">
+  <subsection name="classpath">
+    <p>
+      The nested &lt;classpath> elements are <a href="http://ant.apache.org/manual/using.html#path">path-like structures</a> and they specifiy what classes should be loaded inside the runner. This should include your <tt>Program</tt> class and libraries that it depends on.
+    </p>
+  </subsection>
+  <subsection name="property">
+    <p>
+      The nested &lt;property> elements configure <a href="../dalma-container/apidocs/index.html?dalma/Description.html"><tt>Resource</tt>s</a> used in the workflow application. This element follows <a href="http://ant.apache.org/manual/CoreTasks/exec.html#env">the structure of the &lt;env> element.</a>
+    </p><p>
+      For example, if your program has the following field, then specifying <tt>&lt;property key="xyz" value="5"></tt> will inject "5" into this resource:
+    </p>
+<source>
+@Resource
+int xyz;
+</source>
+    <p>
+      Just like in dalmacon, all mandatory resources must be configured through this mechanism for a workflow application to run. Properties can be specified in a property file and loaded through the propertyFile attribute.
+    </p>
+  </subsection>
+</section>
+</body></document>

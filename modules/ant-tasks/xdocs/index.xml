@@ -1,0 +1,11 @@
+<document>
+<properties>
+  <title>Dalma Ant Tasks</title>
+</properties>
+<body>
+<section name="Dalma Ant Tasks">
+  <p>
+    This module implements Ant tasks that make it easy to develop with Dalma by using Ant.
+  </p>
+</section>
+</body></document>
