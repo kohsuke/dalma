@@ -1,7 +1,7 @@
 <!--
   These goals generate a better dependency list that only list 'public' dependencies.
 -->
-<included xmlns:doc="doc" xmlns:j="jelly:core">
+<j:jelly xmlns:doc="doc" xmlns:j="jelly:core">
   <goal name="dependency-ex:register">
     <echo>registered</echo>
     <doc:registerReport
@@ -25,4 +25,4 @@
       outputMode="xml"
       prettyPrint="true"/>
   </goal>
-</included>
+</j:jelly>
