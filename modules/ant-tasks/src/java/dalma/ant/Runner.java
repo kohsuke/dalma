@@ -105,7 +105,8 @@ public class Runner extends Task {
     }
     private void doExecute() {
         // Container con = Container.create(getWorkDir());
-        System.out.println(getWorkDir());
+        if(!getWorkDir().exists())
+            throw new BuildException("work space directory doesn't exist: "+getWorkDir());
 
         ClassLoaderImpl loader = new ClassLoaderImpl(getClass().getClassLoader());
         loader.makeContinuable();
