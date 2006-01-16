@@ -11,6 +11,35 @@
     <li>Reducing the time and overhead of edit/build/debug cycle.</li>
     <li>Allowing the debugger to be attached easily for tracing through code.</li>
   </ol>
+  <p>
+    To declare the <tt>dalmaRunner</tt> task, include the following statement in your build script:
+  </p>
+<source><![CDATA[
+<taskdef name="dalmaRunner" classname="dalma.ant.Runner">
+  <classpath>
+    <fileset dir="path/to/dalma/engine" includes="*.jar" /><!-- all jars that engine depends on -->
+    <fileset dir="path/to/dalma/container/dalma-container-@@VERSION@@.jar" />
+  </classpath>
+</taskdef>
+]]></source>
+   <p>
+     The endpoints your workflow application uses can be also specified in this classpath (or alternatively then can be specified as a nested &lt;classpath> element inside &lt;dalmaRunner>.)
+   </p>
+   
+   <subsection name="Debugging Workflow Application">
+     <p>
+       When you are debugging your application, run <tt>dalmaRunner</tt> with <a href="http://java.sun.com/products/jpda/index.jsp">JPDA</a>, so that you can attach a debugger remotely to the workflow application. Since dalmaRunner runs in the Ant process, doing this requires launching Ant with JPDA enabled:
+     </p>
+<source>
+$ export ANT_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000"
+$ ant
+</source>
+     <p>
+       Refer to your IDE documentation for how to connect its debugger to a remote Java process.
+     </p><p>
+       It's often convenient (not just for Dalma, but for your java development as a whole) to make this a shell script so that you can easily debug any Ant process.
+     </p>
+   </subsection>
 </section>
 <section name="Synposis">
   <table>

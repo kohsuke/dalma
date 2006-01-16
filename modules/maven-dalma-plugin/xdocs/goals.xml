@@ -12,7 +12,7 @@
     </p>
     <ol>
       <li>
-        Puts <a href="TODO">the <tt>Dalma-Main-Class</tt> attribute</a> to the manifest, as specified by the <a href="properties.html">maven.dalma.mainclass</a> property.
+        Puts <a href="../container/dar.html">the <tt>Dalma-Main-Class</tt> attribute</a> to the manifest, as specified by the <a href="properties.html">maven.dalma.mainclass</a> property.
       </li>
       <li>
         If dependency jar files in the manifest has <tt>dar.bundle</tt> property as follows, bundle those jar file s in the generated dar file. This makes it easy to redistribute libraries that your workflow application uses.
@@ -34,6 +34,23 @@
       This goal works like <a href="http://maven.apache.org/maven-1.x/start/ten-minute-test.html">the genapp goal</a>, and produces a skeleton of a new workflow project into the current directory.
     </p><p>
       This is a handy goal when you are starting a new workflow applciation. It creates <tt>project.xml</tt> and a few other files.
+    </p>
+  </section>
+  <section name="dalma:run goal">
+    <p>
+      This goal uses <a href="../ant-tasks/dalmaRunner.html">&lt;dalmaRunner> ant task</a> to run your current workflow application project. This is handy when you are debugging it.
+    </p>
+    <p>
+      To attach a debugger, run Maven with JPDA enabled, as follows:
+    </p>
+<source>
+$ export MAVEN_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000"
+$ maven dalma:run
+</source>
+    <p>
+      This goal consults the <tt>maven.dalma.mainclass</tt> property for the main Program class. Dependencies marked with <tt><![CDATA[<dar.bundle>true</dar.bundle>]]></tt> will be passed as a classpath to the dalmaRunner ant task, therefore they become a subject to the byte code instrumentation.
+    </p><p>
+      Maven properties that start with prefix "dalma.test." will be passed as properties and used to configure resources. For example, a property <tt>dalma.test.xyz=5</tt> will be used to inject "5" into a field <tt>@Resource int xyz;</tt>.
     </p>
   </section>
 </body>
