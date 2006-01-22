@@ -1,6 +1,7 @@
 package dalma.container;
 
 import dalma.Conversation;
+import dalma.impl.Reloadable;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -11,9 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Observable;
 import java.util.TreeMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,18 +34,6 @@ final class CompletedConversationList extends Observable {
     private final File dir;
 
     /**
-     * We occasionally update the list from a file system.
-     * The next scheduled update time.
-     */
-    private transient long nextUpdate = 0;
-
-    /**
-     * If the reloading of runs are in progress (in another thread,
-     * set to true.)
-     */
-    private transient boolean reloadingInProgress;
-
-    /**
      * Keyed by ID.
      */
     private Map<Integer,CompletedConversation> convs;
@@ -61,7 +47,6 @@ final class CompletedConversationList extends Observable {
 
     public CompletedConversationList(File dir) {
         this.dir = dir;
-        scheduleReload();
     }
 
     /**
@@ -76,7 +61,7 @@ final class CompletedConversationList extends Observable {
      */
     public void setPolicy(LogRotationPolicy policy) {
         this.policy = policy;
-        scheduleReload();
+        reloader.update();
     }
 
     public void add(Conversation _conv) {
@@ -111,32 +96,22 @@ final class CompletedConversationList extends Observable {
      *      always non-null, possibly empty. Map is keyed by ID.
      */
     public Map<Integer,Conversation> getList() {
-        loadSync();
-        if(nextUpdate<System.currentTimeMillis() && !reloadingInProgress)
-            scheduleReload();
+        reloader.update();
         // return a new copy to avoid synchronization issue
         return new HashMap<Integer,Conversation>(convs);
     }
 
-    private synchronized void scheduleReload() {
-        if(!reloadingInProgress) {
-            // avoid scheduling the task twice
-            reloadingInProgress = true;
-            // schedule a new reloading operation.
-            // we don't want to block the current thread,
-            // so reloading is done asynchronously.
-            reloader.execute(reloadTask);
-        }
-    }
-
+    /**
+     * Load data if it hasn't been loaded.
+     */
     private void loadSync() {
         if(convs==null)
-            reloadTask.run();
+            reloader.reload();
     }
 
 
-    private final Runnable reloadTask = new Runnable() {
-        public void run() {
+    private final Reloadable reloader = new Reloadable() {
+        public void reload() {
             Map<Integer,CompletedConversation> convs = new TreeMap<Integer,CompletedConversation>();
             convs = Collections.synchronizedMap(convs);
 
@@ -160,8 +135,6 @@ final class CompletedConversationList extends Observable {
             applyLogRotation(convs);
 
             CompletedConversationList.this.convs = convs;
-            reloadingInProgress = false;
-            nextUpdate = System.currentTimeMillis()+5000;
         }
     };
 
@@ -173,14 +146,6 @@ final class CompletedConversationList extends Observable {
                 itr.remove();
         }
     }
-
-    private static final Executor reloader = Executors.newSingleThreadExecutor(new ThreadFactory() {
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread(r);
-            t.setDaemon(true);
-            return t;
-        }
-    });
 
     private static final Logger logger = Logger.getLogger(CompletedConversationList.class.getName());
 }
