@@ -34,8 +34,6 @@ log entries can be deleted at will. How?
 
 Container Version
 =================
-- allow maven-dalma-plugin to run container in it
-
 - duck-typing delegation in Stapler
   - how does it implement UIObject?
 - javadoc link among modules
