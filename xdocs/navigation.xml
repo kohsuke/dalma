@@ -10,6 +10,7 @@
       <item name="Home"                         href="/index.html"/>
       <item name="Download"                     href="https://dalma.dev.java.net/servlets/ProjectDocumentList" />
       <item name="10 minutes guide"             href="/10minutes-guide.html" />
+      <item name="What's new?"                  href="/whatsnew.html" />
     </menu>
 
     <menu name="Writing Workflow App">
@@ -34,6 +35,7 @@
       <item name="JMS endpoint"                 href="/dalma-endpoint-jms/index.html"/>
       <item name="IRC endpoint"                 href="/dalma-endpoint-irc/index.html"/>
       <item name="Maven dalma plugin"           href="/maven-dalma-plugin/index.html" />
+      <item name="Dalma ant tasks"              href="/dalma-ant-tasks/index.html" />
     </menu>
 
     <menu name="Advanced Topics">
