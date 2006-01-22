@@ -4,9 +4,10 @@
          xmlns:maven="jelly:maven"
          xmlns:define="jelly:define"
          xmlns:dalma="dalma"
+         xmlns:dalma-plugin="dalma-plugin"
          xmlns:g="genapp">
 
-  <define:taglib uri="dalma">
+  <define:taglib uri="dalma-plugin">
     <define:jellybean name="find-properties"
                       varAttribute="${null}"
                       className="dalma.maven.PropertySetFinder" />
@@ -46,7 +47,7 @@
       <manifest>
         <attribute name="Dalma-Main-Class" value="${maven.dalma.mainclass}" />
       </manifest>
-      <dalma:copy-artifacts />
+      <dalma-plugin:copy-artifacts />
     </jar>
   </goal>
 
@@ -70,7 +71,7 @@
       </classpath>
     </taskdef>
 
-    <dalma:find-properties var="testProps" prefix="dalma.test." />
+    <dalma-plugin:find-properties var="testProps" prefix="dalma.test." />
 
     <!--
       run the application in the test harness.
