@@ -24,6 +24,14 @@
       </properties>
     </dependency>
     <dependency>
+      <groupId>dalma-lib</groupId>
+      <artifactId>jmxremote_optional</artifactId>
+      <version>1.0.1_03</version>
+      <properties>
+        <jar.manifest.classpath>true</jar.manifest.classpath>
+      </properties>
+    </dependency>
+    <dependency>
       <id>commons-fileupload</id>
       <version>1.0</version>
       <properties>
