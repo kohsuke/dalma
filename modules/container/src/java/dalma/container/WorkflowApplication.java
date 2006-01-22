@@ -111,14 +111,14 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      */
     private final Logger logger;
 
-    private int logRotationDays = -1;
+    private int daysToKeepLog = -1;
     private final LogRotationPolicy logPolicy = new LogRotationPolicy() {
         public boolean keep(Conversation conv) {
-            if(logRotationDays==-1)
+            if(daysToKeepLog ==-1)
                 return true;    // no rotation
 
             Calendar cal = new GregorianCalendar();
-            cal.add(Calendar.DAY_OF_YEAR, -logRotationDays);
+            cal.add(Calendar.DAY_OF_YEAR, -daysToKeepLog);
 
             return conv.getCompletionDate().getTime() > cal.getTimeInMillis();
         }
@@ -145,7 +145,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
         try {
             Properties props = loadConfigProperties();
-            this.logRotationDays = Integer.parseInt(props.getProperty(LOG_ROTATION_KEY,"-1"));
+            this.daysToKeepLog = Integer.parseInt(props.getProperty(LOG_ROTATION_KEY,"-1"));
         } catch (IOException e) {
             throw new FailedOperationException("Failed to load configuration "+confFile,e);
         }
@@ -168,8 +168,8 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      * @param d
      *      -1 to keep indefinitely.
      */
-    public void setLogRotationDays( int d ) throws IOException {
-        logRotationDays = d;
+    public void setDaysToKeepLog( int d ) throws IOException {
+        daysToKeepLog = d;
         Properties props = loadConfigProperties();
         props.setProperty(LOG_ROTATION_KEY,String.valueOf(d));
         saveConfigProperties(props);
@@ -181,8 +181,8 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      *
      * Defaults to -1 (keep indefinitely)
      */
-    public int getLogRotationDays() {
-        return logRotationDays;
+    public int getDaysToKeepLog() {
+        return daysToKeepLog;
     }
 
     public boolean isConfigured() {
