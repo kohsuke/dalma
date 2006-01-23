@@ -48,6 +48,10 @@ public final class LogRecorder extends Handler implements Serializable {
 
     private int daysToKeepLog = -1;
 
+    // used to be there in old version. will be removed in 1.0
+    @Deprecated
+    private transient int id;
+
     /**
      * View of recorded logs as {@link List}.
      */
