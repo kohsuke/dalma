@@ -318,13 +318,17 @@ public final class Container implements ContainerMBean {
 
         int jmxPort = container.readProperty(conf, "jmx.port", -1);
         if(jmxPort>=0) {
-            logger.info("Initializing JMXMP connector at port "+jmxPort);
-            JMXServiceURL url = new JMXServiceURL("jmxmp", null, jmxPort);
-            JMXConnectorServer cs =
-                JMXConnectorServerFactory.newJMXConnectorServer(url, null, ManagementFactory.getPlatformMBeanServer());
+            try {
+                logger.info("Initializing JMXMP connector at port "+jmxPort);
+                JMXServiceURL url = new JMXServiceURL("jmxmp", null, jmxPort);
+                JMXConnectorServer cs =
+                    JMXConnectorServerFactory.newJMXConnectorServer(url, null, ManagementFactory.getPlatformMBeanServer());
 
-            cs.start();
-            logger.info("Started JMXMP connector");
+                cs.start();
+                logger.info("Started JMXMP connector");
+            } catch (IOException e) {
+                logger.log(Level.WARNING,"Unable to start JMXMP",e);
+            }
         }
 
         return container;
