@@ -28,8 +28,10 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.Properties;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.LogRecord;
 
 /**
  * Wrapper around each workflow application.
@@ -145,7 +147,6 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         File clog = new File(workDir, "completed-logs");
         clog.mkdirs();
         this.ccList = new CompletedConversationList(clog);
-        this.ccList.setPolicy(logPolicy);
 
         File excLog = new File(workDir, "logs/exclusive");
         excLog.mkdirs();
@@ -161,6 +162,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         } catch (IOException e) {
             throw new FailedOperationException("Failed to load configuration "+confFile,e);
         }
+        setLogPolicy();
 
         try {
             objectName = new ObjectName("dalma:container=" + ObjectName.quote(owner.getHomeDir().toString()) + ",name=" + name);
@@ -185,7 +187,20 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         Properties props = loadConfigProperties();
         props.setProperty(LOG_ROTATION_KEY,String.valueOf(d));
         saveConfigProperties(props);
+        setLogPolicy();
+    }
+
+    private void setLogPolicy() {
         ccList.setPolicy(logPolicy);
+        inclusiveLogs.setDaysToKeepLog(daysToKeepLog);
+        exclusiveLogs.setDaysToKeepLog(daysToKeepLog);
+    }
+
+    /**
+     * Gets the recorded logs.
+     */
+    public List<LogRecord> getLogs(boolean inclusive) {
+        return (inclusive?inclusiveLogs:exclusiveLogs).getLogs();
     }
 
     /**
@@ -269,7 +284,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
             } catch (IOException e) {
                 throw new FailedOperationException("Failed to start engine",e);
             }
-            
+
             engine.getLogger().setParent(loggerAggregate);
 
             try {
