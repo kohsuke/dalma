@@ -11,6 +11,7 @@ import dalma.container.model.InjectionException;
 import dalma.container.model.Model;
 import dalma.impl.EngineImpl;
 import dalma.impl.Util;
+import dalma.impl.LogRecorder;
 
 import javax.management.JMException;
 import javax.management.ObjectName;
@@ -126,6 +127,9 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
 
     private final CompletedConversationList ccList;
 
+    private final LogRecorder inclusiveLogs;
+    private final LogRecorder exclusiveLogs;
+
 
 
     public WorkflowApplication(Container owner,File appDir) throws FailedOperationException {
@@ -142,6 +146,14 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
         clog.mkdirs();
         this.ccList = new CompletedConversationList(clog);
         this.ccList.setPolicy(logPolicy);
+
+        File excLog = new File(workDir, "logs/exclusive");
+        excLog.mkdirs();
+        this.logger.addHandler(exclusiveLogs=new LogRecorder(excLog));
+
+        File incLog = new File(workDir, "logs/inclusive");
+        incLog.mkdirs();
+        this.loggerAggregate.addHandler(inclusiveLogs=new LogRecorder(incLog));
 
         try {
             Properties props = loadConfigProperties();
