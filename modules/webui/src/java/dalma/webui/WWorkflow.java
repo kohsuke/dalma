@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.logging.LogRecord;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -50,7 +51,7 @@ public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
 
     public String getUrl() {
         return "workflow/"+getName()+'/';
-    }    
+    }
 
     public Model getModel() {
         return core.getModel();
@@ -58,6 +59,10 @@ public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
 
     public boolean isConfigured() {
         return core.isConfigured();
+    }
+
+    public List<LogRecord> getLogs(boolean inclusive) {
+        return core.getLogs(inclusive);
     }
 
     public String getConversationSize() {
@@ -99,7 +104,7 @@ public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
     }
 
     public String getLogRotationDays() {
-        int d = core.getLogRotationDays();
+        int d = core.getDaysToKeepLog();
         if(d==-1)       return "";
         return String.valueOf(d);
     }
@@ -161,7 +166,7 @@ public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
         String logRotateDays = req.getParameter("logrotate_days");
         if(logRotateDays==null || logRotateDays.length()==0) logRotateDays = "-1";
         try {
-            core.setLogRotationDays(Integer.valueOf(logRotateDays));
+            core.setDaysToKeepLog(Integer.valueOf(logRotateDays));
         } catch(NumberFormatException e) {
             sendError(req,logRotateDays+" is not an integer",resp);
         }
