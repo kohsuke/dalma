@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  *
  * @author Kohsuke Kawaguchi
  */
-final class LogRecorder extends Handler implements Serializable {
+public final class LogRecorder extends Handler implements Serializable {
     private final File dir;
 
     /**
