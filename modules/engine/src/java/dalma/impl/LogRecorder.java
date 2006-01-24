@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
+import java.util.Comparator;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -93,7 +94,7 @@ public final class LogRecorder extends Handler implements Serializable {
                 });
                 if(r!=null) {
                     files = new Vector<File>(r.length);
-                    Arrays.sort(r);
+                    Arrays.sort(r,REVERSE_FILE_SORTER);
                     files.addAll(Arrays.asList(r));
                 } else
                     files = new Vector<File>();
@@ -204,4 +205,10 @@ public final class LogRecorder extends Handler implements Serializable {
     private static final Logger logger = Logger.getLogger(LogRecorder.class.getName());
 
     private static final DateFormat FORMATTER = new SimpleDateFormat("yyyyMMdd-HHmmss"); // 15 chars
+
+    private static final Comparator<File> REVERSE_FILE_SORTER = new Comparator<File>() {
+        public int compare(File lhs, File rhs) {
+            return rhs.compareTo(lhs);
+        }
+    };
 }
