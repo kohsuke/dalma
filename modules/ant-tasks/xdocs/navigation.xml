@@ -10,6 +10,7 @@
     <menu name="Overview">
       <item name="Home"                         href="/index.html"/>
       <item name="Runner task"                  href="/dalmaRunner.html" />
+      <item name="Deployer task"                href="/dalmaDeployer.html" />
     </menu>
   </body>
 </project>

@@ -1,0 +1,70 @@
+<document>
+<properties>
+  <title>DalmaDeployer task</title>
+</properties>
+<body>
+<section name="DalmaDeployer task">
+  <p>
+    The <tt>dalmaDeployer</tt> task allows you to to deploy a dar file to a remote webui.
+  </p>
+  <p>
+    To declare the <tt>dalmaDeployer</tt> task, include the following statement in your build script:
+  </p>
+<source>
+&lt;taskdef name="dalmaDeployer" classname="dalma.ant.Deployer">
+  &lt;classpath>
+    &lt;fileset dir="path/to/dalma/ant-tasks/dalma-ant-tasks-@@VERSION@@.jar" />
+  &lt;/classpath>
+&lt;/taskdef>
+</source>
+</section>
+<section name="Synposis">
+  <table>
+    <tr>
+      <th>Attribute</th>
+      <th>Description</th>
+      <th>Required</th>
+    </tr>
+    <tr>
+      <td>file</td>
+      <td>
+        Specifies the dar file to be deployed.
+      </td>
+      <td>
+        Yes
+      </td>
+    </tr>
+    <tr>
+      <td>name</td>
+      <td>
+        Specifies the workflow application name on the webui.
+      </td>
+      <td>
+        Yes
+      </td>
+    </tr>
+    <tr>
+      <td>url</td>
+      <td>
+        The location of the remote webui, such as "http://localhost:8080/dalma/".
+      </td>
+      <td>
+        Yes
+      </td>
+    </tr>
+    <!--
+    <tr>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+    </tr>
+    -->
+  </table>
+  <p>
+    Use <tt>export ANT_OPTS="-Dhttp.proxy.port=8080 -Dhttp.proxy.host=proxy.acme.org"</tt> or <a href="http://ant.apache.org/manual/OptionalTasks/setproxy.html">the setproxy task</a> to go through an HTTP proxy.
+  </p>
+</section>
+</body></document>

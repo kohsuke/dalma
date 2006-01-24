@@ -14,14 +14,15 @@
   <p>
     To declare the <tt>dalmaRunner</tt> task, include the following statement in your build script:
   </p>
-<source><![CDATA[
-<taskdef name="dalmaRunner" classname="dalma.ant.Runner">
-  <classpath>
-    <fileset dir="path/to/dalma/engine" includes="*.jar" /><!-- all jars that engine depends on -->
-    <fileset dir="path/to/dalma/container/dalma-container-@@VERSION@@.jar" />
-  </classpath>
-</taskdef>
-]]></source>
+<source>
+&lt;taskdef name="dalmaRunner" classname="dalma.ant.Runner">
+  &lt;classpath>
+    &lt;fileset dir="path/to/dalma/engine" includes="*.jar" />&lt;!-- all jars that engine depends on -->
+    &lt;fileset dir="path/to/dalma/container/dalma-container-@@VERSION@@.jar" />
+    &lt;fileset dir="path/to/dalma/ant-tasks/dalma-ant-tasks-@@VERSION@@.jar" />
+  &lt;/classpath>
+&lt;/taskdef>
+</source>
    <p>
      The endpoints your workflow application uses can be also specified in this classpath (or alternatively then can be specified as a nested &lt;classpath> element inside &lt;dalmaRunner>.)
    </p>
