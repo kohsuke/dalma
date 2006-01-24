@@ -5,7 +5,7 @@
 <body>
 <section name="DalmaDeployer task">
   <p>
-    The <tt>dalmaDeployer</tt> task allows you to to deploy a dar file to a remote webui.
+    The <tt>dalmaDeployer</tt> task allows you to to deploy a dar file to a remote webui. If the application is already deployed, this task re-deploys it.
   </p>
   <p>
     To declare the <tt>dalmaDeployer</tt> task, include the following statement in your build script:
