@@ -4,6 +4,10 @@
 <%@ taglib prefix="l" uri="http://scotland.dev.java.net/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="d" uri="http://dalma.dev.java.net/" %>
+<%
+  // send the error HTTP code for automated clients
+  response.setStatus(400);
+%>
 <st:include page="sidepanel.jsp" />
 <l:main-panel>
   <div class="error">
