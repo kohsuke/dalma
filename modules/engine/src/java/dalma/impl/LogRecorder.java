@@ -189,7 +189,8 @@ public final class LogRecorder extends Handler implements Serializable {
             f = new File(dir, prefix+String.format("%04d",n++)+".log");
         } while(f.exists());
 
-        allLogs.files.add(f);
+        if(allLogs.files!=null)
+            allLogs.files.add(f);
 
         return f;
     }
