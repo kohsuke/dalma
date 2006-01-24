@@ -33,6 +33,7 @@ public class Deployer extends Task {
     }
 
     private static final String BOUNDARY = "---aXej3hgOjxE";
+    private static final String NEWLINE = "\r\n";
 
     public void execute() throws BuildException {
         try {
@@ -49,20 +50,29 @@ public class Deployer extends Task {
             con.setRequestProperty("Content-Type","multipart/form-data; boundary="+BOUNDARY);
             con.connect();
             PrintStream out = new PrintStream(con.getOutputStream());
-            out.println(BOUNDARY);
-            out.println("Content-Disposition: form-data; name=\"name\"");
-            out.println();
-            out.println(name);
-            out.println(BOUNDARY);
-            out.println("Content-Disposition: form-data; name=\"file\"; filename=\"some.dar\"");
-            out.println("Content-Type: application/octet-stream");
-            out.println("Content-Length: "+darFile.length());
-            out.println();
+            out.print("--"+BOUNDARY);
+            out.print(NEWLINE);
+            out.print("Content-Disposition: form-data; name=\"name\"");
+            out.print(NEWLINE);
+            out.print(NEWLINE);
+            out.print(name);
+            out.print(NEWLINE);
+            out.print("--"+BOUNDARY);
+            out.print(NEWLINE);
+            out.print("Content-Disposition: form-data; name=\"file\"; filename=\"some.dar\"");
+            out.print(NEWLINE);
+            out.print("Content-Type: application/octet-stream");
+            out.print(NEWLINE);
+            out.print("Content-Length: "+darFile.length());
+            out.print(NEWLINE);
+            out.print(NEWLINE);
 
             InputStream in = new FileInputStream(darFile);
             copyStream(in, out);
+            out.print(NEWLINE);
 
-            out.println(BOUNDARY+"--");
+            out.print("--"+BOUNDARY+"--");
+            out.print(NEWLINE);
             out.close();
 
             if(con.getResponseCode()>=300) {
