@@ -51,6 +51,25 @@
     </jar>
   </goal>
 
+  <goal name="dalma:deploy"
+        prereqs="dalma:dar"
+        description="Deploys the dar file to the remote dalma webui through HTTP">
+    <taskdef name="dalmaDeployer" classname="dalma.ant.Deployer">
+      <classpath>
+        <j:forEach var="lib" items="${plugin.artifacts}">
+          <pathelement path="${lib.path}" />
+        </j:forEach>
+      </classpath>
+    </taskdef>
+
+    <j:if test="${maven.dalma.webui.url==null}">
+      <fail>maven.dalma.webui.url property needs to be set (e.g., 'http://localhost/dalma/')</fail>
+    </j:if>
+    <dalmaDeployer file="${maven.build.dir}/${maven.dalma.final.name}"
+      name="${pom.artifactId}"
+      url="${maven.dalma.webui.url}" />
+  </goal>
+
   <goal name="dalma:genapp"
         description="Generate a new dalma workflow application (like 'genapp' goal)">
     <g:generate maven.genapp.template.dir="${plugin.resources}/genapp-template" />
