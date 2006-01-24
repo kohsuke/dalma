@@ -17,16 +17,16 @@
       <li>
         If dependency jar files in the manifest has <tt>dar.bundle</tt> property as follows, bundle those jar file s in the generated dar file. This makes it easy to redistribute libraries that your workflow application uses.
       </li>
-<source><![CDATA[
-<dependency>
-  <groupId>dalma</groupId>
-  <artifactId>dalma-endpoint-email</artifactId>
-  <version>1.0</version>
-  <properties>
-    <dar.bundle>true</dar.bundle>
-  </properties>
-</dependency>
-]]></source>
+<source>
+&lt;dependency>
+  &lt;groupId>dalma&lt;/groupId>
+  &lt;artifactId>dalma-endpoint-email&lt;/artifactId>
+  &lt;version>1.0&lt;/version>
+  &lt;properties>
+    &lt;dar.bundle>true&lt;/dar.bundle>
+  &lt;/properties>
+&lt;/dependency>
+</source>
     </ol>
   </section>
   <section name="dalma:genapp goal">
@@ -51,6 +51,13 @@ $ maven dalma:run
       This goal consults the <tt>maven.dalma.mainclass</tt> property for the main Program class. Dependencies marked with <tt><![CDATA[<dar.bundle>true</dar.bundle>]]></tt> will be passed as a classpath to the dalmaRunner ant task, therefore they become a subject to the byte code instrumentation.
     </p><p>
       Maven properties that start with prefix "dalma.test." will be passed as properties and used to configure resources. For example, a property <tt>dalma.test.xyz=5</tt> will be used to inject "5" into a field <tt>@Resource int xyz;</tt>.
+    </p>
+  </section>
+  <section name="dalma:deploy goal">
+    <p>
+      This goal uses <a href="../ant-tasks/dalmaDeployer.html">&lt;dalmaDeployer> ant task</a> to deploy your current workflow application to a remote dalma <a href="../webui/index.html">webui</a>.
+    </p><p>
+      This task builds a dar file by running the <tt>dalma:dar</tt> goal, and then deploys this dar file to the URL specified by the <tt>maven.dalma.webui.url</tt> property.
     </p>
   </section>
 </body>

@@ -31,6 +31,25 @@
             </p>
           </td>
         </tr>
+        <tr>
+          <td>maven.dalma.webui.url</td>
+          <td>Yes</td>
+          <td>
+            <p>
+              Specifies the URL of a dalma webui installation, such as <tt>http://localhost:8080/dalma/</tt>.
+              This URL is used by the <tt>dalma:deploy</tt> goal to deploy a dar file.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td>maven.dalma.webui.name</td>
+          <td>Yes</td>
+          <td>
+            <p>
+              Name of the workflow application that the <tt>dalma:deploy</tt> goal deploys to. Defaults to <tt>${pom.artifactId}</tt>
+            </p>
+          </td>
+        </tr>
       </table>
     </section>
   </body>
