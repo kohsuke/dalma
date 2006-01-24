@@ -1,18 +1,16 @@
 package dalma.ant;
 
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
 
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.HttpURLConnection;
-import java.io.PrintStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * Deploys a dar file to the webui.
@@ -34,6 +32,8 @@ public class Deployer extends Task {
         this.darFile = darFile;
     }
 
+    private static final String BOUNDARY = "---aXej3hgOjxE";
+
     public void execute() throws BuildException {
         try {
             if(name==null)
@@ -46,11 +46,9 @@ public class Deployer extends Task {
             HttpURLConnection con = (HttpURLConnection)new URL(dalmaUrl,"createApp").openConnection();
             con.setDoOutput(true);
             con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type","multipart/form-data; boundary="+BOUNDARY);
             con.connect();
             PrintStream out = new PrintStream(con.getOutputStream());
-            String BOUNDARY = "---aXej3hgOjxE";
-            out.println("Content-Type: multipart/form-data; boundary="+BOUNDARY);
-            out.println();
             out.println(BOUNDARY);
             out.println("Content-Disposition: form-data; name=\"name\"");
             out.println();
@@ -70,7 +68,7 @@ public class Deployer extends Task {
             if(con.getResponseCode()>=300) {
                 String msg = "Failed to deploy: " + con.getResponseMessage();
                 log(msg,Project.MSG_ERR);
-                in = con.getInputStream();
+                in = con.getErrorStream();
                 copyStream(in,System.out);
                 throw new BuildException(msg);
             }
