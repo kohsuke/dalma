@@ -159,7 +159,11 @@ public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
             if(!name.startsWith("config-"))
                 continue;
             name = name.substring(7);
-            props.put(name,e.getValue()[0]);
+            String value = e.getValue()[0];
+            if(value.length()==0)
+                props.remove(name);
+            else
+                props.put(name,value);
         }
         core.saveConfigProperties(props);
 
