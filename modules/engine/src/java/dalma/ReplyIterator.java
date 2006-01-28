@@ -83,4 +83,18 @@ public interface ReplyIterator<T> extends Iterator<T> {
      * This method can be invoked multiple times. 
      */
     void dispose();
+
+    ///**
+    // * Works like {@link #hasNext(Date)} but with a timeout.
+    // *
+    // * @param timeout
+    // *      If no reply is received by this date,
+    // *      this method returns {@code false}.
+    // */
+    //boolean hasNext(Date timeout);
+
+    ///**
+    // * Works like {@link #hasNext(Date)} but with a timeout.
+    // */
+    //boolean hasNext(long timeout, TimeUnit unit);
 }

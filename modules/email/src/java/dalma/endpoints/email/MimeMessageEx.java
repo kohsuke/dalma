@@ -1,17 +1,23 @@
 package dalma.endpoints.email;
 
 import javax.activation.DataHandler;
-import javax.mail.Message;
+import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-import javax.mail.BodyPart;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.PrintWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A wrapper around {@link MimeMessage} to make it serializable.
@@ -43,7 +49,7 @@ public class MimeMessageEx extends MimeMessage implements Serializable {
         }
     }
 
-    public Message reply(boolean replyToAll) throws MessagingException {
+    public MimeMessageEx reply(boolean replyToAll) throws MessagingException {
         MimeMessage msg = (MimeMessage)super.reply(replyToAll);
 
         // set References header
@@ -58,6 +64,42 @@ public class MimeMessageEx extends MimeMessage implements Serializable {
         msg.setText("");    // set the dummy body otherwise the following method fails
 
         return new MimeMessageEx(msg);
+    }
+
+    /**
+     * Creates a reply message that goes back to the sender,
+     * with the specified text and original e-mail attached.
+     *
+     * <p>
+     * Often useful for reporting an error.
+     */
+    public MimeMessageEx replyWithError(String error, boolean replyToAll) throws MessagingException {
+        MimeMessageEx r = reply(replyToAll);
+        MimeMultipart multipart = new MimeMultipart();
+        r.setContent(multipart);
+
+        MimeBodyPart part = new MimeBodyPart();
+        part.setContent(error,"text/plain");
+        multipart.addBodyPart(part);
+
+        part = new MimeBodyPart();
+        part.setContent(this,"message/rfc822");
+        multipart.addBodyPart(part);
+
+        return r;
+    }
+
+    /**
+     * Creates a reply message that goes back to the sender,
+     * with the specified exception as the text and original e-mail attached.
+     *
+     * <p>
+     * Often useful for reporting an error.
+     */
+    public MimeMessageEx replyWithError(Throwable t, boolean replyToAll) throws MessagingException {
+        StringWriter w = new StringWriter();
+        t.printStackTrace(new PrintWriter(w));
+        return replyWithError(w.toString(),replyToAll);
     }
 
     /**
@@ -110,6 +152,29 @@ public class MimeMessageEx extends MimeMessage implements Serializable {
             throw new MessagingException("Unable to convert "+data+" to string");
         }
     }
+
+    /**
+     * Finds the first line in the {@link #getMainContent() main content}
+     * that matches the given pattern.
+     *
+     * @return
+     *      the {@link Matcher} that matched at the given line,
+     *      or null if none was found.
+     */
+    public Matcher findMainContent(Pattern pattern) throws MessagingException, IOException {
+        BufferedReader r = new BufferedReader(new StringReader(getMainContent()));
+        String line;
+
+        while((line=r.readLine())!=null) {
+            Matcher m = pattern.matcher(line.trim());
+            if(m.matches())
+                return m;
+        }
+
+        return null;
+    }
+
+
     private Object writeReplace() throws IOException, MessagingException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         writeTo(baos);

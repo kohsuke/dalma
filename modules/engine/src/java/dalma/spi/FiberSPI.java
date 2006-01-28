@@ -13,7 +13,7 @@ import java.util.List;
  */
 public abstract class FiberSPI<T extends Runnable> extends Fiber<T> {
     /**
-     * Suspends the conversation.
+     * Suspends the fiber.
      *
      * @param condition
      *      The condition to which this conversation is parked.

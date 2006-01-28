@@ -90,4 +90,17 @@ public abstract class Fiber<T extends Runnable> {
     public static Fiber<?> currentFiber() {
         return FiberImpl.currentFiber(true);
     }
+
+    /**
+     * Completes the execution of the current fiber,
+     * as if the {@link Runnable#run()} method returned
+     * normally.
+     *
+     * <p>
+     * This method works like how {@link System#exit(int)} works
+     * for the VM
+     */
+    public static void exit() {
+        FiberImpl.currentFiber(true).doExit();
+    }
 }

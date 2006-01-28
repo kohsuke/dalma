@@ -18,6 +18,11 @@ import java.io.Serializable;
  * Condition is serialized as a part of the conversation, allowing conversation
  * to requeue when the engine is loaded from a file.
  *
+ * <p>
+ * Note that an activated {@link Condition} may still be serialized,
+ * (which can happen when the engine is persisted before the fiber wakes up.)
+ * Thus {@code T} needs to be serializable.
+ *
  * @author Kohsuke Kawaguchi
  */
 public abstract class Condition<T> implements Serializable {

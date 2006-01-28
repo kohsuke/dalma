@@ -177,7 +177,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         // start the first fiber in this conversation.
         // as soon as we call 'start', conversation may end in any minute,
         // so this has to be the last
-        FiberImpl f = new FiberImpl(this,target);
+        FiberImpl<Workflow> f = new FiberImpl<Workflow>(this,target);
         f.start();
     }
 
@@ -314,7 +314,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
             if(fibers.size()!=list.size())
                 throw new ConversationDeath(list.size()+" fibers are found in the disk but the memory says "+fibers.size()+" fibers",null);
-            for (FiberImpl f : fibers) {
+            for (FiberImpl<?> f : fibers) {
                 f.hydrate(list.get(f.id));
             }
         } catch (IOException e) {
@@ -446,7 +446,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     }
 
     public synchronized void join() throws InterruptedException {
-        FiberImpl fiber = FiberImpl.currentFiber(false);
+        FiberImpl<?> fiber = FiberImpl.currentFiber(false);
         if(fiber==null) {
             // called from outside conversations
             if(getState()!=ConversationState.ENDED) {

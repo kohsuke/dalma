@@ -171,6 +171,10 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
         return r;
     }
 
+    public void doExit() {
+        Continuation.exit();
+    }
+
     /**
      * Called from the executor thread to run this fiber until
      * it suspends or completes.

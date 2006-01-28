@@ -33,7 +33,7 @@ public class MyConversation extends Workflow {
                 break;
             case 2:
                 // die
-                getLogger().fine("die");
+                getLogger().warning("die");
                 return;
             }
             sleep(3, SECONDS);

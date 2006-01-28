@@ -4,7 +4,7 @@
   <name>Dalma Workflow Engine</name>
   <groupId>dalma</groupId>
   <artifactId>dalma-site</artifactId>
-  <currentVersion>0.2</currentVersion>
+  <currentVersion>0.3</currentVersion>
   <package>dalma</package>
 
   <organization>
@@ -64,7 +64,7 @@
     <dependency>
       <groupId>dalma-lib</groupId>
       <artifactId>commons-javaflow</artifactId>
-      <version>20060101</version>
+      <version>1.0-SNAPSHOT</version>
       <properties>
         <dist>engine</dist>
         <belongsTo>dalma</belongsTo>
