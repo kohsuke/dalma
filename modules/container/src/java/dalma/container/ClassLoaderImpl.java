@@ -16,18 +16,17 @@
  */
 package dalma.container;
 
+import org.apache.bcel.util.ClassLoaderRepository;
 import org.apache.commons.javaflow.bytecode.transformation.ResourceTransformer;
 import org.apache.commons.javaflow.bytecode.transformation.bcel.BcelClassTransformer;
-import org.apache.commons.javaflow.ContinuationClassLoader;
-import org.apache.bcel.util.ClassLoaderRepository;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FilenameFilter;
-import java.io.BufferedInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -173,11 +172,6 @@ public final class ClassLoaderImpl extends ClassLoader {
     private boolean ignoreBase = false;
 
     /**
-     * The parent class loader, if one is given or can be determined.
-     */
-    private ClassLoader parent = null;
-
-    /**
      * A hashtable of zip files opened by the classloader (File to ZipFile).
      */
     private Hashtable<File,ZipFile> zipFiles = new Hashtable<File,ZipFile>();
@@ -191,7 +185,7 @@ public final class ClassLoaderImpl extends ClassLoader {
      * Create an Ant Class Loader
      */
     public ClassLoaderImpl(ClassLoader cl) {
-        setParent(cl);
+        super(fixNull(cl));
     }
 
     /**
@@ -200,11 +194,11 @@ public final class ClassLoaderImpl extends ClassLoader {
      *
      * @param parent the parent class loader.
      */
-    public void setParent(ClassLoader parent) {
-        if (parent == null) {
-            this.parent = getClass().getClassLoader();
+    private static ClassLoader fixNull(ClassLoader parent) {
+        if(parent==null) {
+            return ClassLoaderImpl.class.getClassLoader();
         } else {
-            this.parent = parent;
+            return parent;
         }
     }
 
@@ -515,10 +509,10 @@ public final class ClassLoaderImpl extends ClassLoader {
      *         the resource cannot be found.
      */
     private InputStream loadBaseResource(String name) {
-        if (parent == null) {
+        if (getParent() == null) {
             return getSystemResourceAsStream(name);
         } else {
-            return parent.getResourceAsStream(name);
+            return getParent().getResourceAsStream(name);
         }
     }
 
@@ -625,8 +619,8 @@ public final class ClassLoaderImpl extends ClassLoader {
         // we can find the class we want.
         URL url = null;
         if (isParentFirst(name)) {
-            url = (parent == null) ? super.getResource(name)
-                                   : parent.getResource(name);
+            url = (getParent() == null) ? super.getResource(name)
+                                        : getParent().getResource(name);
         }
 
         if (url != null) {
@@ -649,8 +643,8 @@ public final class ClassLoaderImpl extends ClassLoader {
         if (url == null && !isParentFirst(name)) {
             // this loader was first but it didn't find it - try the parent
 
-            url = (parent == null) ? super.getResource(name)
-                : parent.getResource(name);
+            url = (getParent() == null) ? super.getResource(name)
+                : getParent().getResource(name);
             if (url != null) {
                 logger.finer("Resource " + name + " loaded from parent loader");
             }
@@ -1087,10 +1081,10 @@ public final class ClassLoaderImpl extends ClassLoader {
      * on this loader's classpath.
      */
     private Class findBaseClass(String name) throws ClassNotFoundException {
-        if (parent == null) {
+        if (getParent() == null) {
             return findSystemClass(name);
         } else {
-            return parent.loadClass(name);
+            return getParent().loadClass(name);
         }
     }
 
