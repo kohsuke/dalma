@@ -1,5 +1,9 @@
 package dalma;
 
+import dalma.container.WorkflowApplication;
+import dalma.impl.EngineImpl;
+
+import java.io.Serializable;
 import java.util.logging.Logger;
 
 /**
@@ -44,9 +48,21 @@ import java.util.logging.Logger;
  * into the program before the {@link #init(Engine)} method
  * is invoked.
  *
+ * <p>
+ * This object implements {@link Serializable}, so that
+ * it can be referenced from {@link Workflow}s safely.
+ * When serializing, the program object itself is not serialized.
+ * Instead, a reference to it is serialized, and when a {@link Workflow}
+ * is resumed it connects back to the running {@link Workflow}
+ * at that point. Therefore it's safe to have non-serializable
+ * objects on {@link Program}.
+ *
  * @author Kohsuke Kawaguchi
  */
-public abstract class Program {
+public abstract class Program implements Serializable {
+
+    private EngineImpl engine;
+
     /**
      * Called right after the {@link Engine} instance is created
      * and populated with the configured endpoints.
@@ -122,9 +138,47 @@ public abstract class Program {
     }
 
     /**
+     * Gets the dalma {@link Engine} for this workflow application.
+     *
+     * @return
+     *      always non-null. Returns the same {@link Engine} object
+     *      given to callback methods.
+     */
+    public Engine getEngine() {
+        return engine;
+    }
+
+    /**
      * Reserved for the container. Do not invoke this method.
      */
     public void setLogger(Logger logger) {
         this.logger = logger;
     }
+
+    /**
+     * Reserved for the container. Do not invoke this method.
+     */
+    public void setEngine(EngineImpl engine) {
+        this.engine = engine;
+    }
+
+    private Object writeReplace() {
+        return new Moniker(engine);
+    }
+
+    private static final class Moniker implements Serializable {
+        private final EngineImpl engine;
+
+        public Moniker(EngineImpl engine) {
+            this.engine = engine;
+        }
+
+        private Object readResolve() {
+            return ((WorkflowApplication)engine.getOwner()).getProgram();
+        }
+
+        private static final long serialVersionUID = 1L;
+    }
+
+    static private final long serialVersionUID = 1L;
 }

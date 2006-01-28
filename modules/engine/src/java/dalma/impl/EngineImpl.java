@@ -70,6 +70,13 @@ public final class EngineImpl extends EngineSPI implements Serializable {
     private final SequenceGenerator idGen = new SequenceGenerator();
 
     /**
+     * This field allows the container to be referenced from engine,
+     * which in turns allows workflow applications to access
+     * external environment.
+     */
+    private transient Object owner;
+
+    /**
      * ClassLoader used to restore conversations.
      *
      * TODO: allow each conversation to have its own class loader,
@@ -206,6 +213,14 @@ public final class EngineImpl extends EngineSPI implements Serializable {
         int r = idGen.next();
         save();
         return r;
+    }
+
+    public Object getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Object owner) {
+        this.owner = owner;
     }
 
     /**

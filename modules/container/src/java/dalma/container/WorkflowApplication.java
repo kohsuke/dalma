@@ -50,7 +50,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      *
      * non-null in {@link WorkflowState#RUNNING} but null in other cases.
      */
-    private Engine engine;
+    private EngineImpl engine;
 
     /**
      * The {@link ClassLoader} to load workflow applications.
@@ -281,6 +281,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
                     new File(workDir,"data"),
                     classLoader,
                     owner.executor);
+                engine.setOwner(this);
             } catch (IOException e) {
                 throw new FailedOperationException("Failed to start engine",e);
             }
@@ -296,6 +297,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
                 program = (Program)main;
                 // TODO: replace with a real logger
                 program.setLogger(logger);
+                program.setEngine(engine);
             } catch (InstantiationException e) {
                 throw new FailedOperationException("Failed to load the main class from application",e);
             } catch (IllegalAccessException e) {
@@ -493,6 +495,16 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
      */
     public Model<?> getModel() {
         return model;
+    }
+
+    /**
+     * Gets the {@link Program} instance of this workflow application.
+     *
+     * @return
+     *      null if the workflow has not started yet.
+     */
+    public Program getProgram() {
+        return program;
     }
 
     /**
