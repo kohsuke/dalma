@@ -8,7 +8,9 @@
 <st:include page="sidepanel.jsp" />
 <l:main-panel>
   <script type="text/javascript">
-    function doSection(detail,image){
+    function doSection(detailId,imageId){
+      detail = document.getElementById(detailId);
+      image  = document.getElementById(imageId);
       if(detail.style.display=="none") {
         detail.style.display="";
         image.src = "${rootURL}/images/treeMinus.gif";
@@ -46,11 +48,9 @@
         <div class="log-text">
           <div>
             <c:if test="${log.thrown!=null}">
-              <div style="float:right">
-                <img src="${rootURL}/images/treePlus.gif"
-                  id="key${loop.index}"
-                  onclick="doSection(exception${loop.index},key${loop.index})" />
-              </div>
+              <img src="${rootURL}/images/treePlus.gif"
+                id="key${loop.index}"
+                onclick="doSection('exception${loop.index}','key${loop.index}')" />
             </c:if>
             <span class="log-level-${log.level}">
             ${log.message}
