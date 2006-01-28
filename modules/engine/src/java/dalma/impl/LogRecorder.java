@@ -72,7 +72,7 @@ public final class LogRecorder extends Handler implements Serializable {
                             threshold = null;
                         } else {
                             Calendar cal = new GregorianCalendar();
-                            cal.add(-daysToKeepLog, Calendar.DATE);
+                            cal.add(Calendar.DATE,-daysToKeepLog);
                             threshold = cal.getTime();
                         }
                     }
