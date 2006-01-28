@@ -10,6 +10,6 @@
   <l:tasks>
     <l:task icon="images/box.png" href="newApp" title="Deploy New App" />
     <l:task icon="images/caution.png" href="log" title="View System Log" />
-    <l:task icon="images/wrench.gif" href="configure" title="Configure" />
+    <%--<l:task icon="images/wrench.gif" href="configure" title="Configure" />--%>
   </l:tasks>
 </l:side-panel>
