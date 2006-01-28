@@ -34,12 +34,8 @@ log entries can be deleted at will. How?
 
 Container Version
 =================
-- needs a rotating file system logger
-    use DB?
-    one per file?
-                
-
-- workflow page needs to have 'log' view
+- Maven xdoc plugin ignores CDATA section
+- workflow log view behaves strangely.
 - duck-typing delegation in Stapler
   - how does it implement UIObject?
 - javadoc link among modules
