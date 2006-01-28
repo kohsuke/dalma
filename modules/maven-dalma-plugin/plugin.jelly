@@ -11,20 +11,6 @@
     <define:jellybean name="find-properties"
                       varAttribute="${null}"
                       className="dalma.maven.PropertySetFinder" />
-
-    <define:tag name="copy-artifacts">
-      <!-- include dependency jars -->
-      <j:forEach var="lib" items="${pom.artifacts}">
-        <j:set var="dep" value="${lib.dependency}"/>
-        <j:if test="${dep.getProperty('dar.bundle')=='true'}">
-          <fileset file="${lib.path}" />
-        </j:if>
-      </j:forEach>
-      <!-- additional files given -->
-      <j:if test="${context.getVariable('maven.jar.includes') != null}">
-        <setProperty name="includes" value="${maven.jar.includes}" />
-      </j:if>
-    </define:tag>
   </define:taglib>
 
 
@@ -47,7 +33,18 @@
       <manifest>
         <attribute name="Dalma-Main-Class" value="${maven.dalma.mainclass}" />
       </manifest>
-      <dalma-plugin:copy-artifacts />
+      <!-- somehow making this portion a tag didn't work. I hate maven... -->
+      <!-- include dependency jars -->
+      <j:forEach var="lib" items="${pom.artifacts}">
+        <j:set var="dep" value="${lib.dependency}"/>
+        <j:if test="${dep.getProperty('dar.bundle')=='true'}">
+          <fileset file="${lib.path}" />
+        </j:if>
+      </j:forEach>
+      <!-- additional files given -->
+      <j:if test="${context.getVariable('maven.jar.includes') != null}">
+        <setProperty name="includes" value="${maven.jar.includes}" />
+      </j:if>
     </jar>
   </goal>
 
