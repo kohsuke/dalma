@@ -286,7 +286,7 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
                 throw new FailedOperationException("Failed to start engine",e);
             }
 
-            engine.getLogger().setParent(loggerAggregate);
+            engine.getAggregateLogger().setParent(loggerAggregate);
 
             try {
                 Object main = mainClass.newInstance();
