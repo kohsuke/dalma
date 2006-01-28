@@ -19,8 +19,8 @@
     }
   </script>
   <l:tabBar>
-    <l:tab name="Inclusive" active="${param.mode!='exclusive'}" href="?mode=inclusive" />
-    <l:tab name="Exclusive" active="${param.mode=='exclusive'}" href="?mode=exclusive" />
+    <l:tab name="Inclusive" active="${param.mode=='inclusive'}" href="?mode=inclusive" />
+    <l:tab name="Exclusive" active="${param.mode!='inclusive'}" href="?mode=exclusive" />
   </l:tabBar>
   <table width="100%" class="datatable" style="border-top:none;">
     <tr style="border-top: none;">
