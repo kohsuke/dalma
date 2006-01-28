@@ -31,6 +31,10 @@ public class WContainer extends UIObject {
 
     public WContainer(Container core) {
         this.core = core;
+        installLoggers();
+    }
+
+    private void installLoggers() {
         core.getLogger().addHandler(exclusiveLogRecorder);
         core.getAggregateLogger().addHandler(inclusiveLogRecorder);
     }
@@ -47,8 +51,7 @@ public class WContainer extends UIObject {
         defaultLogger.removeHandler(exclusiveLogRecorder);
         defaultLogger.removeHandler(inclusiveLogRecorder);
 
-        core.getLogger().addHandler(exclusiveLogRecorder);
-        core.getAggregateLogger().addHandler(inclusiveLogRecorder);
+        installLoggers();
     }
 
     public String getDisplayName() {
