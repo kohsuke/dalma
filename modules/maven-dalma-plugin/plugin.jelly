@@ -22,14 +22,19 @@
         description="Build dalma archive for distribution" />
 
   <goal name="dalma:dar"
-        prereqs="java:compile"
+        prereqs="test:test"
         description="Build dalma archive for distribution">
     
+    <maven:get var="jarIncludes" plugin="maven-jar-plugin" property="maven.jar.includes" />
     <jar
       jarfile="${maven.build.dir}/${maven.dalma.final.name}"
       basedir="${maven.build.dest}"
       compress="${maven.jar.compress}"
       excludes="${maven.jar.excludes}">
+      <!-- additional files given -->
+      <j:if test="${jarIncludes != null}">
+        <setProperty name="includes" value="${jarIncludes}" />
+      </j:if>
       <manifest>
         <attribute name="Dalma-Main-Class" value="${maven.dalma.mainclass}" />
       </manifest>
@@ -41,10 +46,6 @@
           <fileset file="${lib.path}" />
         </j:if>
       </j:forEach>
-      <!-- additional files given -->
-      <j:if test="${context.getVariable('maven.jar.includes') != null}">
-        <setProperty name="includes" value="${maven.jar.includes}" />
-      </j:if>
     </jar>
   </goal>
 
