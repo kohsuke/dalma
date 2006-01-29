@@ -122,7 +122,10 @@ final class Redeployer extends FileChangeMonitor {
                 if(wa!=null) {
                     logger.info("Changed detected in application '"+wa.getName()+"'. Re-deploying.");
                     wa.unload();
-                    wa.start();
+                    wa.load();
+                    if(wa.isConfigured())
+                        // looks like it's configured enough to start
+                        wa.start();
                 }
                 notifyFutures(file,wa);
             } catch (FailedOperationException e) {
