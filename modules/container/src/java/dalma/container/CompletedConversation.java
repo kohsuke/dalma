@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Collections;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.io.Serializable;
@@ -42,7 +43,13 @@ final class CompletedConversation implements Conversation, Serializable {
         this.startDate = that.getStartDate().getTime();
         this.endDate = that.getCompletionDate().getTime();
 
-        List<LogRecord> ll = that.getLog();
+        // scrape off null entries, which can happen if log records fail to load.
+        List<LogRecord> ll = new ArrayList<LogRecord>();
+        for (LogRecord lr : that.getLog()) {
+            if(lr!=null)
+                ll.add(lr);
+        }
+
         this.logs = ll.toArray(new LogRecord[ll.size()]);
     }
 
