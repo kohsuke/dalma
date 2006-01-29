@@ -19,7 +19,7 @@ public final class ConversationState {
     /**
      * {@link Conversation} is being executed by an {@link Executor}.
      */
-    public static final ConversationState RUNNING = new ConversationState("runnable",true);
+    public static final ConversationState RUNNING = new ConversationState("running",true);
 
     /**
      * {@link Conversation} is waiting for an event. Its state is written to a disk
