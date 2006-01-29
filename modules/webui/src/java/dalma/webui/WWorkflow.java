@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.logging.LogRecord;
 
 /**
@@ -43,6 +44,10 @@ public class WWorkflow extends UIObject implements Comparable<WWorkflow> {
 
     public String getDescription() {
         return core.getDescription();
+    }
+
+    public Date getDeployDate() {
+        return core.getDeployDate();
     }
 
     public boolean isRunning () {

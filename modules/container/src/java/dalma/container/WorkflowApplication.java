@@ -29,6 +29,7 @@ import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.Properties;
 import java.util.List;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.LogRecord;
@@ -220,6 +221,13 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
             log("Failed to check the configuration",e);
             return false;
         }
+    }
+
+    /**
+     * Returns the date when this application was deployed.
+     */
+    public Date getDeployDate() {
+        return new Date(appDir.lastModified());
     }
 
     public synchronized void load() throws FailedOperationException {
