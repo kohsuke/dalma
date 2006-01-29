@@ -1,0 +1,72 @@
+<document>
+  <properties>
+    <title>What's New?</title>
+  </properties>
+  <body>
+    <!--
+    <section name="">
+      <ol>
+        <li>
+        </li>
+        
+        <li><a href="">
+        </a></li>
+      </ol>
+    </section>
+    -->
+    <section name="0.3">
+      <ol>
+        <li>
+          Fixed a packaging error where the engine was requiring Tiger.
+        </li>
+        <li>
+          Reworked the log recording mechanism. Loggers are now organized to trees,
+          and in dalmacon log records are persisted automatically. webui is updated
+          to reflect these changes.
+        </li>
+        <li>
+          Added 'maven:deploy' goal to deploy a workflow application to a remote webui.
+          (Corresponding ant task is also added.)
+        </li>
+        <li>
+          Misc. bug fixes in engine, container, and webui.
+        </li>
+        <!--
+        <li>
+        </li>
+        
+        <li><a href="">
+        </a></li>
+        -->
+      </ol>
+    </section>
+    <section name="0.2">
+      <ol>
+        <li><a href="maven-dalma-plugin/goals.html#dalma:run_goal">
+          Added <tt>dalma:run</tt> goal.
+        </a></li>
+        <li><a href="maven-ant-tasks">
+          Added the ant task module.
+        </a></li>
+        <li>
+          Improved the webui log view.
+        </li>
+        <li>
+          Improved convenience of the e-mail endpoint.
+        </li>
+        <!--
+        <li>
+        </li>
+        
+        <li><a href="">
+        </a></li>
+        -->
+      </ol>
+    </section>
+    <section name="0.1">
+      <p>
+        First release
+      </p>
+    </section>
+  </body>
+</document>
