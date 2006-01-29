@@ -3,6 +3,7 @@ import dalma.Workflow;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.logging.Level;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -33,6 +34,8 @@ public class MyConversation extends Workflow {
                 break;
             case 2:
                 // die
+                getLogger().log(Level.INFO, "exception test",
+                    new FooException("msg1",new FooException("nested")));
                 getLogger().warning("die");
                 return;
             }
