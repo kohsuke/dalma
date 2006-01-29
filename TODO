@@ -34,8 +34,6 @@ log entries can be deleted at will. How?
 
 Container Version
 =================
-- Maven xdoc plugin ignores CDATA section
-- workflow log view behaves strangely.
 - duck-typing delegation in Stapler
   - how does it implement UIObject?
 - javadoc link among modules
