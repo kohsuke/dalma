@@ -1,14 +1,11 @@
 package dalma.impl;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import com.thoughtworks.xstream.XStream;
+
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -16,11 +13,11 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
-import java.util.Comparator;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -52,6 +49,15 @@ public final class LogRecorder extends Handler implements Serializable {
     // used to be there in old version. will be removed in 1.0
     @Deprecated
     private transient int id;
+
+    /**
+     * Used to load/save logrecords.
+     */
+    private final ThreadLocal<XStream> xsPool = new ThreadLocal<XStream>() {
+        protected XStream initialValue() {
+            return new XStream();
+        }
+    };
 
     /**
      * View of recorded logs as {@link List}.
@@ -106,17 +112,8 @@ public final class LogRecorder extends Handler implements Serializable {
         public LogRecord get(int index) {
             reloader.update();
             try {
-                ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(
-                    new FileInputStream(files.get(index))));
-                try {
-                    return (LogRecord)ois.readObject();
-                } finally {
-                    ois.close();
-                }
+                return ((XmlLogRecord)new XmlFile(xsPool.get(),files.get(index)).read()).get();
             } catch (IOException e) {
-                logger.log(Level.WARNING,"Failed to read log record",e);
-                return null;
-            } catch (ClassNotFoundException e) {
                 logger.log(Level.WARNING,"Failed to read log record",e);
                 return null;
             }
@@ -157,12 +154,7 @@ public final class LogRecorder extends Handler implements Serializable {
         File data = createFile();
 
         try {
-            ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(data)));
-            try {
-                os.writeObject(record);
-            } finally {
-                os.close();
-            }
+            new XmlFile(xsPool.get(),data).write(new XmlLogRecord(record));
         } catch (IOException e) {
             logger.log(Level.WARNING,"Failed to write log record",e);
             // just throw away this log record
