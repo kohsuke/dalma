@@ -39,30 +39,32 @@
       </c:otherwise>
     </c:choose>
     <c:forEach var="log" items="${logs}" varStatus="loop">
-      <tr><td class="log-row">
-        <div class="log-preamble">
-          <div><fmt:formatDate value="${d:createDate(log.millis)}" type="both" timeStyle="short" dateStyle="short" /></div>
-          <div style="float:right">${log.loggerName}</div>
-        </div>
-        <div style="clear:both"></div>
-        <div class="log-text">
-          <div>
-            <c:if test="${log.thrown!=null}">
-              <img src="${rootURL}/images/treePlus.gif"
-                id="key${loop.index}"
-                onclick="doSection('exception${loop.index}','key${loop.index}')" />
-            </c:if>
-            <span class="log-level-${log.level}">
-            ${log.message}
-            </span>
+      <c:if test="${log!=null}">
+        <tr><td class="log-row">
+          <div class="log-preamble">
+            <div><fmt:formatDate value="${d:createDate(log.millis)}" type="both" timeStyle="short" dateStyle="short" /></div>
+            <div style="float:right">${log.loggerName}</div>
           </div>
-          <c:if test="${log.thrown!=null}">
-            <pre class="log-detail" style="display:none" id="exception${loop.index}"
-              ><c:out value="${d:getExceptionDetail(log.thrown)}" escapeXml="true"
-            /></pre>
-          </c:if>
-        </div>
-      </td></tr>
+          <div style="clear:both"></div>
+          <div class="log-text">
+            <div>
+              <c:if test="${log.thrown!=null}">
+                <img src="${rootURL}/images/treePlus.gif"
+                  id="key${loop.index}"
+                  onclick="doSection('exception${loop.index}','key${loop.index}')" />
+              </c:if>
+              <span class="log-level-${log.level}">
+            ${log.message}
+              </span>
+            </div>
+            <c:if test="${log.thrown!=null}">
+              <pre class="log-detail" style="display:none" id="exception${loop.index}"
+                ><c:out value="${d:getExceptionDetail(log.thrown)}" escapeXml="true"
+              /></pre>
+            </c:if>
+          </div>
+        </td></tr>
+      </c:if>
     </c:forEach>
   </table>
 </l:main-panel>
