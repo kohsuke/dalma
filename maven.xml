@@ -259,6 +259,7 @@
     <a:echo file="${out}/modules/readme.txt">jar files in module directories (modules/*/*.jar) are made available to all workflow applications</a:echo>
     
     <j:set var="maven.dist.dir" value="${maven.build.dir}/distributions" />
+    <a:mkdir dir="${maven.dist.dir}" />
     <a:zip zipfile="${maven.dist.dir}/${prefix}.zip">
       <a:zipfileset prefix="${prefix}" dir="target/dist-container" />
     </a:zip>
