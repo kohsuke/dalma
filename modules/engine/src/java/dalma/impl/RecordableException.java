@@ -11,6 +11,7 @@ public class RecordableException extends Throwable {
     private RecordableException(Throwable base) {
         super(base.getMessage(),create(base.getCause()));
         className = base.getClass().getName();
+        setStackTrace(base.getStackTrace());
     }
 
     public static RecordableException create(Throwable t) {
