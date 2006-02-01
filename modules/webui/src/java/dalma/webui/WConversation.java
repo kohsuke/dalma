@@ -1,7 +1,6 @@
 package dalma.webui;
 
 import dalma.Conversation;
-import dalma.container.FailedOperationException;
 
 import java.util.Date;
 import java.util.List;
@@ -59,7 +58,7 @@ public class WConversation extends UIObject {
     }
 
     public void doDoDelete(StaplerRequest req, StaplerResponse resp) throws IOException, ServletException {
-        core.remove();
+        core.remove(null);
         resp.sendRedirect("../..");
     }
 }
