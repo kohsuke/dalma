@@ -31,8 +31,12 @@ public interface Conversation {
 
     /**
      * Kills a conversation forcibly, even if it's running.
+     *
+     * @param cause
+     *      If the conversation is removed because of an error,
+     *      specify that error. This information will be logged.
      */
-    void remove();
+    void remove(Throwable cause);
 
     /**
      * Gets the log that this conversation left.

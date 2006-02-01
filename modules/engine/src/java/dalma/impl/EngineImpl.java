@@ -239,7 +239,7 @@ public final class EngineImpl extends EngineSPI implements Serializable {
                     // report the error first before removing the conversation,
                     // which might cause the engine to signal "we are done!" event.
                     addToErrorQueue(t.getCause());
-                    f.owner.remove();
+                    f.owner.remove(t.getCause());
                 } catch(Throwable t) {
                     // even if the error recovery process fails,
                     // don't let the worker thread die.

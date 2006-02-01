@@ -5,6 +5,7 @@ import dalma.Description;
 import dalma.Engine;
 import dalma.EngineListener;
 import dalma.Program;
+import dalma.ErrorHandler;
 import static dalma.container.WorkflowState.*;
 import dalma.container.model.IllegalResourceException;
 import dalma.container.model.InjectionException;

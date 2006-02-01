@@ -72,7 +72,7 @@ public abstract class Condition<T> implements Serializable {
 
     /**
      * Called when a {@link Conversation} parking on this endPoint is
-     * {@link Conversation#remove() removed}.
+     * {@link Conversation#remove(Throwable) removed}.
      *
      * <p>
      * The implementation is expected to remove this conversation

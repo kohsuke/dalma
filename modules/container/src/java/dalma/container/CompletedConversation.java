@@ -65,7 +65,7 @@ final class CompletedConversation implements Conversation, Serializable {
         return ConversationState.ENDED;
     }
 
-    public void remove() {
+    public void remove(Throwable cause) {
         throw uoe();
     }
 

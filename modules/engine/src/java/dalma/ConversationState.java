@@ -33,7 +33,7 @@ public final class ConversationState {
     public static final ConversationState ENDED = new ConversationState("ended",false);
 
     /**
-     * {@link Conversation} has been terminated with the {@link Conversation#remove()} method.
+     * {@link Conversation} has been terminated with the {@link Conversation#remove(Throwable)} method.
      */
     public static final ConversationState ABORTED = new ConversationState("aborted",false);
 

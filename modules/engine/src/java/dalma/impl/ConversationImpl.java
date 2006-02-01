@@ -103,18 +103,22 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     private boolean justCreated;
 
     /**
-     * Set to true once the {@link #remove()} operation is in progress.
-     * This flag is also used to check if the conversation exited abnormally.
+     * Set to true once the {@link Conversation#remove(Throwable)} operation is in progress.
      *
      * <p>
      * When true, {@link Fiber}s are prevented from being executed,
      * and instead they die. In this way, we can guarantee that all
      * {@link Fiber}s die eventually, to remove the conversation from memory.
      */
-    /*package*/ boolean isRemoved;
+    /*package*/ transient boolean isRemoved;
 
     /**
-     * Synchronization for handling multiple concurrent {@link #remove()} method invocation.
+     * This flag is used to check if the conversation exited abnormally.
+     */
+    private boolean isAborted;
+
+    /**
+     * Synchronization for handling multiple concurrent {@link Conversation#remove(Throwable)} method invocation.
      */
     private transient /*final*/ Object removeLock;
 
@@ -260,7 +264,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     public ConversationState getState() {
         if(runningCounts.get()!=0)
             return ConversationState.RUNNING;
-        if(isRemoved)
+        if(isAborted)
             return ConversationState.ABORTED;
 
         ConversationState r = ConversationState.ENDED;
@@ -340,7 +344,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
         if(getState()== ConversationState.ENDED) {
             // no fiber is there to run. conversation is complete
-            remove();
+            remove(null);
             return;
         }
 
@@ -381,7 +385,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         }
     }
 
-    public void remove() {
+    public void remove(Throwable cause) {
         // this lock is to handle multiple concurrent invocations of the remove method
         synchronized(removeLock) {
             // the first thing we have to do is to wait for all the executing fibers
@@ -391,6 +395,11 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
                 return; // already removed.
 
             isRemoved = true;
+
+            if(cause!=null) {
+                getLogger().log(Level.SEVERE, "Conversation is exiting abnormally", cause);
+                isAborted = true;
+            }
 
             try {
                 runningCounts.waitForZero();
