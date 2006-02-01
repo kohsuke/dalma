@@ -115,8 +115,17 @@ final class Redeployer extends FileChangeMonitor {
 
     @Override
     protected void onUpdated(File file) {
-        if(isDar(file))
+        if(isDar(file)) {
+            String name = file.getName();
+            name = name.substring(0,name.length()-4);   // cut off '.dar'
+
+            WorkflowApplication wa = container.getApplication(file.getName());
+            if(wa!=null) {
+                logger.info("Dar file is updated for application '"+wa.getName()+"'. Stopping.");
+                wa.unload();
+            }
             container.explode(file);
+        }
         if(file.isDirectory()) {
             try {
                 WorkflowApplication wa = container.getApplication(file.getName());
