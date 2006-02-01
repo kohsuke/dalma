@@ -34,6 +34,11 @@ log entries can be deleted at will. How?
 
 Container Version
 =================
+- MAin object is serialized incorrectly.
+- If we kill a conversation while it's running, it's left in the "ended" state
+  in the on-going conversation.
+- support "no instrumentation" manifest entry.
+  like "No-Instrumentation: abc.jar def.jar"
 - duck-typing delegation in Stapler
   - how does it implement UIObject?
 - javadoc link among modules
