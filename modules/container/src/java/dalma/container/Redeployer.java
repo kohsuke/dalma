@@ -43,6 +43,7 @@ final class Redeployer extends FileChangeMonitor {
         }
 
         public void abortWith(Exception e) {
+            assert e!=null;
             this.callable.e = e;
             run();
         }
@@ -126,6 +127,10 @@ final class Redeployer extends FileChangeMonitor {
                     if(wa.isConfigured())
                         // looks like it's configured enough to start
                         wa.start();
+                } else {
+                    // we have a directory updated, but no corresponding application exists.
+                    // previous one must have failed to load.
+                    wa = container.deploy(file);
                 }
                 notifyFutures(file,wa);
             } catch (FailedOperationException e) {
