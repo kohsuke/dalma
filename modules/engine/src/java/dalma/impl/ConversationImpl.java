@@ -103,10 +103,15 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     private boolean justCreated;
 
     /**
-     * Set to true if the {@link #remove()} operation is in progress.
-     * When true, {@link Fiber}s are prevented from being executed.
+     * Set to true once the {@link #remove()} operation is in progress.
+     * This flag is also used to check if the conversation exited abnormally.
+     *
+     * <p>
+     * When true, {@link Fiber}s are prevented from being executed,
+     * and instead they die. In this way, we can guarantee that all
+     * {@link Fiber}s die eventually, to remove the conversation from memory.
      */
-    /*package*/ transient boolean isRemoved;
+    /*package*/ boolean isRemoved;
 
     /**
      * Synchronization for handling multiple concurrent {@link #remove()} method invocation.
