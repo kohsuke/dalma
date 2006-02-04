@@ -162,7 +162,7 @@ public abstract class Program implements Serializable {
         this.engine = engine;
     }
 
-    private Object writeReplace() {
+    protected final Object writeReplace() {
         return new Moniker(engine);
     }
 
