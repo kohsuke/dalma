@@ -291,6 +291,11 @@ public final class WorkflowApplication implements WorkflowApplicationMBean {
                     classLoader,
                     owner.executor);
                 engine.setOwner(this);
+                engine.setErrorHandler(new ErrorHandler() {
+                    public void onError(Throwable t) {
+                        logger.log(Level.SEVERE, t.getMessage(), t);
+                    }
+                });
             } catch (IOException e) {
                 throw new FailedOperationException("Failed to start engine",e);
             }
