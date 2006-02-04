@@ -82,8 +82,10 @@ public class MimeMessageEx extends MimeMessage implements Serializable {
         part.setContent(error,"text/plain");
         multipart.addBodyPart(part);
 
+        String filename = "filename=\""+getSubject().replaceAll("\"","\\\"")+"\"";
         part = new MimeBodyPart();
-        part.setContent(this,"message/rfc822");
+        part.setContent(this,"message/rfc822; "+filename);
+        part.setHeader("Content-Disposition","inline; "+filename);
         multipart.addBodyPart(part);
 
         return r;
