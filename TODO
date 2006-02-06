@@ -34,7 +34,7 @@ log entries can be deleted at will. How?
 
 Container Version
 =================
-- MAin object is serialized incorrectly.
+- abort and ended aren't nicely distinguished
 - If we kill a conversation while it's running, it's left in the "ended" state
   in the on-going conversation.
 - support "no instrumentation" manifest entry.
