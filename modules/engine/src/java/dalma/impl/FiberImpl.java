@@ -49,7 +49,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     /**
      * Last return value of {@link #cond}.
      *
-     * This is used to implement {@link #again(long, TimeUnit)} feature.
+     * This is used to implement {@link #doAgain(long, TimeUnit)} feature.
      */
     private Object lastRetVal;
 
@@ -182,7 +182,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     }
 
     // called by the continuation thread
-    public synchronized void again(long delay, TimeUnit unit) {
+    public synchronized void doAgain(long delay, TimeUnit unit) {
         if(!StackRecorder.get().isRestoring) {
             assert cond==null;
             cond = TimerEndPoint.xxxCreateDock(unit.fromNow(delay),lastRetVal);

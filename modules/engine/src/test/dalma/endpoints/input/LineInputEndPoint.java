@@ -56,7 +56,7 @@ public final class LineInputEndPoint extends EndPointImpl implements Runnable {
     }
 
     protected void stop() {
-        thread.interrupt();
+        thread.stop();
         try {
             thread.join();
         } catch (InterruptedException e) {
