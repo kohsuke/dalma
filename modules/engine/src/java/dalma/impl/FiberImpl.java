@@ -4,6 +4,7 @@ import dalma.Condition;
 import dalma.Conversation;
 import dalma.Fiber;
 import dalma.FiberState;
+import dalma.TimeUnit;
 import dalma.endpoints.timer.TimerEndPoint;
 import dalma.spi.ConditionListener;
 import dalma.spi.FiberSPI;
@@ -14,7 +15,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Date;
 
 /**
  * Smallest execution unit inside a {@link Conversation}.
@@ -49,7 +49,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     /**
      * Last return value of {@link #cond}.
      *
-     * This is used to implement {@link #doItAgain()} feature.
+     * This is used to implement {@link #again(long, TimeUnit)} feature.
      */
     private Object lastRetVal;
 
@@ -182,10 +182,10 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     }
 
     // called by the continuation thread
-    public synchronized void again(Date dt) {
+    public synchronized void again(long delay, TimeUnit unit) {
         if(!StackRecorder.get().isRestoring) {
             assert cond==null;
-            cond = TimerEndPoint.xxxCreateDock(dt,lastRetVal);
+            cond = TimerEndPoint.xxxCreateDock(unit.fromNow(delay),lastRetVal);
             assert state== FiberState.RUNNING;
         }
 
