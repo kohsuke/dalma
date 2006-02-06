@@ -104,7 +104,7 @@ public abstract class Condition<T> implements Serializable {
      * Note that the resumed conversation may start executed even before this method
      * returns.
      */
-    public final void activate(T retVal) {
+    public void activate(T retVal) {
         synchronized(this) {
             if(isActive)
                 throw new IllegalStateException("condition is already active : "+toString());

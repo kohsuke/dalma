@@ -7,6 +7,7 @@ import dalma.impl.OrCondition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -25,6 +26,12 @@ public abstract class FiberSPI<T extends Runnable> extends Fiber<T> {
      *      returned.
      */
     public abstract <T> T suspend(Condition<T> condition);
+
+    /**
+     * Jumps to the point where the fiber suspended for the last time,
+     * and re-executes the execution when the specified time is reached.
+     */
+    public abstract void again(Date dt);
 
     public final <T> T suspend(List<? extends Condition<? extends T>> conditions) {
         return suspend(new OrCondition<T>(new ArrayList<Condition<? extends T>>(conditions))).getReturnValue();

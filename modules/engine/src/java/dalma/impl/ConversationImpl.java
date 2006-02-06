@@ -319,7 +319,6 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
             } finally {
                 ois.close();
             }
-            cont.delete();
 
             if(fibers.size()!=list.size())
                 throw new ConversationDeath(list.size()+" fibers are found in the disk but the memory says "+fibers.size()+" fibers",null);
@@ -337,14 +336,13 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         }
     }
 
-    synchronized void onFiberEndedRunning(FiberImpl fiber) {
+    synchronized void onFiberEndedRunning(FiberImpl fiber,Throwable cause) {
         if(runningCounts.dec()>0)
             return;
 
-
-        if(getState()== ConversationState.ENDED) {
+        if(fibers.isEmpty()) {
             // no fiber is there to run. conversation is complete
-            remove(null);
+            remove(cause);
             return;
         }
 

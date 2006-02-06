@@ -2,7 +2,9 @@ package dalma.endpoints.timer;
 
 import dalma.Condition;
 import dalma.TimeUnit;
+import dalma.Fiber;
 import dalma.impl.EndPointImpl;
+import dalma.impl.FiberImpl;
 import dalma.spi.ConversationSPI;
 import dalma.spi.EngineSPI;
 import dalma.spi.FiberSPI;
@@ -43,14 +45,21 @@ public class TimerEndPoint extends EndPointImpl {
         private final Date dt;
 
         /**
+         * This field is used to implement
+         * {@link Fiber#doItAgain(Date)}.
+         */
+        private final Object presetRetVal;
+
+        /**
          *
          * Transient because this field is only used when the timer is in memory.
          */
         private transient TimerTaskImpl task;
 
-        public TimerCondition(Date dt) {
+        public TimerCondition(Date dt, Object presetRetVal) {
             assert dt!=null;
             this.dt = dt;
+            this.presetRetVal = presetRetVal;
         }
 
         public void onParked() {
@@ -72,6 +81,10 @@ public class TimerEndPoint extends EndPointImpl {
             assert task!=null;
             task.cancel();
             task = null;
+        }
+
+        public void activate(T retVal) {
+            super.activate((T)presetRetVal);
         }
 
         private final class TimerTaskImpl extends TimerTask {
@@ -105,17 +118,25 @@ public class TimerEndPoint extends EndPointImpl {
         FiberSPI.currentFiber(true).suspend(createDock(dt));
     }
 
-    public static <T> Condition<T> createDock(Date dt) {
+    /**
+     * This version is used internally by Dalma.
+     * Not for client applications.
+     */
+    public static <T> Condition<T> xxxCreateDock(Date dt, Object retVal) {
         EngineSPI engine = ConversationSPI.currentConversation().getEngine();
 
         TimerEndPoint ep = (TimerEndPoint)engine.getEndPoint(TimerEndPoint.class.getName());
         if(ep==null) {
             throw new IllegalStateException("TimerEndPoint was not added to the engine");
         }
-        return ep.new TimerCondition<T>(dt);
+        return ep.new TimerCondition<T>(dt,retVal);
     }
 
     public static <T> Condition<T> createDock(long delay,TimeUnit unit) {
         return createDock(unit.fromNow(delay));
+    }
+
+    public static <T> Condition<T> createDock(Date dt) {
+        return xxxCreateDock(dt,null);
     }
 }

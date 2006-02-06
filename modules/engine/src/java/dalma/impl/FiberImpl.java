@@ -4,6 +4,7 @@ import dalma.Condition;
 import dalma.Conversation;
 import dalma.Fiber;
 import dalma.FiberState;
+import dalma.endpoints.timer.TimerEndPoint;
 import dalma.spi.ConditionListener;
 import dalma.spi.FiberSPI;
 import org.apache.commons.javaflow.Continuation;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Date;
 
 /**
  * Smallest execution unit inside a {@link Conversation}.
@@ -43,6 +45,13 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
      * is active but {@link FiberImpl} is waiting for a scheduling.
      */
     private Condition cond;
+
+    /**
+     * Last return value of {@link #cond}.
+     *
+     * This is used to implement {@link #doItAgain()} feature.
+     */
+    private Object lastRetVal;
 
     static class PersistedData<T extends Runnable> implements Serializable {
         private Continuation continuation;
@@ -112,7 +121,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
 
     public synchronized void join() throws InterruptedException {
         FiberImpl<?> fiber = FiberImpl.currentFiber(false);
-        
+
         if(!StackRecorder.get().isRestoring) {
             if(getState()==FiberState.ENDED)
                 return;
@@ -164,11 +173,23 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
         // assert c==cond;  this isn't correct, because cond is persisted as a part of conversation.xml
         // while c is persisted in the continuation. they are different objects
         T r = (T)cond.getReturnValue();
+        lastRetVal = r;
         cond = null;
 
         assert state== FiberState.RUNNING;
 
         return r;
+    }
+
+    // called by the continuation thread
+    public synchronized void again(Date dt) {
+        if(!StackRecorder.get().isRestoring) {
+            assert cond==null;
+            cond = TimerEndPoint.xxxCreateDock(dt,lastRetVal);
+            assert state== FiberState.RUNNING;
+        }
+
+        Continuation.cancel();
     }
 
     public void doExit() {
@@ -203,8 +224,11 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
         owner.onFiberStartedRunning(this);
         try {
             run1();
-        } finally {
-            owner.onFiberEndedRunning(this);
+            owner.onFiberEndedRunning(this,null);
+        } catch(RuntimeException e) {
+            owner.onFiberEndedRunning(this,e);
+        } catch(Error e) {
+            owner.onFiberEndedRunning(this,e);
         }
     }
 
