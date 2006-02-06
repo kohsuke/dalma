@@ -340,7 +340,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         if(runningCounts.dec()>0)
             return;
 
-        if(fibers.isEmpty()) {
+        if(getState()==ConversationState.ENDED) {
             // no fiber is there to run. conversation is complete
             remove(cause);
             return;
