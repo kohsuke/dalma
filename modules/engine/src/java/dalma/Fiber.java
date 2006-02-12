@@ -114,11 +114,11 @@ public abstract class Fiber<T extends Runnable> {
      * This is a tricky method, so it probably needs some explanation.
      * In a workflow, often because of an error, one wants to retry
      * the execution. You can do this by using a loop statement, but
-     * the {@link #again(Date)} method provides an interesting way of
+     * the {@link #again} method provides an interesting way of
      * doing this.
      *
      * <p>
-     * The semantics of the {@link #again(Date)} method is really just
+     * The semantics of the {@link #again} method is really just
      * "please retry what you just did later." First, the execution
      * magically jumps to the point where the {@link Fiber} suspended
      * the last time (which is typically one of the blocking endpoint invocation.),
@@ -136,11 +136,20 @@ public abstract class Fiber<T extends Runnable> {
      * } catch(IOException e) {
      *   // OK, the website is down.
      *   // let's try this later, again.
-     *   again(1,HOURS);
+     *   again(1,HOURS,3);
+     *   // the again method returns without doing anything
+     *   // if a certain retry count is met. if so, really
+     *   // abort the processing.
+     *   throw e;
      * }
      * </pre>
+     *
+     * @param retryCount
+     *      The maximum number of retry. The {@link #again} method
+     *      does the retry up to this number, and beyond that it
+     *      simply returns 0.
      */
-    public static void again(long delay, TimeUnit unit) {
-        FiberImpl.currentFiber(true).doAgain(delay,unit);
+    public static void again(long delay, TimeUnit unit, int retryCount) {
+        FiberImpl.currentFiber(true).doAgain(delay,unit,retryCount);
     }
 }

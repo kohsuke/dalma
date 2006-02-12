@@ -37,18 +37,15 @@ public class AgainTest extends WorkflowTestProgram {
     public static final class AgainConversation implements Runnable, Serializable {
         public void run() {
             retryCount = 0;
-            int[] t = new int[1];
 
             TimerEndPoint.waitFor(1, SECONDS);
             //String s = LineInputEndPoint.waitForInput();
             //System.out.println("Received: "+s);
             retryCount++;
 
-            if(t[0]<3) {
-                System.out.println("again");
-                t[0]++;
-                Fiber.again(3, SECONDS);
-            }
+            System.out.println("again");
+            Fiber.again(3,SECONDS,3);
+
             System.out.println("done");
         }
         private static final long serialVersionUID = 1L;

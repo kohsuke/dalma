@@ -33,6 +33,8 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import com.thoughtworks.xstream.converters.ConversionException;
+
 /**
  * Represents a running conversation.
  *
@@ -231,7 +233,14 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
         try {
             SerializationContext.set(engine,SerializationContext.Mode.CONVERSATION);
-            conv = (ConversationImpl) new XmlFile(config).read(engine.classLoader);
+            try {
+                conv = (ConversationImpl) new XmlFile(config).read(engine.classLoader);
+            } catch (ConversionException e) {
+                // if the conversation fails to load, don't let it kill the whole process
+                IOException ioe = new IOException();
+                ioe.initCause(e);
+                throw ioe;
+            }
         } finally {
             SerializationContext.remove();
         }

@@ -49,9 +49,16 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     /**
      * Last return value of {@link #cond}.
      *
-     * This is used to implement {@link #doAgain(long, TimeUnit)} feature.
+     * This is used to implement {@link FiberSPI#doAgain(long,TimeUnit,int)} feature.
      */
     private Object lastRetVal;
+
+    /**
+     * The number of the retries so far (done via {@link #doAgain(long, TimeUnit, int)}.
+     *
+     * This counter is reset to 0 every time an operation is suspended normally.
+     */
+    private int numRetry = 0;
 
     static class PersistedData<T extends Runnable> implements Serializable {
         private Continuation continuation;
@@ -159,7 +166,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
                 throw new IllegalArgumentException("dock cannot be null");
             assert cond==null;
             cond = c;
-
+            numRetry = 0;
             assert state== FiberState.RUNNING;
         }
 
@@ -182,12 +189,14 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     }
 
     // called by the continuation thread
-    public synchronized void doAgain(long delay, TimeUnit unit) {
-        if(!StackRecorder.get().isRestoring) {
-            assert cond==null;
-            cond = TimerEndPoint.xxxCreateDock(unit.fromNow(delay),lastRetVal);
-            assert state== FiberState.RUNNING;
-        }
+    public synchronized void doAgain(long delay, TimeUnit unit, int retryCount) {
+        if(numRetry >= retryCount )
+            return; // too many retries. abort.
+
+        assert cond==null;
+        cond = TimerEndPoint.xxxCreateDock(unit.fromNow(delay),lastRetVal);
+        numRetry++;
+        assert state== FiberState.RUNNING;
 
         Continuation.cancel();
     }

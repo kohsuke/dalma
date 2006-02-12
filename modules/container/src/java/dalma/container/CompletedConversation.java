@@ -30,6 +30,7 @@ final class CompletedConversation implements Conversation, Serializable {
     private final String title;
     private final long startDate;
     private final long endDate;
+    private final ConversationState state;
     private final LogRecord[] logs;
 
     private transient List<LogRecord> logView;
@@ -42,6 +43,7 @@ final class CompletedConversation implements Conversation, Serializable {
         this.title = that.getTitle();
         this.startDate = that.getStartDate().getTime();
         this.endDate = that.getCompletionDate().getTime();
+        this.state = that.getState();
 
         // scrape off null entries, which can happen if log records fail to load.
         List<LogRecord> ll = new ArrayList<LogRecord>();
@@ -62,7 +64,7 @@ final class CompletedConversation implements Conversation, Serializable {
     }
 
     public ConversationState getState() {
-        return ConversationState.ENDED;
+        return state;
     }
 
     public void remove(Throwable cause) {

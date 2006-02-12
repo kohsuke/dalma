@@ -29,9 +29,9 @@ public abstract class FiberSPI<T extends Runnable> extends Fiber<T> {
     public abstract <T> T suspend(Condition<T> condition);
 
     /**
-     * Used to implement {@link Fiber#again(long,TimeUnit)}
+     * Used to implement {@link Fiber#again(long,TimeUnit,int)}
      */
-    public abstract void doAgain(long delay, TimeUnit unit);
+    public abstract void doAgain(long delay, TimeUnit unit, int retryCount);
 
     public final <T> T suspend(List<? extends Condition<? extends T>> conditions) {
         return suspend(new OrCondition<T>(new ArrayList<Condition<? extends T>>(conditions))).getReturnValue();

@@ -4,7 +4,6 @@ import dalma.Condition;
 import dalma.TimeUnit;
 import dalma.Fiber;
 import dalma.impl.EndPointImpl;
-import dalma.impl.FiberImpl;
 import dalma.spi.ConversationSPI;
 import dalma.spi.EngineSPI;
 import dalma.spi.FiberSPI;
