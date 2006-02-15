@@ -18,7 +18,7 @@
         <th width=10%>Status</th>
       </tr>
       <c:forEach var="c" items="${convs}">
-        <tr>
+        <tr class="state_${c.state}">
           <%--td>
             <img src="${rootURL}/images/box.png" />
           </td--%>

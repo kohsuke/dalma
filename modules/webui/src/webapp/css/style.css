@@ -57,3 +57,7 @@ body {
     padding-top: 4px;
     padding-bottom: 4px;
 }
+
+.state_aborted {
+    color: red;
+}
