@@ -162,11 +162,14 @@ public abstract class MultiplexedEndPoint<Key,Msg> extends EndPointImpl {
         }
 
         public void interrupt() {
-            getEndPoint().unregister(this);
+            if(key!=null)
+                getEndPoint().unregister(this);
         }
 
         public void onLoad() {
-            getEndPoint().register(this);
+            // key==null if the condition is created but left unused
+            if(key!=null)
+                getEndPoint().register(this);
         }
     }
 }
