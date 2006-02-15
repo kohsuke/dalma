@@ -282,6 +282,7 @@
         <root url="jar://$PROJECT_DIR$/lib/xstream-1.1.2.zip!/xstream-1.1.2/src/java" />
         <root url="jar://$PROJECT_DIR$/lib/jakarta-bcel-20050813.src.zip!/src/java" />
         <root url="jar://$PROJECT_DIR$/lib/spring-framework-1.2.5.zip!/spring-framework-1.2.5/src" />
+        <root url="jar://$PROJECT_DIR$/lib/commons-javaflow-1.0-SNAPSHOT.src.zip!/src/java" />
       </SOURCES>
     </library>
   </component>
