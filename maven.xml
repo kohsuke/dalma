@@ -244,7 +244,30 @@
     <a:mkdir dir="${out}" />
     
     <a:copy todir="${out}/bin">
+      <a:filterset begintoken="$" endtoken="}">
+        <a:filter token="{VERSION" value="${pom.currentVersion}" />
+      </a:filterset>
       <a:fileset dir="modules/container/src/script" includes="*.sh, *.bat" />
+    </a:copy>
+    <!-- create exe -->
+    <j:if test="${LAUNCH4J_HOME==null}">
+    	<a:fail>Install launch4j and set LAUNCH4J_HOME</a:fail>
+    </j:if>
+    <a:taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
+    	classpath="${LAUNCH4J_HOME}/launch4j.jar" />
+    <a:launch4j>
+      <config
+      	headerType="1"
+      	jar="dalma-container-${pom.currentVersion}.jar"
+        dontWrapJar="true"
+      	outfile="${out}/bin/dalmacon.exe"
+        errTitle="${pom.name}">
+        <jre minVersion="1.5.0" args='-DDALMA_HOME="%EXEDIR%\\.."' />
+      </config>
+    </a:launch4j>
+    
+    <a:copy todir="${out}/bin">
+      <a:fileset dir="modules/container/target" includes="dalma-container-${pom.currentVersion}.jar" />
     </a:copy>
     <dalma:copy-engine out="${out}/bin" />
     
