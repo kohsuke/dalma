@@ -152,7 +152,7 @@ abstract class FileChangeMonitor {
 
 
     static {
-        monitorThread = new Thread() {
+        monitorThread = new Thread("Dalma file change monitor") {
             public void run() {
                 while(true) {
                     try {
@@ -173,11 +173,14 @@ abstract class FileChangeMonitor {
                                     if(!job.check())
                                         itr.remove();
                                 } catch (Throwable e) {
+                                    // this must be a bug in the FileChangeMonitor,
+                                    // so we let the developer know, but take
+                                    // the chance that the next time around it will be fine.
                                     e.printStackTrace();
-                                    itr.remove();
                                 }
                             }
 
+                            // if we don't have anything to monitor, block until we have something
                             while(monitors.isEmpty()) {
                                 monitors.wait();
                             }
