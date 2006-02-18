@@ -351,7 +351,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
 
         if(getState()==ConversationState.ENDED) {
             // no fiber is there to run. conversation is complete
-            remove(cause);
+            remove(cause,cause!=null);
             return;
         }
 
@@ -393,6 +393,20 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     }
 
     public void remove(Throwable cause) {
+        remove(cause,true);
+    }
+
+    /**
+     * Removes a conversation, or terminates it.
+     *
+     * <p>
+     * This method is used also when the conversation normally exits.
+     *
+     * @param forcible
+     *      true if this is a forcible or abnormal termination,
+     *      false if the termination is normal (IOW the execution exited normally.)
+     */
+    public void remove(Throwable cause, boolean forcible) {
         // this lock is to handle multiple concurrent invocations of the remove method
         synchronized(removeLock) {
             // the first thing we have to do is to wait for all the executing fibers
@@ -407,6 +421,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
                 getLogger().log(Level.SEVERE, "Conversation is exiting abnormally", cause);
                 isAborted = true;
             }
+            if(forcible)
+                isAborted = true;
 
             try {
                 runningCounts.waitForZero();
