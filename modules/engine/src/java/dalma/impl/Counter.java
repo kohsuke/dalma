@@ -15,6 +15,7 @@ final class Counter implements Serializable {
     }
 
     public synchronized int dec() {
+        assert value>0;
         return --value;
     }
 

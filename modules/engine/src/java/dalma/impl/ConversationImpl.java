@@ -281,6 +281,9 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
         synchronized(fibers) {
             for (FiberImpl f : fibers) {
                 switch(f.getState()) {
+                case RUNNING:
+                    // if so, runningCount.get()>0
+                    throw new AssertionError();
                 case RUNNABLE:
                     return ConversationState.RUNNABLE;
                 case WAITING:
@@ -346,7 +349,8 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     }
 
     synchronized void onFiberEndedRunning(FiberImpl fiber,Throwable cause) {
-        assert runningCounts.get()==0;
+        if(runningCounts.dec()>0)
+            return;
 
         if(getState()==ConversationState.ENDED) {
             // no fiber is there to run. conversation is complete

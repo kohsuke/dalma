@@ -10,4 +10,10 @@ import dalma.Conversation;
  * @author Kohsuke Kawaguchi
  */
 public class FiberDeath extends Error {
+    public FiberDeath(Throwable cause) {
+        super(cause);
+    }
+
+    public FiberDeath() {
+    }
 }

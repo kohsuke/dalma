@@ -8,5 +8,6 @@ public enum FiberState {
     WAITING,
     RUNNING,
     RUNNABLE,
+    ABORTED,
     ENDED
 }

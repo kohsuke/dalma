@@ -231,26 +231,13 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     }
     private void run0() {
         owner.onFiberStartedRunning(this);
-        int endCount = -1;
+        Throwable t = null;
         try {
-            try {
-                run1();
-            } finally {
-                endCount = owner.runningCounts.dec();
-            }
-
-            assert endCount>=0;
-            if(endCount==0)
-                owner.onFiberEndedRunning(this,null);
-        } catch(RuntimeException e) {
-            assert endCount>=0;
-            if(endCount==0)
-                owner.onFiberEndedRunning(this,e);
-        } catch(Error e) {
-            assert endCount>=0;
-            if(endCount==0)
-                owner.onFiberEndedRunning(this,e);
+            run1();
+        } catch(Throwable tt) {
+            t = tt;
         }
+        owner.onFiberEndedRunning(this,t);
     }
 
     private void run1() {
@@ -262,8 +249,10 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
             execution.execute();
         } catch(Error e) {
             die(e);
+            throw e;
         } catch(RuntimeException e) {
             die(e);
+            throw e;
         }
 
         assert state == FiberState.RUNNING;
@@ -273,7 +262,7 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
                 // conversation has finished execution.
                 state = FiberState.ENDED;
 
-                // notify any threads that are blocked on this conversation.
+                // notify any threads that are blocked on this fiber.
                 notifyAll();
 
                 // notify all conversations that are blocked on this
@@ -310,7 +299,6 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
         // clean up if we own a condition
         remove();
         owner.getEngine().addToErrorQueue(t);
-        throw new FiberDeath();
     }
 
     protected synchronized Set<FiberCompletionCondition> getWaitList() {
