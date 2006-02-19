@@ -346,8 +346,7 @@ public final class ConversationImpl extends ConversationSPI implements Serializa
     }
 
     synchronized void onFiberEndedRunning(FiberImpl fiber,Throwable cause) {
-        if(runningCounts.dec()>0)
-            return;
+        assert runningCounts.get()==0;
 
         if(getState()==ConversationState.ENDED) {
             // no fiber is there to run. conversation is complete

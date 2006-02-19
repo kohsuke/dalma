@@ -231,13 +231,25 @@ public final class FiberImpl<T extends Runnable> extends FiberSPI<T> implements 
     }
     private void run0() {
         owner.onFiberStartedRunning(this);
+        int endCount = -1;
         try {
-            run1();
-            owner.onFiberEndedRunning(this,null);
+            try {
+                run1();
+            } finally {
+                endCount = owner.runningCounts.dec();
+            }
+
+            assert endCount>=0;
+            if(endCount==0)
+                owner.onFiberEndedRunning(this,null);
         } catch(RuntimeException e) {
-            owner.onFiberEndedRunning(this,e);
+            assert endCount>=0;
+            if(endCount==0)
+                owner.onFiberEndedRunning(this,e);
         } catch(Error e) {
-            owner.onFiberEndedRunning(this,e);
+            assert endCount>=0;
+            if(endCount==0)
+                owner.onFiberEndedRunning(this,e);
         }
     }
 
