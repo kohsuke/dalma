@@ -31,6 +31,12 @@ Aggregated logging makes logging redundant if copies are kept on separate direct
 some kind of database would be nice, or just index, maybe. In such a way that
 log entries can be deleted at will. How?
 
+Content-Location header
+===========
+Perhaps the Content-Location cheader is being eaten by some intermediate servers?
+The MIME boundary tokens are different (between when I sent and when I receive it), too.
+
+(When I send it to gmail it works)
 
 Container Version
 =================
