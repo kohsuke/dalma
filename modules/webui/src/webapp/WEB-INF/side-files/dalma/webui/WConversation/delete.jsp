@@ -4,7 +4,7 @@
 <jsp:include page="sidepanel.jsp" />
 <l:main-panel>
   <form method="get" action="doDelete">
-    Are you sure about uninstalling this workflow?
+    Are you sure about removing this conversation?
     <input type="submit" value="Yes" />
   </form>
 </l:main-panel>
