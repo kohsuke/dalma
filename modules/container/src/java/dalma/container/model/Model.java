@@ -62,7 +62,7 @@ public final class Model<T> {
             if(token==null && !optional)
                 throw new InjectionException("resource \""+name+"\" must be configured");
             Object value = converter.load(engine, name, token);
-            if(!type.isInstance(value))
+            if(value!=null && !type.isInstance(value))
                 throw new InjectionException("resource \""+name+"\" wants "+type.getName()+" but found "+(value==null?"null":value.getClass().getName())+" in configuration");
             injector.set(target,type.cast(value));
         }
