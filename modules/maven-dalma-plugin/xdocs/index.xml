@@ -14,7 +14,7 @@
   </p>
 <source>
 maven plugin:download \
-  -Dmaven.repo.remote=https://maven-repository.dev.java.net/nonav/repository \
+  -Dmaven.repo.remote=http://www.ibiblio.org/maven,https://maven-repository.dev.java.net/nonav/repository \
   -DgroupId=dalma \
   -DartifactId=maven-dalma-plugin \
   -Dversion=@@VERSION@@
