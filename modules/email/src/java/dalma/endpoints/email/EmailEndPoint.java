@@ -201,7 +201,9 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
      */
     public UUID send(MimeMessage msg) {
         try {
-            msg.setReplyTo(new Address[]{address});
+            String[] rt = msg.getHeader("Reply-To");
+            if(rt ==null || rt.length==0)
+                msg.setReplyTo(new Address[]{address});
             if(msg.getFrom()==null || msg.getFrom().length==0) {
                 msg.setFrom(address);
             }
