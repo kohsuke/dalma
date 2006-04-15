@@ -19,5 +19,19 @@ maven plugin:download \
   -DartifactId=maven-dalma-plugin \
   -Dversion=@@VERSION@@
 </source>
+  <p>
+    This plugin needs to install a few additional jars from the java.net maven repository. Maven does not install those jars when you install a plugin, so do the following to download all the jars:
+  </p>
+<source>
+$ mkdir dummy
+$ cd dummy
+$ maven \
+  -Dmaven.repo.remote=http://www.ibiblio.org/maven,https://maven-repository.dev.java.net/nonav/repository \
+  dalma:genapp
+  (... this will download a bunch of jars ...)
+$ cd ..
+$ rm -rf dummy
+  (... not needed ...)
+</source>
 </section>
 </body></document>
