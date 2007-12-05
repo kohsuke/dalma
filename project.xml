@@ -20,10 +20,6 @@
     <url>https://${maven.javanet.project}.dev.java.net/source/browse/${maven.javanet.project}</url>
   </repository>
 
-  <organization>
-    <url>http://www.java.net/</url>
-    <logo>https://${maven.javanet.project}.dev.java.net/maven/images/java.net-logo.png</logo>
-  </organization>
   <issueTrackingUrl>https://${maven.javanet.project}.dev.java.net/servlets/ProjectIssues</issueTrackingUrl>
   <mailingLists>
     <mailingList>
