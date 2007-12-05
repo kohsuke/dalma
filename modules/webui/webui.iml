@@ -1,11 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module version="4" relativePaths="true" type="J2EE_WEB_MODULE" j2ee-integration="Tomcat Server">
-  <component name="ModuleRootManager" />
-  <component name="NewModuleRootManager">
+<module relativePaths="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="web" name="webui">
+      <configuration>
+        <descriptors>
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/src/webapp/WEB-INF/web.xml" optional="false" version="2.5" />
+        </descriptors>
+        <webroots>
+          <root url="file://$MODULE_DIR$/src/webapp" relative="/" />
+        </webroots>
+        <building>
+          <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/target/exploded" />
+          <setting name="EXPLODED_ENABLED" value="true" />
+          <setting name="JAR_URL" value="file://" />
+          <setting name="JAR_ENABLED" value="false" />
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
+          <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
+          <setting name="RUN_JASPER_VALIDATION" value="false" />
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
+        </building>
+        <packaging>
+          <containerElement type="module" name="webui">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+          </containerElement>
+          <containerElement type="module" name="container">
+            <attribute name="method" value="5" />
+            <attribute name="URI" value="/WEB-INF/lib/container.jar" />
+          </containerElement>
+          <containerElement type="module" name="engine">
+            <attribute name="method" value="5" />
+            <attribute name="URI" value="/WEB-INF/lib/engine.jar" />
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.0.jar" />
+            <url>jar://$MODULE_DIR$/lib/commons-fileupload-1.0.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/jmxremote_optional-1.0.1_03.jar" />
+            <url>jar://$MODULE_DIR$/lib/jmxremote_optional-1.0.1_03.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/jstl.jar" />
+            <url>jar://$MODULE_DIR$/lib/jstl.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/scotland-1.0.jar" />
+            <url>jar://$MODULE_DIR$/lib/scotland-1.0.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/standard.jar" />
+            <url>jar://$MODULE_DIR$/lib/standard.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/stapler-1.1.jar" />
+            <url>jar://$MODULE_DIR$/lib/stapler-1.1.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/taglibs-request.jar" />
+            <url>jar://$MODULE_DIR$/lib/taglibs-request.jar!/</url>
+          </containerElement>
+          <containerElement type="library" name="redist" level="project">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+          </containerElement>
+        </packaging>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/exploded/WEB-INF/classes" />
     <exclude-output />
-    <exploded url="file://$MODULE_DIR$/target/exploded" />
-    <exclude-exploded />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/java" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
@@ -83,71 +156,6 @@
       </library>
     </orderEntry>
     <orderEntryProperties />
-  </component>
-  <component name="WebModuleBuildComponent">
-    <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/target/exploded" />
-    <setting name="EXPLODED_ENABLED" value="true" />
-    <setting name="JAR_URL" value="file://" />
-    <setting name="JAR_ENABLED" value="false" />
-    <setting name="SYNC_EXPLODED_DIR" value="true" />
-    <setting name="BUILD_ON_FRAME_DEACTIVATION" value="true" />
-    <setting name="RUN_JASPER_VALIDATION" value="false" />
-  </component>
-  <component name="WebModuleProperties">
-    <containerElement type="module" name="container">
-      <attribute name="method" value="5" />
-      <attribute name="URI" value="/WEB-INF/lib/container.jar" />
-    </containerElement>
-    <containerElement type="module" name="engine">
-      <attribute name="method" value="5" />
-      <attribute name="URI" value="/WEB-INF/lib/engine.jar" />
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.0.jar" />
-      <url>jar://$MODULE_DIR$/lib/commons-fileupload-1.0.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/jmxremote_optional-1.0.1_03.jar" />
-      <url>jar://$MODULE_DIR$/lib/jmxremote_optional-1.0.1_03.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/jstl.jar" />
-      <url>jar://$MODULE_DIR$/lib/jstl.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/scotland-1.0.jar" />
-      <url>jar://$MODULE_DIR$/lib/scotland-1.0.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/standard.jar" />
-      <url>jar://$MODULE_DIR$/lib/standard.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/stapler-1.1.jar" />
-      <url>jar://$MODULE_DIR$/lib/stapler-1.1.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="module">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib/taglibs-request.jar" />
-      <url>jar://$MODULE_DIR$/lib/taglibs-request.jar!/</url>
-    </containerElement>
-    <containerElement type="library" level="project" name="redist">
-      <attribute name="method" value="1" />
-      <attribute name="URI" value="/WEB-INF/lib" />
-    </containerElement>
-    <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/src/webapp/WEB-INF/web.xml" optional="false" version="2.4" />
-    <webroots>
-      <root url="file://$MODULE_DIR$/src/webapp" relative="/" />
-    </webroots>
-  </component>
-  <component name="WeblogicWebModuleProperties">
-    <option name="IS_RUN_APPC" value="false" />
   </component>
   <component name="org.mevenide.idea.module.ModuleSettings">
     <favoriteGoals>
