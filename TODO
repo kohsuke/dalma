@@ -40,6 +40,7 @@ The MIME boundary tokens are different (between when I sent and when I receive i
 
 Container Version
 =================
+- conversation needs to be able to error-abort, and it should show up prominently
 - If we kill a conversation while it's running, it's left in the "ended" state
   in the on-going conversation.
 - support "no instrumentation" manifest entry.

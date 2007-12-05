@@ -241,14 +241,15 @@
       <module fileurl="file://$PROJECT_DIR$/dalma.iml" filepath="$PROJECT_DIR$/dalma.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/email/email.iml" filepath="$PROJECT_DIR$/modules/email/email.iml" group="modules" />
       <module fileurl="file://$PROJECT_DIR$/modules/engine/engine.iml" filepath="$PROJECT_DIR$/modules/engine/engine.iml" group="modules" />
+      <module fileurl="file://$PROJECT_DIR$/experiments/exception/exception.iml" filepath="$PROJECT_DIR$/experiments/exception/exception.iml" group="experiments" />
       <module fileurl="file://$PROJECT_DIR$/samples/hangman/hangman.iml" filepath="$PROJECT_DIR$/samples/hangman/hangman.iml" group="samples" />
       <module fileurl="file://$PROJECT_DIR$/modules/irc/irc.iml" filepath="$PROJECT_DIR$/modules/irc/irc.iml" group="modules" />
       <module fileurl="file://$PROJECT_DIR$/modules/james/james.iml" filepath="$PROJECT_DIR$/modules/james/james.iml" group="experiments" />
       <module fileurl="file://$PROJECT_DIR$/job/java.net-project-approval/java.net-project-approval.iml" filepath="$PROJECT_DIR$/job/java.net-project-approval/java.net-project-approval.iml" />
-      <module fileurl="file://$PROJECT_DIR$/samples/java.net-role-process/java.net-role-process.iml" filepath="$PROJECT_DIR$/samples/java.net-role-process/java.net-role-process.iml" group="samples" />
       <module fileurl="file://$PROJECT_DIR$/modules/jbi/jbi.iml" filepath="$PROJECT_DIR$/modules/jbi/jbi.iml" group="modules" />
       <module fileurl="file://$PROJECT_DIR$/modules/jms/jms.iml" filepath="$PROJECT_DIR$/modules/jms/jms.iml" group="modules" />
       <module fileurl="file://$PROJECT_DIR$/modules/maven-dalma-plugin/maven-dalma-plugin.iml" filepath="$PROJECT_DIR$/modules/maven-dalma-plugin/maven-dalma-plugin.iml" group="tools" />
+      <module fileurl="file://$PROJECT_DIR$/experiments/serial-error/serial-error.iml" filepath="$PROJECT_DIR$/experiments/serial-error/serial-error.iml" group="experiments" />
       <module fileurl="file://$PROJECT_DIR$/samples/test-workflow/test-workflow.iml" filepath="$PROJECT_DIR$/samples/test-workflow/test-workflow.iml" group="samples" />
       <module fileurl="file://$PROJECT_DIR$/modules/webui/webui.iml" filepath="$PROJECT_DIR$/modules/webui/webui.iml" group="modules" />
     </modules>
