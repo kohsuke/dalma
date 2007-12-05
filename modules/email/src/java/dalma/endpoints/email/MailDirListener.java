@@ -47,42 +47,48 @@ public class MailDirListener extends Listener {
 
     private class Runner implements Runnable {
         public void run() {
-            while(true) {
-                try {
-                    Thread.sleep(interval);
-                } catch (InterruptedException e) {
-                    return; // treat as a signal to die
-                }
-                try {
-                    File newDir = new File(dir,"new");
-                    File[] files = newDir.listFiles();
-                    if(files==null)
-                        continue;   // the directory doesn't exist.
-
+            try {
+                while(true) {
                     try {
-                        for(File mail : files ) {
-                            BufferedInputStream in = new BufferedInputStream(new FileInputStream(mail));
-                            try {
-                                MimeMessage msg = new MimeMessage(getEndPoint().getSession(),in);
-                                logger.fine("handling message: "+msg.getSubject());
+                        Thread.sleep(interval);
+                    } catch (InterruptedException e) {
+                        return; // treat as a signal to die
+                    }
+                    try {
+                        File newDir = new File(dir,"new");
+                        File[] files = newDir.listFiles();
+                        if(files==null)
+                            continue;   // the directory doesn't exist.
+
+                        try {
+                            for(File mail : files ) {
+                                BufferedInputStream in = new BufferedInputStream(new FileInputStream(mail));
                                 try {
-                                    handleMessage(msg);
-                                } catch (MessagingException e) {
-                                    logger.log(Level.WARNING,"failed to handle message: "+msg.getSubject(),e);
-                                    // but delete this message anyway
+                                    MimeMessage msg = new MimeMessage(getEndPoint().getSession(),in);
+                                    logger.fine("handling message: "+msg.getSubject());
+                                    try {
+                                        handleMessage(msg);
+                                    } catch (MessagingException e) {
+                                        logger.log(Level.WARNING,"failed to handle message: "+msg.getSubject(),e);
+                                        // but delete this message anyway
+                                    }
+                                } finally {
+                                    in.close();
+                                    mail.delete();
                                 }
-                            } finally {
-                                in.close();
-                                mail.delete();
                             }
+                        } catch (IOException e) {
+                            logger.log(Level.WARNING,e.getMessage(),e);
                         }
-                    } catch (IOException e) {
+                        logger.fine("done. going back to sleep");
+                    } catch (MessagingException e) {
                         logger.log(Level.WARNING,e.getMessage(),e);
                     }
-                    logger.fine("done. going back to sleep");
-                } catch (MessagingException e) {
-                    logger.log(Level.WARNING,e.getMessage(),e);
                 }
+            } catch (Error e) {
+                logger.log(Level.SEVERE,e.getMessage(),e);
+            } catch (RuntimeException e) {
+                logger.log(Level.SEVERE,e.getMessage(),e);
             }
         }
     }
