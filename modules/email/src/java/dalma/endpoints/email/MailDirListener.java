@@ -19,7 +19,7 @@ public class MailDirListener extends Listener {
     private final int interval;
     private final Thread thread;
 
-    private static final Logger logger = Logger.getLogger(POP3Listener.class.getName());
+    private static final Logger logger = Logger.getLogger(MailDirListener.class.getName());
 
     public MailDirListener(File dir, int interval) {
         this.dir = dir;
@@ -64,7 +64,17 @@ public class MailDirListener extends Listener {
                             for(File mail : files ) {
                                 BufferedInputStream in = new BufferedInputStream(new FileInputStream(mail));
                                 try {
-                                    MimeMessage msg = new MimeMessage(getEndPoint().getSession(),in);
+                                    MimeMessage msg;
+                                    try {
+                                        msg = new MimeMessage(getEndPoint().getSession(),in);
+                                    } catch(OutOfMemoryError e) {
+                                        // got a message that's too big
+                                        logger.log(Level.SEVERE, "Failed to read "+mail+". Re-classifying to cur");
+                                        in.close();
+                                        mail.renameTo(new File(new File(dir,"cur"),mail.getName()));
+                                        continue;
+                                    }
+                                    
                                     logger.fine("handling message: "+msg.getSubject());
                                     try {
                                         handleMessage(msg);
