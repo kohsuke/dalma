@@ -19,8 +19,17 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  */
 final class SenderThread extends Thread {
+    private static final class Unit {
+        final MimeMessage msg;
+        final Throwable sender;
 
-    private final List<MimeMessage> msgs = new ArrayList<MimeMessage>();
+        private Unit(MimeMessage msg) {
+            this.msg = msg;
+            sender = new Exception().fillInStackTrace();
+        }
+    }
+
+    private final List<Unit> msgs = new ArrayList<Unit>();
 
     private final Session session;
 
@@ -37,7 +46,7 @@ final class SenderThread extends Thread {
         if(isShuttingDown)
             throw new IllegalStateException("the sender thread is shutting down");
 
-        msgs.add(msg);
+        msgs.add(new Unit(msg));
         notify();
     }
 
@@ -63,7 +72,7 @@ final class SenderThread extends Thread {
         return !msgs.isEmpty();
     }
 
-    private synchronized MimeMessage getNext() {
+    private synchronized Unit getNext() {
         return msgs.remove(0);
     }
 
@@ -84,9 +93,15 @@ final class SenderThread extends Thread {
                 Transport t = session.getTransport("smtp");
                 t.connect();
                 do {
-                    MimeMessage msg = getNext();
+                    Unit unit = getNext();
+                    MimeMessage msg = unit.msg;
                     logger.fine(toString()+" : sending "+msg.getSubject());
-                    t.sendMessage(msg,msg.getAllRecipients());
+                    try {
+                        t.sendMessage(msg,msg.getAllRecipients());
+                    } catch (MessagingException e) {
+                        logger.log(Level.WARNING,"Failed to send an e-mail via SMTP",e);
+                        logger.log(Level.WARNING,"Message created here",e);
+                    }
                 } while(hasMessage());
                 t.close();
                 logger.fine(toString()+" : going back to sleep");
