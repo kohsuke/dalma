@@ -35,10 +35,15 @@ final class SenderThread extends Thread {
 
     private boolean isShuttingDown = false;
 
+    /**
+     * Records the unexpected problem so that I can debug this later
+     */
+    private Throwable causeOfDeath;
+
     private static final Logger logger = Logger.getLogger(SenderThread.class.getName());
 
-    public SenderThread(Session session) {
-        super("SMTP sender thread");
+    public SenderThread(String name, Session session) {
+        super("SMTP sender thread for "+name);
         this.session = session;
     }
 
@@ -107,6 +112,14 @@ final class SenderThread extends Thread {
                 logger.fine(toString()+" : going back to sleep");
             } catch (MessagingException e) {
                 logger.log(Level.WARNING,"Failed to send an e-mail via SMTP",e);
+            } catch (RuntimeException e) {
+                // don't let the thread die
+                logger.log(Level.WARNING,"Unexpected error",e);
+                causeOfDeath = e;
+            } catch (Error e) {
+                // don't let the thread die
+                logger.log(Level.WARNING,"Unexpected error",e);
+                causeOfDeath = e;
             }
         }
     }
