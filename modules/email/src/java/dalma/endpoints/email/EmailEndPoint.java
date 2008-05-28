@@ -89,7 +89,7 @@ public class EmailEndPoint extends MultiplexedEndPoint<UUID,MimeMessage> {
         this.address = address;
         this.listener = listener;
         this.session = session;
-        this.sender = new SenderThread(session);
+        this.sender = new SenderThread(address.toString(),session);
         if(address==null || listener==null || session==null)
             throw new IllegalArgumentException();
         listener.setEndPoint(this);
